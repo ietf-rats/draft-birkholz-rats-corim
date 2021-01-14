@@ -1,7 +1,7 @@
 ---
 title: Concise Reference Integrity Manifest
 abbrev: CoRIM
-docname: draft-birkholz-rats-corim-earliest
+docname: draft-birkholz-rats-corim-latest
 stand_alone: true
 ipr: trust200902
 area: Security
@@ -64,7 +64,8 @@ Introduction
 
 {::boilerplate bcp14}
 
-# Body {: #mybody}
+{: #mybody}
+# Body
 
 Body
 
