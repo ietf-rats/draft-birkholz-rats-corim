@@ -1,0 +1,35 @@
+unsigned-corim = {
+  corim-id => corim-id-type,
+  tags => concise-tag / [2* concise-tag],
+  ? dependent-rims => corim-locator / [2* corim-locator], ; hint for finding manifest files
+  * $$unsigned-corim-extension
+}
+corim-id = 123 ; TBD
+tags = 97
+dependent-rims = 122; TBD
+
+corim-id-type = tstr / bstr .size 16 ; **Note: Do we want a %6.CT reservation?**
+
+corim-meta = {
+  signer => entity-entry, ; entity-entry is pointing to the manifest issuer - compare tag-metadata tag-issuer these are different things
+  ? validity-entry,
+  ? deny-id => corim-id-type, ; used for revocation - NOTE(tho) I'm not sure I understand how is this supposed to work?
+}
+signer = 98
+deny-id = 99
+
+validity-entry = (
+  ? not-before => time,
+  not-after => time,
+)
+not-before=100
+not-after=101
+
+corim-locator = {
+  href => any-uri, ; e.g. https://isv.example.mymodule.corim
+  ? thumbprint => hash-entry, ; the digest computed over mymodule.corim
+  ; **Note:should there be an extension point here?**
+}
+
+concise-tag = #6.47116(signed-coswid) / #6.47117(concise-mid-tag)
+; NOTE(henk) does a concise-mid-tag by itself should be allowed to be singed the same as a CoSWID tag?

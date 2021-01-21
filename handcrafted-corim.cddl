@@ -1,0 +1,194 @@
+concise-rim =  #6.4711(unsigned-corim) / #6.0815(signed-corim)
+
+signed-corim = #6.18(COSE-Sign1-corim)
+
+cose-label = int / tstr
+cose-values = any
+
+protected-signed-corim-header = {
+  1 => int,                      ; algorithm identifier
+  3 => "application/rim+cbor",   ; content type identifier
+  4 => bstr,                     ; key identifier of issuer?
+  corim-meta-key => corim-meta   ; corim signature attributes
+  * cose-label => cose-values,
+}
+corim-meta-key = 5 ; scoped to protected-signed-corim-header map (XXX 5 is already taken)
+
+unprotected-signed-corim-header = {
+  * cose-label => cose-values,
+}
+
+COSE-Sign1-corim = [
+  protected: bstr .cbor protected-signed-corim-header,
+  unprotected: unprotected-signed-corim-header, 
+  payload: bstr .cbor unsigned-corim,
+  signature: bstr,
+]
+
+unsigned-corim = {
+  corim-id => corim-id-type,
+  tags => concise-tag / [2* concise-tag],
+  ? dependent-rims => corim-locator / [2* corim-locator], ; hint for finding manifest files
+  * $$unsigned-corim-extension
+}
+corim-id = 123 ; TBD
+tags = 97
+dependent-rims = 122; TBD
+
+corim-id-type = tstr / bstr .size 16 ; **Note: Do we want a %6.CT reservation?**
+
+corim-meta = {
+  signer => entity-entry, ; entity-entry is pointing to the manifest issuer - compare tag-metadata tag-issuer these are different things
+  ? validity-entry,
+  ? deny-id => corim-id-type, ; used for revocation - NOTE(tho) I'm not sure I understand how is this supposed to work?
+}
+signer = 98
+deny-id = 99
+
+validity-entry = (
+  ? not-before => time,
+  not-after => time,
+)
+not-before=100
+not-after=101
+
+; Note: Should locator move into unprotected headers?
+corim-locator = {
+  href => any-uri, ; e.g. https://isv.example.mymodule.corim
+  ? thumbprint => hash-entry, ; the digest computed over mymodule.corim
+  ; **Note:should there be an extension point here?**
+}
+
+concise-tag = (#6.TBD6(concise-swid-tag) / #6.TBD7(concise-mid-tag))
+
+concise-mid-tag = {
+  global-attributes, ; NOTE(tho) is this needed? ISTM $$comid-extension should be enough
+  tag-metadata,
+  ? module-name => text,
+  ? module-type => module-type-type,
+  ? module-version => text .default '0.0',
+  ? version-scheme => $version-scheme, ; defined in coswid
+  ? entities => entity-entry / [2* entity-entry], ; defined in coswid
+  ? sub-tags => linked-tags-entry / [2* linked-tags-entry], ; dependent coswid and comid tags. NOTE(tho) linked-tags rather than sub-tags seem like a more appropriate name
+  ? claims => claims-entry / [2* claims-entry], ; claims may be omitted for manifests that only capture dependencies to other manifests
+  * $$comid-extension
+}
+module-name=102
+module-type=103
+module-version=104
+;version-scheme is defined in coswid 
+entities=105
+sub-tags=106
+claims=107
+
+tag-metadata = (
+  tag-id => tag-id-type,
+  tag-version => integer .default 0,
+  ; Verifier can compute digest of the CBOR encoding of this concise-tag
+  ; Verifier can capture tag-issuer Note: What is the right format X.509 Issuer, DID, PEN ???
+  * $$tag-metadata-extension
+)
+;tag-id is defined in coswid
+;tag-version is defined in coswid
+tag-id-type = tstr / bstr .size 16 ; **Note: Do we want a $6.TT reservation?**
+
+module-type-type /= tagged-bytes
+module-type-type /= uuid-bytes
+module-type-type /= implementation-id-bytes
+
+tagged-bytes = #6.111(bytes) ; BER encoded OID
+uuid-bytes = #6.37(bytes .size 16) ; see RFC4412
+implementation-id-bytes = #6.TBD5(bytes .size 32) ; see draft-tschofenig-rats-psa-token-06 - NOTE(tho) if we don't carry PSA identity endorsements in CoRIMs this is no longer needed.
+
+linked-tags-entry = {
+  tag-id => tag-id-type,
+  tag-rel => $comid-rel / $rel,  ; NOTE(tho) let's think about how to deal with ambiguity of overlapping codepoint spaces
+  ? tag-thumbprint => hash-entry, ; digest of the CBOR encoding of the concise-tag
+  ? tag-issuer => tag-issuer-type,
+}
+tag-rel=121
+tag-thumbprint = 199 ; NOTE(tho) - randomly assigned number: check this for clashes
+tag-issuer = 200 ; NOTE(tho) - randomly assigned number: check this for clashes
+
+; DID, PEN ??? Bob is saying I expect this tag to be provided (signed by) by Alice
+tag-issuer-type = "TODO"
+
+$comid-rel /= "submodule" ; a module that depends on this module
+$comid-rel /= "peermodule" ; a module that this module can be access - NOTE(tho) is this needed?  It seems to be implied unambiguously by the fact that modules share the same parent...
+$comid-rel /= "rootmodule" ; a module that contains this module
+$comid-rel /= "parentmodule" ; a module that directly contains this module
+$comid-rel /= -256..64436 / text ; **note: do we need 'text' as that opens a door for confusion**
+
+claims-entry = {
+  ? ref-claims => reference-value  / [2* reference-value], ;any reference-value entry can match evidence
+  ? end-claims => endorsed-value / [2* endorsed-value],
+  * $$claims-entry-extension,
+}
+ref-claims=108
+end-claims=109
+
+; NOTE(tho) from a syntactic PoV reference-value and endorsed-value are extremely similar.  I'm wondering why do we need to keep them separate?
+
+element-name = (
+    ? label => text,
+    ? vendor => text, ; namespace authority designation
+    ? type => module-type-type, ; Note: 'type' SHOULD include a namespace authority if 'vendor' is ommitted
+    ? model => text,
+    ? layer => int,
+    ? index => int,
+; **note: An extension point in element-name confuses verifiers' ability to match against evidence**
+)
+; label is defined in coswid schema (q: should we use a different value if the semantics differ?)
+; type is defined in coswid schema
+vendor=110
+model=111
+layer=112
+index=113
+
+element-value = (
+  ? version => text,
+  ? svn => int,
+  ? raw-value-entry,  
+  ? digests => digests-entry,
+  ? flags => bytes .bits operational-flags,
+;  * $$element-value-extension ; **note do we need an extension point in element-value given there are extension points in endorsed-value and reference-value?**
+)
+version=114
+svn=115
+digests=116
+flags=117
+
+endorsed-value = {
+  element-name,
+  ? element-value, ; one endorser benefits from the element-value of another endorser
+  ? any-attribute, ; defined in coswid schema - **note: this can be removed if we opt for using the extension point instead. ** NOTE(tho): agree
+  * $$endorsed-value-extension ;How do vendor specific schemas allocate indices (keys)? We need to specify a range of keys with rules 'first come first served'
+}
+
+;**Note: a collection of reference values can be modeled using multiplicity of tags and/or claims, but we need to verify how to apply AND and OR logic for matching.**
+
+reference-value = {
+  element-name,
+  element-value,
+  * $$reference-value-extension,
+}
+
+raw-value-entry = (
+  raw-value => bstr,
+  ? raw-value-mask => bstr,
+)
+raw-value=118
+raw-value-mask=119
+
+operational-flags = &( ;requires functional compare
+  not-configured: 0,
+  not-secure: 1,
+  recovery: 2,
+  debug: 3,
+)
+
+digests-entry = [ hash-entry / [2* hash-entry] ]
+; hash-entry is defined in coswid schema
+~~~
+> [name=nedmsmith]Checking out commenting tool
+> 
