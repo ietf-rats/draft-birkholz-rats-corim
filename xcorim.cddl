@@ -1,0 +1,47 @@
+xcorim = #6.47113(unsigned-xcorim) / #6.47114(signed-xcorim)
+
+signed-xcorim = #6.18(COSE-Sign1-xcorim)
+
+cose-label = int / tstr
+cose-values = any
+
+protected-signed-xcorim-header = {
+  1 => int,                      ; algorithm identifier
+  3 => "application/xrim+cbor",  ; content type identifier
+  4 => bstr,                     ; key identifier
+  corim-meta-key => corim-meta   ; xcorim signature attributes are the same as defined by corim schema
+  * cose-label => cose-values,
+}
+corim-meta-key = 8 ; scoped to protected-signed-xcorim-header map
+
+corim-meta = {
+  signer => entity-entry, ; entity-entry is pointing to the manifest issuer - compare tag-metadata tag-issuer these are different things
+  ? validity => validity-entry, ; NOTE(henk) this needed a key to be valid, but I am not sure what the semantics are
+  ? deny-id => $corim-id-type, ; used for revocation - NOTE(tho) I'm not sure I understand how is this supposed to work?
+}
+signer = 98
+deny-id = 99
+validity = 121
+
+unprotected-signed-xcorim-header = {
+  * cose-label => cose-values,
+}
+
+COSE-Sign1-xcorim = [
+  protected: bstr .cbor protected-signed-xcorim-header,
+  unprotected: unprotected-signed-xcorim-header,
+  payload: bstr .cbor unsigned-xcorim,
+  signature: bstr,
+]
+
+unsigned-xcorim = {
+  denied-rims => corim-id / [2* corim-id],
+  * $$unsigned-xcorim-extension
+}
+denied-rims=120
+
+corim-id = bstr .size 16
+
+entity-entry = "a CoSWID entity entry" 
+validity-entry = "a XCoRIM validity entry"
+$corim-id-type /= "one of many corim ID types"
