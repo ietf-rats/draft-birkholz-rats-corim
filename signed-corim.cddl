@@ -10,7 +10,7 @@ protected-signed-corim-header = {
   corim-meta-key => corim-meta   ; corim signature attributes
   * cose-label => cose-values,
 }
-corim-meta-key = 5 ; scoped to protected-signed-corim-header map (XXX 5 is already taken)
+corim-meta-key = 8 ; scoped to protected-signed-corim-header map
 
 unprotected-signed-corim-header = {
   * cose-label => cose-values,

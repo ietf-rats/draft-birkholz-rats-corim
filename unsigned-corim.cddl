@@ -10,14 +10,6 @@ dependent-rims = 122; TBD
 
 corim-id-type = tstr / bstr .size 16 ; **Note: Do we want a %6.CT reservation?**
 
-corim-meta = {
-  signer => entity-entry, ; entity-entry is pointing to the manifest issuer - compare tag-metadata tag-issuer these are different things
-  ? validity-entry,
-  ? deny-id => corim-id-type, ; used for revocation - NOTE(tho) I'm not sure I understand how is this supposed to work?
-}
-signer = 98
-deny-id = 99
-
 validity-entry = (
   ? not-before => time,
   not-after => time,

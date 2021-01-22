@@ -1,4 +1,5 @@
 concise-mid-tag = {
+  ? lang => text,
   tag-metadata,
   ? module-name => text,
   ? module-type => module-type-type,
@@ -7,7 +8,6 @@ concise-mid-tag = {
   ? entity => entity-entry / [2* entity-entry], ; defined in coswid
   ? sub-tags => linked-tags-entry / [2* linked-tags-entry], ; dependent coswid and comid tags. NOTE(tho) linked-tags rather than sub-tags seem like a more appropriate name
   ? claims => claims-entry / [2* claims-entry], ; claims may be omitted for manifests that only capture dependencies to other manifests
-  global-attributes, ; NOTE(tho) is this needed? ISTM $$comid-extension should be enough
   * $$comid-extension
 }
 module-name=101
