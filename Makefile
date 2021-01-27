@@ -16,7 +16,7 @@ include cddl/tools.mk
 CDDL_FRAGS := $(addprefix cddl/,$(CDDL_FRAGS))
 CDDL_FULL := $(addprefix cddl/,$(CDDL_FULL))
 
-draft-birkholz-rats-corim.xml: cddl-check
+draft-birkholz-rats-corim.xml: $(CDDL_FULL)
 
 .PHONY: cddl-check
 cddl-check: $(CDDL_FULL) ; $(cddl) $< generate 10 &> /dev/null
