@@ -47,8 +47,10 @@ normative:
   RFC2119:
   RFC8174:
   I-D.ietf-sacm-coswid: coswid
+  I-D.ietf-rats-architecture: rats-arch
 
 informative:
+  RFC4949:
 
 --- abstract
 
@@ -58,7 +60,19 @@ Abstract
 
 # Introduction
 
-Introduction
+The Remote Attestation Procedures architecture {{-rats-arch}} describes appraisal procedures for attestation Evidence and Attestation Results. Appraisal procedures for Evidence are conducted by Verifiers and are intended to assess the trustworthiness of a remote peer. Appraisal procedures for Attestation Results are conducted by Relying Parties and are intended to operationalize the assessment about a remote peer and to act on it appropriately. In order to enable their intent, appraisal procedures consume Appraisal Policies, Reference Values, and Endorsements.
+
+This documents specifies a binary encoding for Reference Values using the Concise Binary Object Representation (CBOR). The encoding is based on three parts that are defined using the Concise Data Definition Language (CDDL):
+
+* Concise Reference Integrity Manifests (CoRIM),
+* Concise Module Identifiers (CoMID), and
+* Concise Software Identifier (CoSWID).
+
+While CoRIM and CoMID are defined in this document, CoSWID are defined in {{-coswid}}. CoRIM provide a wrapper structure, in which CoMID, CoSWID, and corresponding metadata can be bundled and signed as whole. CoMID represent hardware components and provide a counterpart to CoSWID, which represent software components.
+
+While firmware can be represented as a software component, it is also very hardware-specific and often resides directly on block devices instead of a file system. In accordance to {{RFC4949}}, software components that are stored in hardware modules are referred to as firmware. In this specification, firmware and their Reference Values are represented via CoMID. Reference Values for any other software components stored on a file system are represented via CoSWID.
+
+In addition to CoRIM - and respective CoMID - this specification defines a Concise Manifest Revocation that represents a list of reference to CoRIM that are actively marked as invalid before their expiration time.
 
 ## Requirements Notation
 
