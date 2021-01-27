@@ -10,13 +10,6 @@ dependent-rims = 122; TBD
 
 corim-id-type = tstr / bstr .size 16 ; **Note: Do we want a %6.CT reservation?**
 
-validity-entry = (
-  ? not-before => time,
-  not-after => time,
-)
-not-before=100
-not-after=101
-
 corim-locator = {
   href => any-uri, ; e.g. https://isv.example.mymodule.corim
   ? thumbprint => hash-entry, ; the digest computed over mymodule.corim

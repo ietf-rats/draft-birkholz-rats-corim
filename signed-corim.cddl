@@ -20,6 +20,13 @@ corim-meta = {
 signer = 98
 deny-id = 99
 
+validity-entry = (
+  ? not-before => time,
+  not-after => time,
+)
+not-before=100
+not-after=101
+
 unprotected-signed-corim-header = {
   * cose-label => cose-values,
 }
