@@ -11,19 +11,27 @@ else
 endif
 
 include cddl/vars.mk
-include cddl/tools.mk
 
 CDDL_FRAGS := $(addprefix cddl/,$(CDDL_FRAGS))
 CDDL_FULL := $(addprefix cddl/,$(CDDL_FULL))
 
 draft-birkholz-rats-corim.xml: $(CDDL_FULL)
 
-.PHONY: cddl-check
-cddl-check: $(CDDL_FULL) ; $(cddl) $< generate 10 &> /dev/null
-
 $(CDDL_FULL): $(CDDL_FRAGS)
 	for f in $^ ; do \
 		( cat $$f ; echo ) ; \
 	done > $@
+
+cddl ?= cddl
+
+.PHONY: cddl-lint
+cddl-lint: $(CDDL_FULL) cddl-install
+	$(cddl) $< generate 10 &> /dev/null
+
+lint:: cddl-lint
+
+.PHONY: cddl-install
+cddl-install:
+	@hash cddl 2>/dev/null || gem install cddl
 
 cddl-clean: ; $(RM) $(CDDL_FULL)

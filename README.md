@@ -23,7 +23,7 @@ The `cddl/corim.cddl` file is assembled from the fragments in `cddl/`.  It is ge
 
 The build system exposes two new targets:
 
-* `cddl-check` - to check that the CDDL spec is in order;
+* `cddl-lint`  - to check that the CDDL spec is in order;
 * `cddl-clean` - to remove the auto-generated CDDL spec.
 
 ## Contributing
