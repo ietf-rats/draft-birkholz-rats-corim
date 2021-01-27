@@ -17,6 +17,14 @@ $ make
 This requires that you have the necessary software installed.  See
 [the instructions](https://github.com/martinthomson/i-d-template/blob/master/doc/SETUP.md).
 
+### CDDL
+
+The `cddl/corim.cddl` file is assembled from the fragments in `cddl/`.  It is generated transparently by the build system and must not be added to git index.
+
+The build system exposes two new targets:
+
+* `cddl-check` - to check that the CDDL spec is in order;
+* `cddl-clean` - to remove the auto-generated CDDL spec.
 
 ## Contributing
 
