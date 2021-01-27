@@ -1,4 +1,0 @@
-;Sequence of CDDL definitions:
-;cat concise-rim.cddl signed-corim.cddl unsigned-corim.cddl concise-mid-tag.cddl signed-coswid.cddl concise-swid-tag.cddl > corim.cddl
-concise-reference-integrity-manifest =  #6.47111(unsigned-corim) / #6.47112(signed-corim)
-
