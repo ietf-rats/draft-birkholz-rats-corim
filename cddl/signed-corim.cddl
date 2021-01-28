@@ -10,7 +10,22 @@ protected-signed-corim-header = {
   corim-meta-key => corim-meta   ; corim signature attributes
   * cose-label => cose-values,
 }
-corim-meta-key = 5 ; scoped to protected-signed-corim-header map (XXX 5 is already taken)
+corim-meta-key = 8 ; scoped to protected-signed-corim-header map
+
+corim-meta = {
+  signer => entity-entry, ; entity-entry is pointing to the manifest issuer - compare tag-metadata tag-issuer these are different things
+  ? validity-entry,
+  ? deny-id => corim-id-type, ; used for revocation - NOTE(tho) I'm not sure I understand how is this supposed to work?
+}
+signer = 98
+deny-id = 99
+
+validity-entry = (
+  ? not-before => time,
+  not-after => time,
+)
+not-before=100
+not-after=101
 
 unprotected-signed-corim-header = {
   * cose-label => cose-values,
