@@ -6,5 +6,3 @@ CDDL_FRAGS += signed-coswid.cddl
 CDDL_FRAGS += concise-swid-tag.cddl
 
 CDDL_FULL := corim.cddl
-
-CLEANFILES += $(CDDL_FULL)
