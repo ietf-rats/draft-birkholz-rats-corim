@@ -89,7 +89,7 @@ See {{-coswid}}.
 
 ~~~~ CDDL
 <CODE BEGINS>
-{::include corim.cddl}
+{::include cddl/corim.cddl}
 <CODE ENDS>
 ~~~~
 
