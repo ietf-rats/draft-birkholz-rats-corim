@@ -16,5 +16,5 @@ corim-locator = {
   ; **Note:should there be an extension point here?**
 }
 
-concise-tag = #6.47116(signed-coswid) / #6.47117(concise-mid-tag)
+concise-tag = #6.47116(concise-swid-tag) / #6.47117(concise-mid-tag)
 ; NOTE(henk) does a concise-mid-tag by itself should be allowed to be singed the same as a CoSWID tag?
