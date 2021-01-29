@@ -68,7 +68,7 @@ This documents specifies a binary encoding for Reference Values using the Concis
 * Concise Module Identifiers (CoMID), and
 * Concise Software Identifier (CoSWID).
 
-While CoRIM and CoMID are defined in this document, CoSWID are defined in {{-coswid}}. CoRIM provide a wrapper structure, in which CoMID, CoSWID, and corresponding metadata can be bundled and signed as whole. CoMID represent hardware components and provide a counterpart to CoSWID, which represent software components.
+While CoRIM and CoMID are defined in this document, CoSWID are defined in {{-coswid}}. CoRIM provide a wrapper structure, in which CoMID, CoSWID, and corresponding metadata can be bundled and signed as a whole. CoMID represent hardware components and provide a counterpart to CoSWID, which represent software components.
 
 While firmware can be represented as a software component, it is also very hardware-specific and often resides directly on block devices instead of a file system. In accordance to {{RFC4949}}, software components that are stored in hardware modules are referred to as firmware. In this specification, firmware and their Reference Values are represented via CoMID. Reference Values for any other software components stored on a file system are represented via CoSWID.
 
@@ -79,7 +79,9 @@ In addition to CoRIM - and respective CoMID - this specification defines a Conci
 {::boilerplate bcp14}
 
 {: #mybody}
-# Body
+# Concise Reference Integrity Manifests
+
+
 
 Body
 
