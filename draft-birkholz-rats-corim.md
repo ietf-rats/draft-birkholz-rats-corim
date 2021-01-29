@@ -60,7 +60,7 @@ Abstract
 
 # Introduction
 
-The Remote Attestation Procedures architecture {{-rats-arch}} describes appraisal procedures for attestation Evidence and Attestation Results. Appraisal procedures for Evidence are conducted by Verifiers and are intended to assess the trustworthiness of a remote peer. Appraisal procedures for Attestation Results are conducted by Relying Parties and are intended to operationalize the assessment about a remote peer and to act on it appropriately. In order to enable their intent, appraisal procedures consume Appraisal Policies, Reference Values, and Endorsements.
+The Remote Attestation Procedures (RATS) architecture {{-rats-arch}} describes appraisal procedures for attestation Evidence and Attestation Results. Appraisal procedures for Evidence are conducted by Verifiers and are intended to assess the trustworthiness of a remote peer. Appraisal procedures for Attestation Results are conducted by Relying Parties and are intended to operationalize the assessment about a remote peer and to act on it appropriately. In order to enable their intent, appraisal procedures consume Appraisal Policies, Reference Values, and Endorsements.
 
 This documents specifies a binary encoding for Reference Values using the Concise Binary Object Representation (CBOR). The encoding is based on three parts that are defined using the Concise Data Definition Language (CDDL):
 

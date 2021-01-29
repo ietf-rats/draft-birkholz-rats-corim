@@ -43,7 +43,7 @@ implementation-id-bytes = #6.47115(bytes .size 32) ; see draft-tschofenig-rats-p
 
 linked-tags-entry = {
   tag-id => $tag-id-type,
-  tag-rel => $comid-rel / $rel,  ; NOTE(tho) let's think about how to deal with ambiguity of overlapping codepoint spaces
+  tag-rel => $tag-rel-type,
   ? tag-thumbprint => hash-entry, ; digest of the CBOR encoding of the concise-tag
   ? tag-issuer => tag-issuer-type,
 }
@@ -54,11 +54,15 @@ tag-issuer = 200 ; NOTE(tho) - randomly assigned number: check this for clashes
 ; DID, PEN ??? Bob is saying I expect this tag to be provided (signed by) by Alice
 tag-issuer-type = "TODO"
 
-$comid-rel /= "submodule" ; a module that depends on this module
-$comid-rel /= "peermodule" ; a module that this module can be access - NOTE(tho) is this needed?  It seems to be implied unambiguously by the fact that modules share the same parent...
-$comid-rel /= "rootmodule" ; a module that contains this module
-$comid-rel /= "parentmodule" ; a module that directly contains this module
-$comid-rel /= -256..64436 / text ; **note: do we need 'text' as that opens a door for confusion**
+$tag-rel-type /= submodule ; a module that depends on this module
+$tag-rel-type /= peermodule ; a module that this module can be access - NOTE(tho) is this needed?  It seems to be implied unambiguously by the fact that modules share the same parent...
+$tag-rel-type /= rootmodule ; a module that contains this module
+$tag-rel-type /= parentmodule ; a module that directly contains this module
+$tag-rel-type /= -256..64436 / text
+submodule = 0
+peermodule = 1
+rootmodule = 2
+parentmodule = 3
 
 claims-entry = {
   ? ref-claims => reference-value  / [2* reference-value], ;any reference-value entry can match evidence
