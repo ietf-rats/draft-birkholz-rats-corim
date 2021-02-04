@@ -27,11 +27,7 @@ tag-metadata = (
 )
 ;tag-id = 0
 ;tag-version = 12
-$tag-id-type /= type-one
-$tag-id-type /= type-two
-type-one = 0
-type-two = 1
-;tag-id-type = tstr / bstr .size 16 ; **Note: Do we want a $6.TT reservation?**
+tag-id-type = tstr / bstr .size 16 ; **Note: Do we want a $6.TT reservation?**
 
 module-type-type /= tagged-bytes
 module-type-type /= uuid-bytes
