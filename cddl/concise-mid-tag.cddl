@@ -76,8 +76,9 @@ identity-value = {
 }
 device-id=125
 key-material=126
-device-id-type /= #6.47115(psa-instance-id-type) ; same as EAT UEID?
-device-id-type /= bstr ; 
+device-id-type /= #6.47115(ueid)
+ueid = bstr .size 33
+device-id-type /= #6.37(bytes .size 16) ; see RFC4412
 ; Note: is there a #6.4711 definition for hardwaremodulename RFC4108?
 
 ; NOTE(tho) from a syntactic PoV reference-value and endorsed-value are extremely similar.  I'm wondering why do we need to keep them separate?
