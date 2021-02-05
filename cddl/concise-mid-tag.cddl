@@ -63,10 +63,22 @@ parentmodule = 3
 claims-entry = {
   ? ref-claims => reference-value  / [2* reference-value], ;any reference-value entry can match evidence
   ? end-claims => endorsed-value / [2* endorsed-value],
+  ? id-claims => identity-value / [2* identity-value],
   * $$claims-entry-extension,
 }
 ref-claims=108
 end-claims=109
+id-claims=124
+
+identity-value = {
+  ? device-id => device-id-type,
+  key-material => COSE_KeySet, ; see RFC8152, draft-ietf-cose-x509
+}
+device-id=125
+key-material=126
+device-id-type /= #6.47115(psa-instance-id-type) ; same as EAT UEID?
+device-id-type /= bstr ; 
+; Note: is there a #6.4711 definition for hardwaremodulename RFC4108?
 
 ; NOTE(tho) from a syntactic PoV reference-value and endorsed-value are extremely similar.  I'm wondering why do we need to keep them separate?
 ; NOTE(henk) I very much hope that they are similar: endorsements are on the "evidence side" of things as they kick in when the Attester cannot create evidence about the characteristics of its own components (roots of trust). Reference-values are the things that you compare the "evidence side" with. So endorsements cannot be part of the "reference side". They have to look similar/identical though - otherwise the comparison becomes complex and brittle.
