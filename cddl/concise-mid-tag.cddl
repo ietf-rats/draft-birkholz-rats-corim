@@ -1,18 +1,12 @@
 concise-mid-tag = {
   ? lang => text,
   tag-metadata,
-  ? module-name => text,
-  ? module-type => module-type-type,
-  ? module-version => text .default '0.0',
-  ? version-scheme => $version-scheme, ; defined in coswid
+  ? module-metadata => module-metadata-type,
   ? entity => entity-entry / [2* entity-entry], ; defined in coswid
   ? linked-tags => linked-tags-entry / [2* linked-tags-entry], ; dependent coswid and comid tags.
   ? claims => claims-entry / [2* claims-entry], ; claims may be omitted for manifests that only capture dependencies to other manifests
   * $$comid-extension
 }
-module-name=101
-module-type=102
-module-version=103
 ;version-scheme = 14
 ;entity=2
 linked-tags=106
@@ -23,19 +17,62 @@ tag-metadata = (
   tag-version => integer .default 0,
   ; Verifier can compute digest of the CBOR encoding of this concise-tag
   ; Verifier can capture tag-issuer Note: What is the right format X.509 Issuer, DID, PEN ???
-  * $$tag-metadata-extension
+  ; * $$tag-metadata-extension ; XXX(tho) this does not work CDDL-wise: it needs to be segregated
 )
 ;tag-id = 0
 ;tag-version = 12
-tag-id-type = tstr / bstr .size 16 ; **Note: Do we want a $6.TT reservation?**
+$tag-id-type /= tstr
+$tag-id-type /= bstr .size 16
 
-module-type-type /= tagged-bytes
-module-type-type /= uuid-bytes
-module-type-type /= implementation-id-bytes
+module-metadata = 2
 
-tagged-bytes = #6.111(bytes) ; BER encoded OID
-uuid-bytes = #6.37(bytes .size 16) ; see RFC4412
-implementation-id-bytes = #6.47115(bytes .size 32) ; see draft-tschofenig-rats-psa-token-06 - NOTE(tho) if we don't carry PSA identity endorsements in CoRIMs this is no longer needed.
+module-metadata-type = {
+  ? 0 => module-name,
+  ? 1 => $module-type,
+  ? 2 => module-version,
+  ? 3 => module-vendor,
+  * $$module-metadata-extension
+}
+
+module-name = text
+
+$module-type /= tagged-oid
+$module-type /= tagged-uuid
+$module-type /= tagged-impl-id
+$module-type /= tagged-ueid
+
+;
+; From draft-ietf-cbor-tags-oid (TBD, roid and pen)
+;
+oid = bstr
+tagged-oid = #6.111(bstr)
+
+;
+; From https://github.com/lucas-clemente/cbor-specs/blob/master/uuid.md
+;
+uuid = bytes .size 16
+tagged-uuid = #6.37(uuid)
+
+;
+; From draft-tschofenig-rats-psa-token
+;
+impl-id = bytes .size 32
+tagged-impl-id = #6.47115(impl-id)
+
+;
+; From draft-ietf-rats-eat
+;
+ueid = bstr .size 33
+tagged-ueid = #6.48000(ueid)
+
+module-version = {
+  0 => text .default '0.0', ; version
+  1 => $version-scheme,     ; version-scheme
+}
+
+; version-scheme defined in CoSWID
+
+module-vendor = text
 
 linked-tags-entry = {
   tag-id => $tag-id-type,
@@ -54,9 +91,9 @@ $tag-rel-type /= parent ; a tag that introduces additional element-names
 $tag-rel-type /= supplemental ; a tag that augments existing element-names with additional values
 $tag-rel-type /= supersedes ; a tag that replaces existing element-names and values
 $tag-rel-type /= -256..64436 / text
-parent = 0
-supplemental = 1
-supersedes = 2
+; parent = 0
+; supplemental = 1
+; supersedes = 2
 
 claims-entry = {
   ? ref-claims => reference-value  / [2* reference-value], ;any reference-value entry can match evidence
@@ -69,14 +106,12 @@ end-claims=109
 id-claims=124
 
 identity-value = {
-  ? device-id => device-id-type,
-  key-material => COSE_KeySet, ; see RFC8152, draft-ietf-cose-x509
+  ? 0 => $device-id-type, ; device id
+  1 => COSE_KeySet, ; key material
 }
-device-id=125
-key-material=126
-device-id-type /= #6.47115(ueid)
-ueid = bstr .size 33
-device-id-type /= #6.37(bytes .size 16) ; see RFC4412
+
+$device-id-type /= tagged-ueid
+$device-id-type /= tagged-uuid
 ; Note: is there a #6.4711 definition for hardwaremodulename RFC4108?
 
 ; NOTE(tho) from a syntactic PoV reference-value and endorsed-value are extremely similar.  I'm wondering why do we need to keep them separate?
@@ -85,7 +120,7 @@ device-id-type /= #6.37(bytes .size 16) ; see RFC4412
 element-name = (
     ? label => text,
     ? vendor => text, ; namespace authority designation
-    ? type => module-type-type, ; Note: 'type' SHOULD include a namespace authority if 'vendor' is ommitted
+    ? type => $module-type, ; Note: 'type' SHOULD include a namespace authority if 'vendor' is ommitted
     ? model => text,
     ? layer => int,
     ? index => int,
