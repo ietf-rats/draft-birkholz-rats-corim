@@ -36,7 +36,6 @@ module-name = text
 $module-type /= tagged-oid
 $module-type /= tagged-uuid
 $module-type /= tagged-impl-id
-$module-type /= tagged-ueid
 
 ;
 ; From draft-ietf-cbor-tags-oid (TBD, roid and pen)
@@ -201,4 +200,3 @@ operational-flags = &( ;requires functional compare
 
 digests-entry = [ hash-entry / [2* hash-entry] ]
 ; hash-entry is defined in coswid schema
-
