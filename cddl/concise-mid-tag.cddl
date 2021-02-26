@@ -7,7 +7,7 @@ concise-mid-tag = {
   ? version-scheme => $version-scheme, ; defined in coswid
   ? entity => entity-entry / [2* entity-entry], ; defined in coswid
   ? linked-tags => linked-tags-entry / [2* linked-tags-entry], ; dependent coswid and comid tags.
-  ? claims => claims-entry / [2* claims-entry], ; claims may be omitted for manifests that only capture dependencies to other manifests
+  ? claims => claims-entry, ; claims may be omitted for manifests that only capture dependencies to other manifests
   * $$comid-extension
 }
 module-name=101
