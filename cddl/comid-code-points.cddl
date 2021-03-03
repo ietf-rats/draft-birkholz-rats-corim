@@ -42,3 +42,11 @@ flags=117
 ;raw-value-entry code points
 raw-value=118
 raw-value-mask=119
+
+;corim-meta code points
+signer = 98
+deny-id = 99
+
+;validity-entry code points
+not-before=100
+not-after=101
