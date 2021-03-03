@@ -10,13 +10,6 @@ concise-mid-tag = {
   ? claims => claims-entry / [2* claims-entry], ; claims may be omitted for manifests that only capture dependencies to other manifests
   * $$comid-extension
 }
-module-name=101
-module-type=102
-module-version=103
-;version-scheme = 14
-;entity=2
-linked-tags=106
-claims=107
 
 tag-metadata = (
   tag-id => $tag-id-type,
@@ -25,10 +18,7 @@ tag-metadata = (
   ; Verifier can capture tag-issuer Note: What is the right format X.509 Issuer, DID, PEN ???
   * $$tag-metadata-extension
 )
-;tag-id = 0
-;tag-version = 12
 tag-id-type = tstr / bstr .size 16 ; **Note: Do we want a $6.TT reservation?**
-
 module-type-type /= tagged-bytes
 module-type-type /= uuid-bytes
 module-type-type /= implementation-id-bytes
@@ -43,9 +33,6 @@ linked-tags-entry = {
   ? tag-thumbprint => hash-entry, ; digest of the CBOR encoding of the concise-tag
   ? tag-issuer => tag-issuer-type,
 }
-tag-rel=121
-tag-thumbprint = 199 ; NOTE(tho) - randomly assigned number: check this for clashes
-tag-issuer = 200 ; NOTE(tho) - randomly assigned number: check this for clashes
 
 ; Bob is saying I expect this tag to be provided (signed by) by Alice
 tag-issuer-type /= COSE_KeySet
@@ -64,16 +51,13 @@ claims-entry = {
   ? id-claims => identity-value / [2* identity-value],
   * $$claims-entry-extension,
 }
-ref-claims=108
-end-claims=109
-id-claims=124
+
 
 identity-value = {
   ? device-id => device-id-type,
   key-material => COSE_KeySet, ; see RFC8152, draft-ietf-cose-x509
 }
-device-id=125
-key-material=126
+
 device-id-type /= #6.47115(ueid)
 ueid = bstr .size 33
 device-id-type /= #6.37(bytes .size 16) ; see RFC4412
@@ -91,12 +75,6 @@ element-name = (
     ? index => int,
 ; **note: An extension point in element-name confuses verifiers' ability to match against evidence**
 )
-; label is defined in coswid schema (q: should we use a different value if the semantics differ?)
-; type is defined in coswid schema
-vendor=110
-model=111
-layer=112
-index=113
 
 element-value = (
   ? version => text,
@@ -106,10 +84,6 @@ element-value = (
   ? flags => bytes .bits operational-flags,
 ;  * $$element-value-extension ; **note do we need an extension point in element-value given there are extension points in endorsed-value and reference-value?**
 )
-version=114
-svn=115
-digests=116
-flags=117
 
 endorsed-value = {
   element-name,
@@ -130,8 +104,6 @@ raw-value-entry = (
   raw-value => bstr,
   ? raw-value-mask => bstr,
 )
-raw-value=118
-raw-value-mask=119
 
 operational-flags = &( ;requires functional compare
   not-configured: 0,
