@@ -50,3 +50,8 @@ deny-id = 99
 ;validity-entry code points
 not-before=100
 not-after=101
+
+;unsigned-corim code points
+corim-id = 123 ; TBD
+tags = 97
+dependent-rims = 122; TBD
