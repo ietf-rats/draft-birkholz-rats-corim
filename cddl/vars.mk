@@ -3,5 +3,6 @@ CDDL_FRAGS += signed-corim.cddl
 CDDL_FRAGS += unsigned-corim.cddl
 CDDL_FRAGS += concise-mid-tag.cddl
 CDDL_FRAGS += concise-swid-tag.cddl
+CDDL_FRAGS += comid-code-points.cddl
 
 CDDL_FULL := corim.cddl
