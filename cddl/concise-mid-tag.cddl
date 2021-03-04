@@ -123,6 +123,7 @@ claims-entry = {
   ? ref-claims => reference-value  / [2* reference-value], ;any reference-value entry can match evidence
   ? end-claims => endorsed-value / [2* endorsed-value],
   ? id-claims => identity-value / [2* identity-value],
+  ? instance-claims => instance-claim-entry / [2* instance-claim-entry],
   * $$claims-entry-extension,
 }
 ref-claims=108
@@ -140,6 +141,37 @@ $device-id-type /= tagged-uuid
 
 ; NOTE(tho) from a syntactic PoV reference-value and endorsed-value are extremely similar.  I'm wondering why do we need to keep them separate?
 ; NOTE(henk) I very much hope that they are similar: endorsements are on the "evidence side" of things as they kick in when the Attester cannot create evidence about the characteristics of its own components (roots of trust). Reference-values are the things that you compare the "evidence side" with. So endorsements cannot be part of the "reference side". They have to look similar/identical though - otherwise the comparison becomes complex and brittle.
+
+instance-claim-entry = {
+  ? element-name,
+  ; TLVs where instance-type identifies the data type e.g. MAC address, serial# etc.
+  instance-type => instance-values / [2* instance-values],
+}
+
+instance-type /= mac-address
+instance-type /= serial-number
+instance-type /= euid
+instance-type /= uuid
+instance-type /= ip-addr
+
+full-address = [[+ label], ip4, ip6]
+ip4 = bstr .size 4
+ip6 = bstr .size 16
+label = bstr .size (1..63)
+
+mac-address = 0
+serial-number = 1
+euid = 2
+uuid = 3
+ip-addr = 4
+
+instance-values /= full-address
+instance-values /= uuid-bytes
+instance-values /= #6.47115(ueid) ;should define ueid-bytes type?
+instance-values /= mac-address-bytes
+instance-values /= serial-number-bytes
+; ...
+; Note: are there other well defined types under #6.4711 or EAT etc...
 
 element-name = (
     ? label => text,
