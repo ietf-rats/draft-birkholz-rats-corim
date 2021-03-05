@@ -1,12 +1,19 @@
+; Notes:
+; - entity and entity-entry are defined by CoSWID
+; - linked-tags contains references to dependent CoSWID and CoMID tags
+; - claims may be omitted for manifests that only capture dependencies to other
+;   manifests
 concise-mid-tag = {
   ? language => text,
   tag-metadata => tag-metadata-type,
   ? module-metadata => module-metadata-type,
-  ? entity => entity-entry / [2* entity-entry], ; defined in coswid
-  ? linked-tags => linked-tags-entry / [2* linked-tags-entry], ; dependent coswid and comid tags.
-  ? claims => claims-entry, ; claims may be omitted for manifests that only capture dependencies to other manifests
+  ? entity => one-or-many<entity-entry>,
+  ? linked-tags => one-or-many<linked-tags-entry>,
+  ? claims => claims-entry,
   * $$comid-extension
 }
+
+one-or-many<T> = T / [ 2* T ]
 
 language = 0
 tag-metadata = 1
@@ -62,14 +69,15 @@ tagged-impl-id = #6.47115(impl-id)
 ueid = bstr .size 33
 tagged-ueid = #6.48000(ueid)
 
+; version-scheme defined in CoSWID
 module-version = {
   0 => text .default '0.0.0', ; version
   1 => $version-scheme,       ; version-scheme
 }
 
-; version-scheme defined in CoSWID
-
 module-vendor = text
+
+module-index = uint
 
 linked-tags = 106
 
@@ -119,16 +127,20 @@ comid-patches = 5
 
 claims = 107
 
+; Notes:
+; - any reference-value entry can match evidence
 claims-entry = {
-  ? ref-claims => reference-value  / [2* reference-value], ;any reference-value entry can match evidence
-  ? end-claims => endorsed-value / [2* endorsed-value],
-  ? id-claims => identity-value / [2* identity-value],
-  ? instance-claims => instance-claim-entry / [2* instance-claim-entry],
-  * $$claims-entry-extension,
+  ? ref-claims => one-or-many<reference-value>
+  ? end-claims => one-or-many<endorsed-value>
+  ? identity-claims => one-or-many<identity-value>
+  ? instance-claims => one-or-many<instance-value>
+  * $$claims-entry-extension
 }
-ref-claims=108
-end-claims=109
-id-claims=124
+
+ref-claims = 0
+end-claims = 1
+identity-claims = 2
+instance-claims = 3
 
 identity-value = {
   ? 0 => $device-id-type, ; device id
@@ -139,97 +151,113 @@ $device-id-type /= tagged-ueid
 $device-id-type /= tagged-uuid
 ; Note: is there a #6.4711 definition for hardwaremodulename RFC4108?
 
-; NOTE(tho) from a syntactic PoV reference-value and endorsed-value are extremely similar.  I'm wondering why do we need to keep them separate?
-; NOTE(henk) I very much hope that they are similar: endorsements are on the "evidence side" of things as they kick in when the Attester cannot create evidence about the characteristics of its own components (roots of trust). Reference-values are the things that you compare the "evidence side" with. So endorsements cannot be part of the "reference side". They have to look similar/identical though - otherwise the comparison becomes complex and brittle.
-
-instance-claim-entry = {
-  ? element-name,
-  ; TLVs where instance-type identifies the data type e.g. MAC address, serial# etc.
-  instance-type => instance-values / [2* instance-values],
+instance-value = {
+  ? 0 => element-name
+  $$instance-claim-choice
 }
 
-instance-type /= mac-address
-instance-type /= serial-number
-instance-type /= euid
-instance-type /= uuid
-instance-type /= ip-addr
+$$instance-claim-choice = (
+  mac-addr-key => mac-addr-type //
+  ip-addrs-key => one-or-many<ip-addr-type> //
+  serial-number-key => serial-number-type //
+  ueid-key => ueid //
+  uuid-key => uuid
+)
 
-full-address = [[+ label], ip4, ip6]
-ip4 = bstr .size 4
-ip6 = bstr .size 16
-label = bstr .size (1..63)
+mac-addr-key = 1
+ip-addrs-key = 2
+serial-number-key = 3
+ueid-key = 4
+uuid-key = 5
 
-mac-address = 0
-serial-number = 1
-euid = 2
-uuid = 3
-ip-addr = 4
+ip-addr-type = ip4-addr-type / ip6-addr-type
+ip4-addr-type = bytes .size 4
+ip6-addr-type = bytes .size 16
 
-instance-values /= full-address
-instance-values /= uuid-bytes
-instance-values /= #6.47115(ueid) ;should define ueid-bytes type?
-instance-values /= mac-address-bytes
-instance-values /= serial-number-bytes
-; ...
+mac-addr-type = bytes .size 6
+
+serial-number-type = text
+
 ; Note: are there other well defined types under #6.4711 or EAT etc...
 
-element-name = (
-    ? label => text,
-    ? vendor => text, ; namespace authority designation
-    ? type => $module-type, ; Note: 'type' SHOULD include a namespace authority if 'vendor' is ommitted
-    ? model => text,
-    ? layer => int,
-    ? index => int,
-; **note: An extension point in element-name confuses verifiers' ability to match against evidence**
-)
-; label is defined in coswid schema (q: should we use a different value if the semantics differ?)
-; type is defined in coswid schema
-vendor=110
-model=111
-layer=112
-index=113
+; Notes:
+; - vendor is the namespace authority designation
+; - type SHOULD include a namespace authority if vendor is ommitted
+; - An extension point in element-name confuses verifiers' ability to match
+;   against evidence
+; - label is defined in coswid schema (q: should we use a different value if
+;   the semantics differ?)
+; - type is defined in coswid schema
+element-name = {
+  ? label => text,
+  ? vendor => text,
+  ? type => $module-type,
+  ? model => text,
+  ? layer => int,
+  ? index => int,
+}
 
-element-value = (
+vendor = 110
+model = 111
+layer = 112
+index = 113
+
+; Notes:
+; - do we need an extension point in element-value given there are extension
+;   points in endorsed-value and reference-value?
+element-value = {
   ? version => text,
   ? svn => int,
   ? raw-value-entry,
   ? digests => digests-entry,
   ? flags => bytes .bits operational-flags,
-;  * $$element-value-extension ; **note do we need an extension point in element-value given there are extension points in endorsed-value and reference-value?**
-)
-version=114
-svn=115
-digests=116
-flags=117
-
-endorsed-value = {
-  element-name,
-  ? element-value, ; one endorser benefits from the element-value of another endorser
-  ? any-attribute, ; defined in coswid schema - **note: this can be removed if we opt for using the extension point instead. ** NOTE(tho): agree
-  * $$endorsed-value-extension ;How do vendor specific schemas allocate indices (keys)? We need to specify a range of keys with rules 'first come first served'
 }
 
-;**Note: a collection of reference values can be modeled using multiplicity of tags and/or claims, but we need to verify how to apply AND and OR logic for matching.**
-
-reference-value = {
-  element-name,
-  element-value,
-  * $$reference-value-extension,
-}
+version = 0
+svn = 1
+digests = 2
+flags = 3
 
 raw-value-entry = (
   raw-value => bstr,
   ? raw-value-mask => bstr,
 )
-raw-value=118
-raw-value-mask=119
 
-operational-flags = &( ;requires functional compare
+raw-value = 4
+raw-value-mask = 5
+
+; Notes:
+; - one endorser benefits from the element-value of another endorser
+; - any-attribute is defined in CoSWID (this can be removed if we opt for using
+;   the extension point instead. NOTE(tho): agree
+; - How do vendor specific schemas allocate indices (keys)? We need to specify
+;   a range of keys with rules 'first come first served'
+endorsed-value = {
+  0 => element-name,
+  ? 1 => element-value,
+  ? any-attribute,
+  * $$endorsed-value-extension
+}
+
+; Notes:
+; - a collection of reference values can be modeled using multiplicity of tags
+;   and/or claims, but we need to verify how to apply AND and OR logic for
+;   matching
+reference-value = {
+  0 => element-name,
+  1 => element-value,
+  * $$reference-value-extension,
+}
+
+; Notes:
+; - requires functional compare
+operational-flags = &(
   not-configured: 0,
   not-secure: 1,
   recovery: 2,
   debug: 3,
 )
 
+; Notes:
+; - hash-entry is defined in CoSWID schema
 digests-entry = [ hash-entry / [2* hash-entry] ]
-; hash-entry is defined in coswid schema
