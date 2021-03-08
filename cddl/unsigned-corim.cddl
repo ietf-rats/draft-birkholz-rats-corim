@@ -4,9 +4,6 @@ unsigned-corim = {
   ? dependent-rims => corim-locator / [2* corim-locator], ; hint for finding manifest files
   * $$unsigned-corim-extension
 }
-corim-id = 123 ; TBD
-tags = 97
-dependent-rims = 122; TBD
 
 corim-id-type = tstr / bstr .size 16 ; **Note: Do we want a %6.CT reservation?**
 

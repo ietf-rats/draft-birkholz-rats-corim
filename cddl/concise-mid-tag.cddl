@@ -8,10 +8,6 @@ concise-mid-tag = {
   * $$comid-extension
 }
 
-language = 0
-tag-metadata = 1
-module-metadata = 2
-
 tag-metadata-type = {
   0 => $tag-id-type,
   1 => tag-version-type,
@@ -126,9 +122,7 @@ claims-entry = {
   ? instance-claims => instance-claim-entry / [2* instance-claim-entry],
   * $$claims-entry-extension,
 }
-ref-claims=108
-end-claims=109
-id-claims=124
+
 
 identity-value = {
   ? 0 => $device-id-type, ; device id
@@ -137,6 +131,7 @@ identity-value = {
 
 $device-id-type /= tagged-ueid
 $device-id-type /= tagged-uuid
+
 ; Note: is there a #6.4711 definition for hardwaremodulename RFC4108?
 
 ; NOTE(tho) from a syntactic PoV reference-value and endorsed-value are extremely similar.  I'm wondering why do we need to keep them separate?
@@ -182,12 +177,6 @@ element-name = (
     ? index => int,
 ; **note: An extension point in element-name confuses verifiers' ability to match against evidence**
 )
-; label is defined in coswid schema (q: should we use a different value if the semantics differ?)
-; type is defined in coswid schema
-vendor=110
-model=111
-layer=112
-index=113
 
 element-value = (
   ? version => text,
@@ -197,10 +186,6 @@ element-value = (
   ? flags => bytes .bits operational-flags,
 ;  * $$element-value-extension ; **note do we need an extension point in element-value given there are extension points in endorsed-value and reference-value?**
 )
-version=114
-svn=115
-digests=116
-flags=117
 
 endorsed-value = {
   element-name,
@@ -221,8 +206,6 @@ raw-value-entry = (
   raw-value => bstr,
   ? raw-value-mask => bstr,
 )
-raw-value=118
-raw-value-mask=119
 
 operational-flags = &( ;requires functional compare
   not-configured: 0,
