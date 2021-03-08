@@ -1,75 +1,177 @@
 concise-mid-tag = {
-  ? lang => text,
-  tag-metadata,
-  ? module-name => text,
-  ? module-type => module-type-type,
-  ? module-version => text .default '0.0',
-  ? version-scheme => $version-scheme, ; defined in coswid
+  ? language => text,
+  tag-metadata => tag-metadata-type,
+  ? module-metadata => module-metadata-type,
   ? entity => entity-entry / [2* entity-entry], ; defined in coswid
   ? linked-tags => linked-tags-entry / [2* linked-tags-entry], ; dependent coswid and comid tags.
-  ? claims => claims-entry / [2* claims-entry], ; claims may be omitted for manifests that only capture dependencies to other manifests
+  ? claims => claims-entry, ; claims may be omitted for manifests that only capture dependencies to other manifests
   * $$comid-extension
 }
 
-tag-metadata = (
-  tag-id => $tag-id-type,
-  tag-version => integer .default 0,
-  ; Verifier can compute digest of the CBOR encoding of this concise-tag
-  ; Verifier can capture tag-issuer Note: What is the right format X.509 Issuer, DID, PEN ???
-  * $$tag-metadata-extension
-)
-tag-id-type = tstr / bstr .size 16 ; **Note: Do we want a $6.TT reservation?**
-module-type-type /= tagged-bytes
-module-type-type /= uuid-bytes
-module-type-type /= implementation-id-bytes
-
-tagged-bytes = #6.111(bytes) ; BER encoded OID
-uuid-bytes = #6.37(bytes .size 16) ; see RFC4412
-implementation-id-bytes = #6.47115(bytes .size 32) ; see draft-tschofenig-rats-psa-token-06 - NOTE(tho) if we don't carry PSA identity endorsements in CoRIMs this is no longer needed.
-
-linked-tags-entry = {
-  tag-id => $tag-id-type,
-  tag-rel => $tag-rel-type,
-  ? tag-thumbprint => hash-entry, ; digest of the CBOR encoding of the concise-tag
-  ? tag-issuer => tag-issuer-type,
+tag-metadata-type = {
+  0 => $tag-id-type,
+  1 => tag-version-type,
+  * $$tag-metadata-extension,
 }
 
-; Bob is saying I expect this tag to be provided (signed by) by Alice
+$tag-id-type /= tstr
+$tag-id-type /= bstr .size 16
+
+tag-version-type = integer .default 0
+
+module-metadata-type = {
+  ? 0 => module-name,
+  ? 1 => $module-type,
+  ? 2 => module-version,
+  ? 3 => module-vendor,
+  ? 4 => module-index,
+  * $$module-metadata-extension
+}
+
+module-name = text
+
+$module-type /= tagged-oid
+$module-type /= tagged-uuid
+$module-type /= tagged-impl-id
+
+;
+; From draft-ietf-cbor-tags-oid (TBD, roid and pen)
+;
+oid = bstr
+tagged-oid = #6.111(bstr)
+
+;
+; From https://github.com/lucas-clemente/cbor-specs/blob/master/uuid.md
+;
+uuid = bytes .size 16
+tagged-uuid = #6.37(uuid)
+
+;
+; From draft-tschofenig-rats-psa-token
+;
+impl-id = bytes .size 32
+tagged-impl-id = #6.47115(impl-id)
+
+;
+; From draft-ietf-rats-eat
+;
+ueid = bstr .size 33
+tagged-ueid = #6.48000(ueid)
+
+module-version = {
+  0 => text .default '0.0.0', ; version
+  1 => $version-scheme,       ; version-scheme
+}
+
+; version-scheme defined in CoSWID
+
+module-vendor = text
+
+linked-tags = 106
+
+linked-tags-entry = {
+  0 => $tag-id-type,
+  1 => $tag-rel-type,
+  ; tag thumbprint, i.e., digest of the CBOR encoding of the concise-tag
+  ? 2 => hash-entry,
+  ; verification key associated with the tag issuer
+  ? 3 => tag-issuer-type,
+}
+
+; Bob is saying: I expect this tag to be provided (signed by) by Alice.
+; The COSE keyset only contains raw / certified public keys.
 tag-issuer-type /= COSE_KeySet
 
-$tag-rel-type /= parent ; a tag that introduces additional element-names
-$tag-rel-type /= supplemental ; a tag that augments existing element-names with additional values
-$tag-rel-type /= supersedes ; a tag that replaces existing element-names and values
-$tag-rel-type /= -256..64436 / text
-parent = 0
-supplemental = 1
-supersedes = 2
+$tag-rel-type /= comid-includes
+$tag-rel-type /= comid-or-includes
+$tag-rel-type /= comid-supplements
+$tag-rel-type /= comid-updates
+$tag-rel-type /= comid-replaces
+$tag-rel-type /= comid-patches
+
+; The current module has additional module(s) identified by the linked tag(s).
+; The union of all modules describes an acceptable device.
+comid-includes = 0
+; The current module has additional module(s) identified by the linked tag(s)
+; that describe alternative acceptable modules. At least one of the
+; alternatives is included to describe an acceptable device.
+comid-or-includes = 1
+; The current module has additional claims that augment the claim set of the
+; target module. The current tag module information must match the target
+; module for the claims to be combined under the target.
+comid-supplements = 2
+; The current module contains claims that fully replace the target module
+; claims. This is applied when the module is updated or changes in some
+; fashion.
+comid-updates = 3
+; The current tag contains corrections to a previously issued tag. This tag
+; replaces the target tag. The tag-id remains unchanged. The tag-version is
+; incremented.
+comid-replaces = 4
+; The current module contains claims that partially replace the target module
+; claims. This is applied when the module is updated or changes in some
+; fashion.  The target module contains both valid and replaced claims.
+comid-patches = 5
+
+claims = 107
 
 claims-entry = {
   ? ref-claims => reference-value  / [2* reference-value], ;any reference-value entry can match evidence
   ? end-claims => endorsed-value / [2* endorsed-value],
   ? id-claims => identity-value / [2* identity-value],
+  ? instance-claims => instance-claim-entry / [2* instance-claim-entry],
   * $$claims-entry-extension,
 }
 
 
 identity-value = {
-  ? device-id => device-id-type,
-  key-material => COSE_KeySet, ; see RFC8152, draft-ietf-cose-x509
+  ? 0 => $device-id-type, ; device id
+  1 => COSE_KeySet, ; key material
 }
 
-device-id-type /= #6.47115(ueid)
-ueid = bstr .size 33
-device-id-type /= #6.37(bytes .size 16) ; see RFC4412
+$device-id-type /= tagged-ueid
+$device-id-type /= tagged-uuid
+
 ; Note: is there a #6.4711 definition for hardwaremodulename RFC4108?
 
 ; NOTE(tho) from a syntactic PoV reference-value and endorsed-value are extremely similar.  I'm wondering why do we need to keep them separate?
 ; NOTE(henk) I very much hope that they are similar: endorsements are on the "evidence side" of things as they kick in when the Attester cannot create evidence about the characteristics of its own components (roots of trust). Reference-values are the things that you compare the "evidence side" with. So endorsements cannot be part of the "reference side". They have to look similar/identical though - otherwise the comparison becomes complex and brittle.
 
+instance-claim-entry = {
+  ? element-name,
+  ; TLVs where instance-type identifies the data type e.g. MAC address, serial# etc.
+  instance-type => instance-values / [2* instance-values],
+}
+
+instance-type /= mac-address
+instance-type /= serial-number
+instance-type /= euid
+instance-type /= uuid
+instance-type /= ip-addr
+
+full-address = [[+ label], ip4, ip6]
+ip4 = bstr .size 4
+ip6 = bstr .size 16
+label = bstr .size (1..63)
+
+mac-address = 0
+serial-number = 1
+euid = 2
+uuid = 3
+ip-addr = 4
+
+instance-values /= full-address
+instance-values /= uuid-bytes
+instance-values /= #6.47115(ueid) ;should define ueid-bytes type?
+instance-values /= mac-address-bytes
+instance-values /= serial-number-bytes
+; ...
+; Note: are there other well defined types under #6.4711 or EAT etc...
+
 element-name = (
     ? label => text,
     ? vendor => text, ; namespace authority designation
-    ? type => module-type-type, ; Note: 'type' SHOULD include a namespace authority if 'vendor' is ommitted
+    ? type => $module-type, ; Note: 'type' SHOULD include a namespace authority if 'vendor' is ommitted
     ? model => text,
     ? layer => int,
     ? index => int,
@@ -114,4 +216,3 @@ operational-flags = &( ;requires functional compare
 
 digests-entry = [ hash-entry / [2* hash-entry] ]
 ; hash-entry is defined in coswid schema
-
