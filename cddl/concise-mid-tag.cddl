@@ -204,9 +204,9 @@ index-type = int
 element-value = {
   ? 0 => version-type
   ? 1 => svn-type
+  ? 2 => digests-entry
+  ? 3 => flags-type
   ? raw-value-entry
-  ? 3 => digests-entry
-  ? 4 => flags-type
 }
 
 version-type = text
@@ -214,12 +214,12 @@ svn-type = int
 flags-type = bytes .bits operational-flags
 
 raw-value-entry = (
-  raw-value => bstr,
-  ? raw-value-mask => bstr,
+  4 => raw-value-type
+  ? 5 => raw-value-mask-type
 )
 
-raw-value = 4
-raw-value-mask = 5
+raw-value-type = bstr
+raw-value-mask-type = bstr
 
 ; Notes:
 ; - one endorser benefits from the element-value of another endorser
