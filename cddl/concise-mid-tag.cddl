@@ -79,8 +79,6 @@ module-vendor = text
 
 module-index = uint
 
-linked-tags = 106
-
 linked-tags-entry = {
   0 => $tag-id-type,
   1 => $tag-rel-type,
@@ -197,11 +195,6 @@ element-name = {
   ? index => int,
 }
 
-vendor = 110
-model = 111
-layer = 112
-index = 113
-
 ; Notes:
 ; - do we need an extension point in element-value given there are extension
 ;   points in endorsed-value and reference-value?
@@ -213,18 +206,10 @@ element-value = {
   ? flags => bytes .bits operational-flags,
 }
 
-version = 0
-svn = 1
-digests = 2
-flags = 3
-
 raw-value-entry = (
   raw-value => bstr,
   ? raw-value-mask => bstr,
 )
-
-raw-value = 4
-raw-value-mask = 5
 
 ; Notes:
 ; - one endorser benefits from the element-value of another endorser
