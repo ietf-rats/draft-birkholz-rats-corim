@@ -235,7 +235,6 @@ raw-value-mask = 5
 endorsed-value = {
   0 => element-name,
   ? 1 => element-value,
-  ? any-attribute,
   * $$endorsed-value-extension
 }
 
