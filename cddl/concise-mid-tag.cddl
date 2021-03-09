@@ -182,41 +182,36 @@ serial-number-type = text
 
 ; Notes:
 ; - vendor is the namespace authority designation
-; - type SHOULD include a namespace authority if vendor is ommitted
-; - An extension point in element-name confuses verifiers' ability to match
-;   against evidence
-; - label is defined in coswid schema (q: should we use a different value if
-;   the semantics differ?)
-; - type is defined in coswid schema
+; - type SHOULD include a namespace authority if vendor is omitted
 element-name = {
-  ? label => text,
-  ? vendor => text,
-  ? type => $module-type,
-  ? model => text,
-  ? layer => int,
-  ? index => int,
+  ? 0 => label-type
+  ? 1 => vendor-type
+  ? 2 => $module-type
+  ? 3 => model-type
+  ? 4 => layer-type,
+  ? 5 => index-type,
 }
 
-vendor = 110
-model = 111
-layer = 112
-index = 113
+label-type = text
+vendor-type = text
+model-type = text
+layer-type = int
+index-type = int
 
 ; Notes:
 ; - do we need an extension point in element-value given there are extension
 ;   points in endorsed-value and reference-value?
 element-value = {
-  ? version => text,
-  ? svn => int,
-  ? raw-value-entry,
-  ? digests => digests-entry,
-  ? flags => bytes .bits operational-flags,
+  ? 0 => version-type
+  ? 1 => svn-type
+  ? raw-value-entry
+  ? 3 => digests-entry
+  ? 4 => flags-type
 }
 
-version = 0
-svn = 1
-digests = 2
-flags = 3
+version-type = text
+svn-type = int
+flags-type = bytes .bits operational-flags
 
 raw-value-entry = (
   raw-value => bstr,
@@ -228,8 +223,6 @@ raw-value-mask = 5
 
 ; Notes:
 ; - one endorser benefits from the element-value of another endorser
-; - any-attribute is defined in CoSWID (this can be removed if we opt for using
-;   the extension point instead. NOTE(tho): agree
 ; - How do vendor specific schemas allocate indices (keys)? We need to specify
 ;   a range of keys with rules 'first come first served'
 endorsed-value = {
