@@ -109,12 +109,10 @@ See Body {{mybody}}.
 
 New indexes for Software Tag Link Relationship Values needs to be registered as below:
 
-
+### CoSWID to CoMID Link Relations
  | Index | Relationship Type Name | Description                                |
  --------|----------------------- |--------------------------------------------|
  | 12    | needs                  | links to a module this software needs      |
  | 13    | runs-on                | links to a module this software runs on    |
  | 14    | part-of                | links to a module this software is part of |
  | 15    | m-supplemental         | provides additional information of a module|
-
-{: #tbl-new-coswid-to-comid-link-relations title="New CoSWID to CoMID Link Relations"}
