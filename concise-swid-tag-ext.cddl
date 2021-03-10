@@ -9,12 +9,11 @@ mlink-entry = {
   * $$mlink-extension
 }
 
-
 ; TBD: mlink-entry can be merged with link-entry
-; Benefits of keeping seperate, any future evolution of CoSWID to CoMID relationships with mandatory 
-; elements that describe them, does not need to pollute the link-entry namespace which then becomes ambigous
+; Benefits of keeping seperate, any future evolution of CoSWID to CoMID
+; relationships with mandatory elements that describe them, does not 
+; need to pollute the link-entry namespace which then becomes ambigous
 ; Fully backward compatible
-
 
 
 ; expansion of rel values to accomodate comid relationship
@@ -38,9 +37,9 @@ part-of = 14
 ; about the module it links to
 m-supplemental = 15
 
-; Please note that for some of the relationships above are strikingly similar to 
-; existing  SWID to SWID relationships. here they have been explicitly stated
-; to avoid confusion!
+; Please note that for some of the relationships above are strikingly similar 
+; to existing  SWID to SWID relationships. Here they have been explicitly 
+; stated to avoid confusion!
 
 ; previlege indicates level of previlege that is required for this SW to run
 ; on a given module, i.e. whether this SW runs in a TEE or not?
