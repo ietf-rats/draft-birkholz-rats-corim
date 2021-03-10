@@ -188,15 +188,15 @@ See Body {{mybody}}.
 
 New indexes for Software Tag Link Relationship Values needs to be registered as below:
 
- +==========+========================+============================================+
- | Index    | Relationship Type Name | Description                                |
- +==========+========================+============================================+
- | 12       | needs                  | links to a module this software needs      |
- +----------+------------------------+--------------------------------------------+
- | 13       | runs-on                | links to a module this software runs       |
- +----------+------------------------+--------------------------------------------+
- | 14       | part-of                | links to a module this software is part of |
- +----------+------------------------+--------------------------------------------+
- | 16       | m-supplemental         | provides additional information if a module|
-  +----------+------------------------+-------------------------------------------+
+ +=======+========================+============================================+
+ | Index | Relationship Type Name | Description                                |
+ +=======+========================+============================================+
+ | 12    | needs                 | links to a module this software needs      |
+ +-------+-----------------------+--------------------------------------------+
+ | 13    | runs-on               | links to a module this software runs       |
+ +-------+-----------------------+--------------------------------------------+
+ | 14    | part-of               | links to a module this software is part of |
+ +-------+-----------------------+--------------------------------------------+
+ | 16    | m-supplemental        | provides additional information if a module|
+  +------+------------------------+-------------------------------------------+
 
