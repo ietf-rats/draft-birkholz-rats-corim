@@ -11,6 +11,7 @@ concise-swid-tag = {
   ? software-meta => software-meta-entry / [ 2* software-meta-entry ],
   entity => entity-entry / [ 2* entity-entry ],
   ? link => link-entry / [ 2* link-entry ],
+  ? mlink => mlink-entry / [2*mlink-entry], ; mlink represents the linkage of CoSWID to CoMID
   ? payload-or-evidence,
   global-attributes,
   * $$coswid-extension,
