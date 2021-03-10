@@ -1,57 +1,26 @@
-;concise-mid-tag code points
-module-name=101
-module-type=102
-module-version=103
-;version-scheme = 14
-;entity=2
-linked-tags=106
-claims=107
+; concise-mid-tag code points
+language = 0
+tag-metadata = 1
+module-metadata = 2
+comid-entity = 3
+linked-tags = 4
+claims = 5
 
-;tag-metadata code points
-;tag-id = 0
-;tag-version = 12
+; claims-entry code points
+ref-claims = 0
+end-claims = 1
+identity-claims = 2
+instance-claims = 3
 
-;linked-tags-entry code points
-tag-rel=121
-tag-thumbprint = 199 ; NOTE(tho) - randomly assigned number: check this for clashes
-tag-issuer = 200 ; NOTE(tho) - randomly assigned number: check this for clashes
-
-;claims-entry code points
-ref-claims=108
-end-claims=109
-id-claims=124
-
-;identity-value code points
-device-id=125
-key-material=126
-
-;element-name code points
-; label is defined in coswid schema (q: should we use a different value if the semantics differ?)
-; type is defined in coswid schema
-vendor=110
-model=111
-layer=112
-index=113
-
-;element-value code points
-version=114
-svn=115
-digests=116
-flags=117
-
-;raw-value-entry code points
-raw-value=118
-raw-value-mask=119
-
-;corim-meta code points
+; corim-meta code points
 signer = 98
 deny-id = 99
 
-;validity-entry code points
-not-before=100
-not-after=101
+; validity-entry code points
+not-before = 100
+not-after = 101
 
-;unsigned-corim code points
+; unsigned-corim code points
 corim-id = 123 ; TBD
 tags = 97
 dependent-rims = 122; TBD
