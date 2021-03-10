@@ -7,17 +7,13 @@ concise-mid-tag = {
   ? language => text,
   tag-metadata => tag-metadata-type,
   ? module-metadata => module-metadata-type,
-  ? entity => one-or-many<entity-entry>,
+  ? comid-entity => one-or-many<entity-entry>,
   ? linked-tags => one-or-many<linked-tags-entry>,
   ? claims => claims-entry,
   * $$comid-extension
 }
 
 one-or-many<T> = T / [ 2* T ]
-
-language = 0
-tag-metadata = 1
-module-metadata = 2
 
 tag-metadata-type = {
   0 => $tag-id-type,
@@ -79,8 +75,6 @@ module-vendor = text
 
 module-index = uint
 
-linked-tags = 106
-
 linked-tags-entry = {
   0 => $tag-id-type,
   1 => $tag-rel-type,
@@ -125,8 +119,6 @@ comid-replaces = 4
 ; fashion.  The target module contains both valid and replaced claims.
 comid-patches = 5
 
-claims = 107
-
 ; Notes:
 ; - any reference-value entry can match evidence
 claims-entry = {
@@ -136,11 +128,6 @@ claims-entry = {
   ? instance-claims => one-or-many<instance-value>
   * $$claims-entry-extension
 }
-
-ref-claims = 0
-end-claims = 1
-identity-claims = 2
-instance-claims = 3
 
 identity-value = {
   ? 0 => $device-id-type, ; device id
