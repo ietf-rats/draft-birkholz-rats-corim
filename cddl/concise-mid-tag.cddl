@@ -149,6 +149,7 @@ identity-value = {
 
 $device-id-type /= tagged-ueid
 $device-id-type /= tagged-uuid
+
 ; Note: is there a #6.4711 definition for hardwaremodulename RFC4108?
 
 instance-value = {
