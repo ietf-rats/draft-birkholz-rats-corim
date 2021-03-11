@@ -191,6 +191,10 @@ should not be used:
 * ownership
 * use
 
+The new rel values (as listed section 4.4) will not be defined in ISO/IEC 19770-2:2015
+[SWID] specification. Hence for modelling CoSWID to CoMID relations
+ISO/IEC 19770-2:2015 [SWID] specification shall not be used.
+
 # CoSWID Indexed Label Values
 
 # 4.4. Link Rel Values
