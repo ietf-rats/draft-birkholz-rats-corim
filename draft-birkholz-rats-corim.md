@@ -180,7 +180,8 @@ Privacy Considerations
 
 # Concise SWID Data Definition
 
-# Section 2.7 The link-entry Map
+# 2.7 The link-entry Map
+
 The link-entry map has been extended to define new relationship between a CoSWID and
 CoMID(identifies a hardware/firmware module).
 
@@ -227,7 +228,6 @@ The "Definition" describes the semantic meaning of each entry.
 Security Considerations
 
 # IANA Considerations
-
 
 See Body {{mybody}}.
 
