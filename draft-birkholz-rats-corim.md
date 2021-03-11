@@ -99,20 +99,66 @@ See {{-coswid}}.
 
 Privacy Considerations
 
+# Concise SWID Data Definition
+
+# Section 2.7 The link-entry Map
+The link-entry map has been extended to define new relationship between a CoSWID and
+CoMID(identifies a hardware/firmware module).
+
+When defining CoSWID to CoMID link entry map the following optional elements
+should not be used:
+ artifact
+ ownership
+ use
+
+# CoSWID Indexed Label Values
+
+# 4.4. Link Rel Values
+New indexes in the range 12 to 15 will be registered in the
+IANA "Software Tag Link Relationship Values" registry defined in Section 6.2.7.
+
+ | Index | Relationship Type Name | Definition                                     |
+ --------|----------------------- |--------------------------------------------|
+ | 12    | m-requires             | The link references a prerequisite module  |
+ |       |                        | tag(s) for installing this software.       |
+ | 13    | m-runs-on              | The link references a module tag that      |
+ |       |                        | this software run on                       |
+ | 14    | m-part-of              | The link references a module tag that this |
+ |       |                        | software is part of                        |
+ | 15    | m-supplemental         | The link references a module tag that the  |
+ |       |                        | referencing tag supplements.               |
+
+# 4.6 Link Privilege Values
+
+The following table indicates the index value to use for the link-entry
+group's privilege item (see Section 2.7). The "Index" value indicates the
+value to use as the link-entry group privilege item's value.
+The "Privilege Type" provides human-readable text for the value.
+The "Definition" describes the semantic meaning of each entry.
+
+ | Index | Previlege Type         | Definition                                     |
+ --------|----------------------- |--------------------------------------------|
+ | 1     | trusted                | If this software component runs in trusted |
+ |       |                        | execution environment on the module        |
+ | 2     | untrusted              | If this software component runs in         |
+ |       |                        | untrusted region on the module             |
+
 # Security Considerations
 
 Security Considerations
 
 # IANA Considerations
 
+
 See Body {{mybody}}.
 
 New indexes for Software Tag Link Relationship Values needs to be registered as below:
 
 ### CoSWID to CoMID Link Relations
- | Index | Relationship Type Name | Description                                |
- --------|----------------------- |--------------------------------------------|
- | 12    | needs                  | links to a module this software needs      |
- | 13    | runs-on                | links to a module this software runs on    |
- | 14    | part-of                | links to a module this software is part of |
- | 15    | m-supplemental         | provides additional information of a module|
+
+ | Index | Relationship Type Name | Specification                   |
+ --------|----------------------- |---------------------------------|
+ | 12    | m-requires             | See Section 4.4                 |
+ | 13    | m-runs-on              | See Section 4.4                 |
+ | 14    | m-part-of              | See Section 4.4                 |
+ | 15    | m-supplemental         | See Section 4.4                 |

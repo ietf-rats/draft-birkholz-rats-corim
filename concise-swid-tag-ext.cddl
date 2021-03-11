@@ -1,50 +1,38 @@
-; mlink-entry defines the CoSWID relationship to a CoMID.
-mlink-entry = {
-  href => any-uri,
-  ? media => text,
-  rel => $rel,
-  ? media-type => text,
-  ? previlege > $previlege,
-  global-attributes,
-  * $$mlink-extension
-}
-
-; TBD: mlink-entry can be merged with link-entry
-; Benefits of keeping seperate, any future evolution of CoSWID to CoMID
-; relationships with mandatory elements that describe them, does not 
-; need to pollute the link-entry namespace which then becomes ambigous
-; Fully backward compatible
-
+$$link-extension //= (
+  ? privilege => $privilege,
+)
 
 ; expansion of rel values to accomodate comid relationship
-$rel /= needs
-$rel /= runs-on
-$rel /= part-of
+$rel /= m-requires
+$rel /= m-runs-on
+$rel /= m-part-of
 $rel /= m-supplemental
 $rel /= -256..64436 / text
 
-; A software module identified by this tag may need or depends on 
+; A software module identified by this tag may require or depends on 
 ; one or more modules(firmwares) identified by the linked tag(s)
-needs = 12
+m-requires = 12
 ; A software module identified by this tag runs on a module
 ; identified by the linked tag(s)
-runs-on = 13
+m-runs-on = 13
 ; A software module identified by this tag is part of a sub-system (or module)
 ; to which this tag links to
-part-of = 14
+m-part-of = 14
 
 ; A software module identified by this tag provides additional information
 ; about the module it links to
 m-supplemental = 15
 
-; Please note that for some of the relationships above are strikingly similar 
-; to existing SWID to SWID relationships. TBD in meeting whether
-; usage of same semantics with "description of intent" modification 
-; is more beneficial or expanding the range of existing values 
-; to avoid confusion!
 
-; previlege indicates level of previlege that is required for this SW to run
-; on a given module, i.e. whether this SW runs in a TEE or not?
-$previlege /= trusted
-$previlege /= untrusted
-$ownership /= int / text
+; privilege indicates level of privilege that is required for this SW to run
+; on a given module, i.e. whether this SW runs in a 
+; Trusted Execution Environment(TEE) or not?
+
+; "privilege" integer indexes
+trusted=1
+untrusted=2
+
+
+$privilege /= trusted
+$privilege /= untrusted
+$privilege /= int / text
