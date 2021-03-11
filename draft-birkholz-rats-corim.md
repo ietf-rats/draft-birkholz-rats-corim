@@ -182,8 +182,8 @@ Privacy Considerations
 
 # 2.7 The link-entry Map
 
-The link-entry map has been extended to define new relationship between a CoSWID and
-CoMID
+The link-entry map has been extended to define new relationship between a
+CoSWID and CoMID
 
 When defining CoSWID to CoMID link entry map the following optional elements
 should not be used:
