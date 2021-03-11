@@ -137,12 +137,14 @@ value to use as the link-entry group privilege item's value.
 The "Privilege Type" provides human-readable text for the value.
 The "Definition" describes the semantic meaning of each entry.
 
- | Index | Previlege Type         | Definition                                     |
+ | Index | Privilege Type         | Definition                                     |
  --------|----------------------- |--------------------------------------------|
  | 1     | trusted                | If this software component runs in trusted |
  |       |                        | execution environment on the module        |
  | 2     | untrusted              | If this software component runs in         |
  |       |                        | untrusted region on the module             |
+
+{: #tbl-link-privelege-values title="Link Privilege Values"}
 
 # Security Considerations
 
@@ -162,3 +164,5 @@ New indexes for Software Tag Link Relationship Values needs to be registered as 
  | 13    | m-runs-on              | See Section 4.4                 |
  | 14    | m-part-of              | See Section 4.4                 |
  | 15    | m-supplemental         | See Section 4.4                 |
+
+{: #tbl-coswid-to-comid-link-relations title="CoSWID to CoMID Link Relations"}
