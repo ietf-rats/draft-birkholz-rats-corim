@@ -178,6 +178,38 @@ Not included in the full CDDL definition are CDDL dependencies to CoSWID. The fo
 
 Privacy Considerations
 
+# Concise SWID Data Extension
+
+# 2.7 The link-entry Map
+
+The link-entry map has been extended to define new relationship between a CoSWID and
+CoMID
+
+When defining CoSWID to CoMID link entry map the following optional elements
+should not be used:
+* artifact
+* ownership
+* use
+
+# CoSWID Indexed Label Values
+
+# 4.4. Link Rel Values
+
+The Link Rel values as mentioned in Table 6 of CoSWID specification
+has been extended to add new indexes which defines the relationship
+between a CoSWID to CoMID.
+
+ | Index | Relationship Type Name | Definition                                     |
+ --------|----------------------- |--------------------------------------------|
+ | 12    | m-requires             | The link references a prerequisite module  |
+ |       |                        | tag(s) to be loaded or present             |
+ |       |                        | for installing this software.       |      |
+ | 13    | m-runs-on              | The link references a module tag that      |
+ |       |                        | this software run on                       |
+
+New indexes 12 and 13 will be registered in the
+IANA "Software Tag Link Relationship Values" registry defined in Section 6.2.7.
+
 # Security Considerations
 
 Security Considerations
@@ -186,4 +218,11 @@ Security Considerations
 
 See Body {{mybody}}.
 
---- back
+New indexes for Software Tag Link Relationship Values needs to be registered as below:
+
+### CoSWID to CoMID Link Relations
+
+ | Index | Relationship Type Name | Specification                   |
+ --------|----------------------- |---------------------------------|
+ | 12    | m-requires             | See Section 4.4                 |
+ | 13    | m-runs-on              | See Section 4.4                 |
