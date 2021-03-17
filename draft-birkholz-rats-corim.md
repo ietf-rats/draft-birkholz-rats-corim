@@ -180,39 +180,33 @@ Privacy Considerations
 
 # Concise SWID Data Extension
 
-# 2.7 The link-entry Map
+## New CoSWID to CoMID Relations
 
-The link-entry map has been extended to define new relationship between a
-CoSWID and CoMID
+The CoSWID link-entry map is extended to describe relationships between CoSWID
+and CoMID.  The new Link Rel values are defined in {{sec-link-rel-values}}.
 
-When defining CoSWID to CoMID link entry map the following optional elements
-should not be used:
+When using one of these new relations, the following optional elements MUST NOT
+be present in the Link Entry:
+
 * artifact
 * ownership
 * use
 
-The new rel values (as listed section 4.4) will not be defined in ISO/IEC 19770-2:2015
-[SWID] specification. Hence for modelling CoSWID to CoMID relations
-ISO/IEC 19770-2:2015 [SWID] specification shall not be used.
+### Link Rel Values {#sec-link-rel-values}
 
-# CoSWID Indexed Label Values
+This document adds the following code-points to the Link Rel values defined in
+Table 6 of {{!I-D.ietf-sacm-coswid}}.  These new indexes define relationships
+between a CoSWID and a CoMID with the semantics specified in
+{{tbl-link-rel-values}}.
 
-# 4.4. Link Rel Values
-
-The Link Rel values as mentioned in Table 6 of CoSWID specification
-has been extended to add new indexes which defines the relationship
-between a CoSWID to CoMID.
-
- | Index | Relationship Type Name | Definition                                     |
+ | Index | Relationship Type Name | Definition |
  --------|----------------------- |--------------------------------------------|
- | 12    | m-requires             | The link references a prerequisite module  |
- |       |                        | tag(s) to be loaded or present             |
- |       |                        | for installing this software.       |      |
- | 13    | m-runs-on              | The link references a module tag that      |
- |       |                        | this software run on                       |
+ | 12    | m-requires             | The link references a prerequisite module that needs to be loaded or present for installing this software |
+ | 13    | m-runs-on              | The link references a module tag that this software runs on |
+{: #tbl-link-rel-values title="New CoSWID to CoMID Link Relations"}
 
-New indexes 12 and 13 will be registered in the
-IANA "Software Tag Link Relationship Values" registry defined in Section 6.2.7.
+The rel values listed in {{tbl-link-rel-values}} MUST be used only for link
+relations involving a base CoSWID and a target CoMID.
 
 # Security Considerations
 
@@ -222,11 +216,14 @@ Security Considerations
 
 See Body {{mybody}}.
 
-New indexes for Software Tag Link Relationship Values needs to be registered as below:
 
 ### CoSWID to CoMID Link Relations
 
- | Index | Relationship Type Name | Specification                   |
- --------|----------------------- |---------------------------------|
- | 12    | m-requires             | See Section 4.4                 |
- | 13    | m-runs-on              | See Section 4.4                 |
+IANA is requested to add the indexes in {{tbl-iana-link-rel-values}} to the
+Software Tag Link Relationship Values Registry.
+
+ | Index | Relationship Type Name | Specification               |
+ --------|----------------------- |-----------------------------|
+ | 12    | m-requires             | See {{sec-link-rel-values}} |
+ | 13    | m-runs-on              | See {{sec-link-rel-values}} |
+{: #tbl-iana-link-rel-values title="New CoSWID Link Relationship Values"}
