@@ -5,7 +5,7 @@ unsigned-corim = {
   * $$unsigned-corim-extension
 }
 
-corim-id-type = tstr / bstr .size 16 ; **Note: Do we want a %6.CT reservation?**
+corim-id-type = tstr / uuid
 
 corim-locator = {
   href => any-uri, ; e.g. https://isv.example.mymodule.corim

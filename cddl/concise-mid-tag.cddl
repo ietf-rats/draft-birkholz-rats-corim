@@ -22,7 +22,7 @@ tag-metadata-type = {
 }
 
 $tag-id-type /= tstr
-$tag-id-type /= bstr .size 16
+$tag-id-type /= uuid
 
 tag-version-type = integer .default 0
 
