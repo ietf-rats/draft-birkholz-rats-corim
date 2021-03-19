@@ -7,13 +7,13 @@ concise-mid-tag = {
   ? language => text,
   tag-metadata => tag-metadata-type,
   ? module-metadata => module-metadata-type,
-  ? comid-entity => one-or-many<entity-entry>,
-  ? linked-tags => one-or-many<linked-tags-entry>,
+  ? comid-entity => one-or-more<entity-entry>,
+  ? linked-tags => one-or-more<linked-tags-entry>,
   ? claims => claims-entry,
   * $$comid-extension
 }
 
-one-or-many<T> = T / [ 2* T ]
+one-or-more<T> = T / [ 2* T ]
 
 tag-metadata-type = {
   0 => $tag-id-type,
@@ -122,10 +122,10 @@ comid-patches = 5
 ; Notes:
 ; - any reference-value entry can match evidence
 claims-entry = {
-  ? ref-claims => one-or-many<reference-value>
-  ? end-claims => one-or-many<endorsed-value>
-  ? identity-claims => one-or-many<identity-value>
-  ? instance-claims => one-or-many<instance-value>
+  ? ref-claims => one-or-more<reference-value>
+  ? end-claims => one-or-more<endorsed-value>
+  ? identity-claims => one-or-more<identity-value>
+  ? instance-claims => one-or-more<instance-value>
   * $$claims-entry-extension
 }
 
@@ -146,7 +146,7 @@ instance-value = {
 
 $$instance-claim-choice = (
   mac-addr-key => mac-addr-type //
-  ip-addrs-key => one-or-many<ip-addr-type> //
+  ip-addrs-key => one-or-more<ip-addr-type> //
   serial-number-key => serial-number-type //
   ueid-key => ueid //
   uuid-key => uuid
