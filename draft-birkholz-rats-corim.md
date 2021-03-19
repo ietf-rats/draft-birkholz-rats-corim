@@ -111,6 +111,26 @@ The following CDDL sockets (extension points) are defined in the CoRIM specifica
 | concise-mid-tag | $$comid-extension | {{model-concise-mid-tag}}
 {: #comid-extension-group-sockets title="CoMID CDDL Group Extension Points"}
 
+## Generic CDDL rules
+
+CDDL provides generic rules where parameters are bound to the arguments of a rule via angle brackets (see {{RFC8610}} Section 3.10). In the specifications defined by this document, this mechanism is used to simplify the representation of "either one stand-alone value or more than one values in an array". The following CDDL notation is used.
+
+~~~~
+one-or-more<T> = T / [ 2* T ]
+~~~~
+
+The following example illustrates the use in context.
+
+~~~~
+linked-tags => one-or-more<linked-tags-entry>
+~~~~
+
+effectively expands to:
+
+~~~~
+linked-tags => linked-tags-entry / [ 2* linked-tags-entry ]
+~~~~
+
 # Concise RIM Data Definition
 
 A CoRIM is a bundle of CoMIDs and CoSWIDs that can reference each other and that includes additional metadata about that bundle.
@@ -125,16 +145,16 @@ start = corim
 {: #model-concise-mid-tag}
 ## The concise-mid-tag Map
 
-The CDDL specification for the root concise-mid-tag map is as follows. This rule and its constraints MUST be followed when creating or validating a CoMID tag:
+The CDDL specification for the root concise-mid-tag map is as follows. This rule and its constraints MUST be followed when creating or validating a CoMID tag.
 
 ~~~ CDDL
 concise-mid-tag = {
   ? language => text,
   tag-metadata => tag-metadata-type,
   ? module-metadata => module-metadata-type,
-  ? entity => entity-entry / [2* entity-entry], ; defined in coswid
-  ? linked-tags => linked-tags-entry / [2* linked-tags-entry], ; dependent coswid and comid tags.
-  ? claims => claims-entry, ; claims may be omitted for manifests that only capture dependencies to other manifests
+  ? comid-entity => one-or-many<entity-entry>,
+  ? linked-tags => one-or-many<linked-tags-entry>,
+  ? claims => claims-entry,
   * $$comid-extension
 }
 ~~~
@@ -154,6 +174,10 @@ The following describes each member of the concise-mid-tag root map.
 - claims:
 
 - $$comid-extension: This CDDL socket is used to add new information structures to the concise-mid-tag root map. See FIXME.
+
+## The tag-metadata-type Map
+
+
 
 # Full CDDL Definition
 
