@@ -27,14 +27,10 @@ $tag-id-type /= uuid
 tag-version-type = integer .default 0
 
 module-metadata-type = {
-  ? 0 => module-name,
-  ? 1 => $module-type,
-  ? 2 => module-version,
-  ? 3 => module-vendor,
-  ? 4 => module-index,
+  ? 0 => element-name,
+  ? 1 => module-version,
   * $$module-metadata-extension
 }
-
 module-name = text
 
 $module-type /= tagged-oid
@@ -130,7 +126,8 @@ claims-entry = {
 }
 
 identity-value = {
-  ? 0 => $device-id-type, ; device id
+  ? element-name, ; class identifier
+  ? 0 => $device-id-type, ; device id - note: this is actually a cryptographic module identifier
   1 => COSE_KeySet, ; key material
 }
 
@@ -140,7 +137,7 @@ $device-id-type /= tagged-uuid
 ; Note: is there a #6.4711 definition for hardwaremodulename RFC4108?
 
 instance-value = {
-  ? 0 => element-name
+  ? 0 => element-name, ; class identifier
   $$instance-claim-choice
 }
 
