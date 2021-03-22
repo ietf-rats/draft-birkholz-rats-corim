@@ -126,9 +126,9 @@ claims-entry = {
 }
 
 identity-value = {
-  ? element-name, ; class identifier
-  ? 0 => $device-id-type, ; device id - note: this is actually a cryptographic module identifier
-  1 => COSE_KeySet, ; key material
+  ? 0 => element-name, ; class identifier
+  ? 1 => $device-id-type, ; device/module id
+  2 => COSE_KeySet, ; key material
 }
 
 $device-id-type /= tagged-ueid
