@@ -60,6 +60,7 @@ $role /= aggregator
 $role /= distributor
 $role /= licensor
 $role /= maintainer
+$role /= module-creator
 $role /= uint / text
 
 link-entry = {
