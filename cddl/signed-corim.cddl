@@ -14,8 +14,7 @@ corim-meta-key = 8 ; scoped to protected-signed-corim-header map
 
 corim-meta = {
   signer => entity-entry, ; entity-entry is pointing to the manifest issuer - compare tag-metadata tag-issuer these are different things
-  ? validity-entry,
-  ? deny-id => corim-id-type, ; used for revocation - NOTE(tho) I'm not sure I understand how is this supposed to work?
+  ? validity-entry
 }
 
 validity-entry = (
