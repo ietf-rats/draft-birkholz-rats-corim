@@ -1,0 +1,3 @@
+[submodule "corim-cddl"]
+	path = corim-cddl
+	url = https://github.com/ietf-rats/ietf-corim-cddl

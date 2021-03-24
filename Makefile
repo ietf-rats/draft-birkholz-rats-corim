@@ -10,18 +10,18 @@ else
 	    -b main https://github.com/martinthomson/i-d-template $(LIBDIR)
 endif
 
-CORIM_CDDL := cddl/corim.cddl
-CORIM_MAKEFILE := cddl/Makefile
+CORIM_CDDL := corim-cddl/corim.cddl
+CORIM_MAKEFILE := corim-cddl/Makefile
 
 draft-birkholz-rats-corim.md: $(CORIM_CDDL)
 
-$(CORIM_CDDL): $(CORIM_MAKEFILE) ; $(MAKE) -C cddl
+$(CORIM_CDDL): $(CORIM_MAKEFILE) ; $(MAKE) -C corim-cddl
 
 .PHONY: cddl-lint
-cddl-lint: $(CORIM_MAKEFILE) ; $(MAKE) -C cddl check
+cddl-lint: $(CORIM_MAKEFILE) ; $(MAKE) -C corim-cddl check
 
 .PHONY: cddl-clean
-cddl-clean: $(CORIM_MAKEFILE) ; $(MAKE) -C cddl clean
+cddl-clean: $(CORIM_MAKEFILE) ; $(MAKE) -C corim-cddl clean
 
 $(CORIM_MAKEFILE):
 	git submodule sync

@@ -170,7 +170,7 @@ Not included in the full CDDL definition are CDDL dependencies to CoSWID. The fo
 
 ~~~~ CDDL
 <CODE BEGINS>
-{::include cddl/corim.cddl}
+{::include corim-cddl/corim.cddl}
 <CODE ENDS>
 ~~~~
 
