@@ -14,4 +14,4 @@ report.xml
 venv/
 lib
 draft-birkholz-rats-corim.xml
-cddl/corim.cddl
+cddl

@@ -6,6 +6,20 @@ This is the working area for the individual Internet-Draft, "Concise Reference I
 * [Individual Draft](https://tools.ietf.org/html/draft-birkholz-rats-corim)
 * [Compare Editor's Copy to Individual Draft](https://ietf-rats.github.io/draft-birkholz-rats-corim/#go.draft-birkholz-rats-corim.diff)
 
+## Pulling the CDDL
+
+The master copy of the CoRIM CDDL is stored in the [ietf-corim-cddl](https://github.com/ietf-rats/ietf-corim-cddl) repo.
+
+When starting with a fresh clone you need to pull it in as a git submodule:
+
+```
+$ git submodule update --init --recursive
+```
+
+The CDDL files will materialise inside the `cddl/` folder.
+
+Any change to the CDDL MUST be done in the master copy.
+
 ## Building the Draft
 
 Formatted text and HTML versions of the draft can be built using `make`.

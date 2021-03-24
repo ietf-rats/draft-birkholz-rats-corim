@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: martinthomson/i-d-template:latest
+      - image: thomasfossati/i-d-template:latest
     working_directory: ~/draft
 
     steps:
