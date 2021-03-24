@@ -34,9 +34,9 @@ jobs:
           refcache-
 
     - name: "Build Drafts"
-      uses: martinthomson/i-d-template@v1
+      uses: docker://thomasfossati/i-d-template:latest
 
     - name: "Upload to Datatracker"
-      uses: martinthomson/i-d-template@v1
+      uses: docker://thomasfossati/i-d-template:latest
       with:
         make: upload
