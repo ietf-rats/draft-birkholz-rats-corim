@@ -201,8 +201,8 @@ between a CoSWID and a CoMID with the semantics specified in
 
  | Index | Relationship Type Name | Definition |
  --------|----------------------- |--------------------------------------------|
- | 12    | m-requires             | The link references a prerequisite module that needs to be loaded or present for installing this software |
- | 13    | m-runs-on              | The link references a module tag that this software runs on |
+ | 12    | requires-module        | The link references a prerequisite module that needs to be loaded or present for installing this software |
+ | 13    | runs-on-module         | The link references a module tag that this software runs on |
 {: #tbl-link-rel-values title="New CoSWID to CoMID Link Relations"}
 
 The rel values listed in {{tbl-link-rel-values}} MUST be used only for link
@@ -224,6 +224,6 @@ Software Tag Link Relationship Values Registry.
 
  | Index | Relationship Type Name | Specification               |
  --------|----------------------- |-----------------------------|
- | 12    | m-requires             | See {{sec-link-rel-values}} |
- | 13    | m-runs-on              | See {{sec-link-rel-values}} |
+ | 12    | requires-module        | See {{sec-link-rel-values}} |
+ | 13    | runs-on-module         | See {{sec-link-rel-values}} |
 {: #tbl-iana-link-rel-values title="New CoSWID Link Relationship Values"}
