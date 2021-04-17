@@ -129,13 +129,13 @@ The CDDL specification for the root concise-mid-tag map is as follows. This rule
 
 ~~~ CDDL
 concise-mid-tag = {
-  ? language => text,
-  tag-metadata => tag-metadata-type,
-  ? module-metadata => module-metadata-type,
-  ? entity => entity-entry / [2* entity-entry], ; defined in coswid
-  ? linked-tags => linked-tags-entry / [2* linked-tags-entry], ; dependent coswid and comid tags.
-  ? claims => claims-entry, ; claims may be omitted for manifests that only capture dependencies to other manifests
-  * $$comid-extension
+  ? comid.language => language-type
+  comid.tag-metadata => tag-metadata-map
+  ? comid.module-metadata => module-metadata-map
+  ? comid.entity => one-or-more<module-entity-map>
+  ? comid.linked-tags => one-or-more<linked-tag-map>
+  ? comid.claims => claims-map
+  * $$concise-mid-tag-extension
 }
 ~~~
 
@@ -170,7 +170,7 @@ Not included in the full CDDL definition are CDDL dependencies to CoSWID. The fo
 
 ~~~~ CDDL
 <CODE BEGINS>
-{::include corim-cddl/corim.cddl}
+{::include corim-cddl/corim-autogen.cddl}
 <CODE ENDS>
 ~~~~
 
