@@ -100,9 +100,27 @@ While each specification defines its own start rule, only CoMID and CoSWID are s
 
 While stand-alone CoSWIDs can be signed, CoMID are not intended to be signed themselves. In order to provide a proof of authenticity and to be temper-evident, CoMIDs MUST be wrapped in a CoRIM that is then signed.
 
+This document uses the Concise Data Definition Language (CDDL {{RFC8610}}) to define the specification for CoRIM and CoMID, as well as the extensions to CoSWID. The CDDL definitions provided define nested structures. Typically, the CDDL types used for nesting are maps. Every key used in the maps is a named type that is associated with an corresponding uint via a block of rules appended at the end of the CDDL definition.
+
+Every set of uint keys that is used in the context of the collision domain of map is intended to be collision-free (each key is intended to be unique in the scope of a map, not a multimap). To accomplish that, for each map there is a registry for the map members of that map <!-- FIXME: ref to IANA sections --> 
+
 ## Extensibility
 
-Both the CoRIM and the CoMID specification include extension points using CDDL sockets (see {{RFC8610}} Section 3.9). The use of CDDL sockets allow for well-formed extensions to be defined in supplementary CDDL descriptions that support additional uses of CoRIM and CoMID.
+Both the CoRIM and the CoMID specification include extension points using CDDL sockets (see {{RFC8610}} Section 3.9). The use of CDDL sockets allow for well-formed extensions to be defined in supplementary CDDL definitions that support additional uses of CoRIM and CoMID.
+
+There are two types of extensibility supported via the extension points defined in this document. Both types allow for the addition of keys in the scope of a map.
+
+Custom Keys:
+
+: The CDDL definition allows for the use of negative integers as keys. These keys cannot take on a well-defined global semantic. They can take on custom-defined semantics in a limited or local scope, e.g. vendor-defined scope.
+
+Registered Keys:
+
+: Additional keys can be registered at IANA via separate specifications.
+
+Both types of extensibility also allow for the definition of new nested maps that again in includes additionally defined keys.
+
+## Concise RIM extension points
 
 The following CDDL sockets (extension points) are defined in the CoRIM specification, which allow the addition of new information structures to their respective CDDL groups.
 
