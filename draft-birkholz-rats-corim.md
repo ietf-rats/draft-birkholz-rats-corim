@@ -120,6 +120,10 @@ Registered Keys:
 
 Both types of extensibility also allow for the definition of new nested maps that again in includes additionally defined keys.
 
+## Type Names, Prefixes, and Namespaces
+
+The semantics of the information elements (attributes) defined by CoRIM, CoMID, and CoSWID are sometimes very similar, but do not share the same scope or are slightly different. In order to not overload the semantics of the already existing semantics of the software-centric IANA registries of CoSWID with, for example, hardware-centric semantics of CoMID, new type names are introduce. For example: both CoSWID and CoMID define a tag-id. As CoSWID already specifies "tag-id", CoMID prefixes that type name with "comid." to disambiguate the context, resulting in "comid.tag-id". This prefixing provides a well-defined scope for the use of that the named type defined in this document and guarantees interoperability (no type name collisions) with the CoSWID CDDL definition. Effectively, the prefixes used in this specification enable simple hierarchical namespaces. The prefixing introduced is also based on the anticipated namespace features for CDDL. <!-- FIXME: ref to upcoming CDDL Namespaces I-D -->
+
 ## Concise RIM extension points
 
 The following CDDL sockets (extension points) are defined in the CoRIM specification, which allow the addition of new information structures to their respective CDDL groups.
@@ -159,19 +163,25 @@ concise-mid-tag = {
 
 The following describes each member of the concise-mid-tag root map.
 
-- language:
+- comid.language:
 
-- tag-metadata:
+- comid.tag-identity:
 
-- module-metadata:
+- comid.module-name:
 
-- entity:
+- comid.entity:
 
-- linked-tags:
+- comid.linked-tags:
 
-- claims:
+- comid.claims:
 
-- $$comid-extension: This CDDL socket is used to add new information structures to the concise-mid-tag root map. See FIXME.
+- $$comid-mid-tag-extension: This CDDL socket is used to add new information structures to the concise-mid-tag root map. See FIXME.
+
+## The tag-identity-map Map
+
+- tag-id:
+
+- tag-version:
 
 # Full CDDL Definition
 
