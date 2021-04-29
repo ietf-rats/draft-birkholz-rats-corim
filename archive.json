@@ -1,0 +1,3342 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2021-04-29T08:28:55.060637+00:00",
+  "repo": "ietf-rats/draft-birkholz-rats-corim",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    },
+    {
+      "name": "design",
+      "description": "discussion around design",
+      "color": "d4c5f9"
+    },
+    {
+      "name": "typographical consistency",
+      "description": "",
+      "color": "d93f0b"
+    }
+  ],
+  "issues": [
+    {
+      "number": 1,
+      "id": "MDU6SXNzdWU3OTIxMzM0MjI=",
+      "title": "automatic build of the CDDL from snippets",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/1",
+      "state": "CLOSED",
+      "author": "thomas-fossati",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "thomas-fossati"
+      ],
+      "labels": [],
+      "body": "Add the needed Makefile magic to build the complete CDDL from the snippets.",
+      "createdAt": "2021-01-22T16:19:45Z",
+      "updatedAt": "2021-01-28T17:08:25Z",
+      "closedAt": "2021-01-28T17:08:25Z",
+      "comments": [
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "also, add instructions to have the build environment set up.",
+          "createdAt": "2021-01-22T16:22:04Z",
+          "updatedAt": "2021-01-22T16:22:04Z"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "id": "MDU6SXNzdWU3OTIxNjQ2MTM=",
+      "title": "No Signed CoMID CDDL",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/2",
+      "state": "OPEN",
+      "author": "henkbirkholz",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "henkbirkholz"
+      ],
+      "labels": [],
+      "body": "Is it intentional that there is no option to optionally sign Co(H)MIDs? Maybe I just overlooked that option, but I am under the impression that we do not have that.\r\n\r\nIn unsigned-corim we have:\r\n\r\nconcise-tag = #6.47116(signed-coswid) / #6.47117(concise-mid-tag)\r\n\r\nSo on the Co(H)MID side of things we directly go to the unsigned variant (as there is no signed one).\r\n",
+      "createdAt": "2021-01-22T17:02:59Z",
+      "updatedAt": "2021-03-03T19:42:29Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "There used to be a signed-comid map. But we defined COSE signature as:\r\nCOSE-Sign1-corim = [\r\n  protected: bstr .cbor protected-signed-corim-header,\r\n  unprotected: unprotected-signed-corim-header, \r\n  payload: bstr .cbor unsigned-corim,\r\n  signature: bstr,\r\n]\r\nSuch that the payload is the signed variant of a corim.\r\n\r\nThe signed-corim/comid used to contain the corim-meta that was moved into protected headers (see below). Therefore, we don't need a signed-comid map any more. signed-corim suffices. \r\ncorim-meta = {\r\n  signer => entity-entry, ; entity-entry is pointing to the manifest issuer - compare tag-metadata tag-issuer these are different things\r\n  ? validity-entry,\r\n  ? deny-id => corim-id-type, ; used for revocation - NOTE(tho) I'm not sure I understand how is this supposed to work?\r\n}\r\n",
+          "createdAt": "2021-01-22T19:28:25Z",
+          "updatedAt": "2021-01-22T19:35:13Z"
+        },
+        {
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "body": "This means that CoMID - in contrast to CoSWID - cannot exist separately signed in the wild - only signed as a part of a CoRIM. Is that desirable, if modules can be composed into a composite device across a supply chain? ",
+          "createdAt": "2021-01-27T20:43:08Z",
+          "updatedAt": "2021-01-27T20:43:08Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "consice-tag should only include unsigned tag expressions. The definition #6.47116(signed-coswid) should change to #6.47116(unsigned-coswid).\r\n\r\nand corim shouldn't try to define a 'signed-comid' thing.",
+          "createdAt": "2021-01-29T16:58:54Z",
+          "updatedAt": "2021-03-03T19:42:29Z"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "id": "MDU6SXNzdWU3OTIxNjU2MzQ=",
+      "title": "In CoMID, we probably don't want the any-attribute that comes with the global-attribute group",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/3",
+      "state": "CLOSED",
+      "author": "henkbirkholz",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "So the proposal is to remove global-attributes and just use the lang attribute from CoSWID here.",
+      "createdAt": "2021-01-22T17:04:31Z",
+      "updatedAt": "2021-01-28T17:36:32Z",
+      "closedAt": "2021-01-28T17:36:32Z",
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "If the only reason for global-attributes is for language declaration then lets consider using a simpler language group and limit use of global-attributes.",
+          "createdAt": "2021-01-22T18:43:42Z",
+          "updatedAt": "2021-01-22T18:43:42Z"
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "id": "MDU6SXNzdWU3OTIxNjY0NDg=",
+      "title": "CoMID or CoHMID",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/4",
+      "state": "CLOSED",
+      "author": "henkbirkholz",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "In order not to write Co(H)MID anymore, we should nail the acronym down. At least for the moment?\r\n\r\nAnyone objecting to CoHMID? If so, this is the place to DISCUSS.",
+      "createdAt": "2021-01-22T17:05:44Z",
+      "updatedAt": "2021-01-27T20:40:50Z",
+      "closedAt": "2021-01-27T20:40:50Z",
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I already modified hackmd to use comid. Seemed to be consensus in email for this.",
+          "createdAt": "2021-01-22T18:42:12Z",
+          "updatedAt": "2021-01-22T18:42:12Z"
+        },
+        {
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Ah! Because of the firmware+hardware composition. Makes sense.",
+          "createdAt": "2021-01-27T20:40:50Z",
+          "updatedAt": "2021-01-27T20:40:50Z"
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "id": "MDU6SXNzdWU3OTIxNzU3MDQ=",
+      "title": "corim-meta belongs to signed-corim and not to unsigned-corim",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/5",
+      "state": "CLOSED",
+      "author": "henkbirkholz",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "During splitting the CDDL into semantic pieces, corim-meta turned up in the wrong place.",
+      "createdAt": "2021-01-22T17:20:14Z",
+      "updatedAt": "2021-01-29T16:52:40Z",
+      "closedAt": "2021-01-29T16:52:40Z",
+      "comments": [
+        {
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Proposal in #7 ",
+          "createdAt": "2021-01-22T17:32:15Z",
+          "updatedAt": "2021-01-22T17:32:15Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The reason for moving to signed headers is why? Was there a security threat? ",
+          "createdAt": "2021-01-22T19:24:47Z",
+          "updatedAt": "2021-01-22T19:24:47Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Fixed in #7",
+          "createdAt": "2021-01-29T16:52:40Z",
+          "updatedAt": "2021-01-29T16:52:40Z"
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "id": "MDU6SXNzdWU3OTIxNzY0MDg=",
+      "title": "COSE header member key for CoRIM",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/6",
+      "state": "CLOSED",
+      "author": "henkbirkholz",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The next free COSE header member is 8, currently. Putting that in for now. Should be updated before WGLC, obviously.",
+      "createdAt": "2021-01-22T17:21:22Z",
+      "updatedAt": "2021-01-29T16:51:58Z",
+      "closedAt": "2021-01-29T16:51:58Z",
+      "comments": [
+        {
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Proposal in #7 ",
+          "createdAt": "2021-01-22T17:31:58Z",
+          "updatedAt": "2021-01-22T17:31:58Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Fixed in #7",
+          "createdAt": "2021-01-29T16:50:28Z",
+          "updatedAt": "2021-01-29T16:51:44Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Fixed in #7",
+          "createdAt": "2021-01-29T16:51:58Z",
+          "updatedAt": "2021-01-29T16:51:58Z"
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "id": "MDU6SXNzdWU3OTIxODAxMTk=",
+      "title": "No Editor's Version (404)",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/8",
+      "state": "CLOSED",
+      "author": "henkbirkholz",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "wontfix"
+      ],
+      "body": "Unfortunately, github states @ https://docs.github.com/en/github/working-with-github-pages/about-github-pages\r\n\r\n> GitHub Pages is available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server. For more information, see \"GitHub's products.\"\r\n\r\nSo that's a feature until the repo is set to public.",
+      "createdAt": "2021-01-22T17:27:13Z",
+      "updatedAt": "2021-03-23T11:41:29Z",
+      "closedAt": "2021-03-23T11:41:29Z",
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Won't fix - Github issue",
+          "createdAt": "2021-01-29T16:49:47Z",
+          "updatedAt": "2021-01-29T16:49:47Z"
+        }
+      ]
+    },
+    {
+      "number": 10,
+      "id": "MDU6SXNzdWU3OTU0NjI2OTc=",
+      "title": "sub-tags changed to linked-tags",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/10",
+      "state": "CLOSED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Thomas and I decided 'linked-tags' is more intuitive than 'sub-tags' in concise-mid-tag map.",
+      "createdAt": "2021-01-27T21:37:33Z",
+      "updatedAt": "2021-01-27T21:41:56Z",
+      "closedAt": "2021-01-27T21:41:56Z",
+      "comments": [
+        {
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "body": "fixed in https://github.com/ietf-rats/draft-birkholz-rats-corim/commit/a08322a85e93cc998ec3f33667926a6e724abd8d",
+          "createdAt": "2021-01-27T21:41:56Z",
+          "updatedAt": "2021-01-27T21:41:56Z"
+        }
+      ]
+    },
+    {
+      "number": 11,
+      "id": "MDU6SXNzdWU3OTU0NzM2Nzk=",
+      "title": "global-attributes vs lang => text",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/11",
+      "state": "CLOSED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "we decided that within the concise-mid-tag map and its sub maps we only need lang => text rather than global-attributes. This effects concise-mid-tag map but may effect sub maps as we currently don't include the lang declaration there.",
+      "createdAt": "2021-01-27T21:51:33Z",
+      "updatedAt": "2021-01-29T16:48:39Z",
+      "closedAt": "2021-01-29T16:48:22Z",
+      "comments": [
+        {
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "body": "addressed in commit https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/7/commits/770496192105ae96ac209a9b5caef7055216aa83 of PR #7 in branch https://github.com/ietf-rats/draft-birkholz-rats-corim/tree/no-any-anymore",
+          "createdAt": "2021-01-27T22:09:16Z",
+          "updatedAt": "2021-01-27T22:09:16Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "fixed in PR #7",
+          "createdAt": "2021-01-29T16:48:39Z",
+          "updatedAt": "2021-01-29T16:48:39Z"
+        }
+      ]
+    },
+    {
+      "number": 12,
+      "id": "MDU6SXNzdWU3OTU0ODQ2MDI=",
+      "title": "supplemental comid tags",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/12",
+      "state": "CLOSED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "SWID has the notion of a supplemental tag see [1]. A supplemental comid tag can be used to append additional claims to an existing (primary?) tag. SWID has two code points related to supplemental. A boolean flag indicating the current tag is/isn't a supplemental tag. SWID tags can link to supplemental tags (see [2]) via a link-entry $rel type called 'supplemental' to indicate the linked tag is a supplemental tag to the current tag. \r\n\r\nI don't like overloading code points that have different semantics. If we add a supplemental tags to comid, the boolean code point should be 'is-supplemental' (boolean). \r\n\r\nA supplemental tag should reference (identify) the tag that it is supplementing. In the use case for a value added endorser (tag is generated after the mfg'r tags are created). The augmented tag is known a'priori. \r\n[2] is confusing as it seems to say the href link is to refer to the supplemental tag (which is 'this' tag; and this tag has is-supplemental set to true) already knows it is a supplemental tag. \r\n\r\nInstead, linked-tags should point to the 'primary?' tag that it supplements. Therefore, comid-rel should have a relationship value for 'primary'. e.g. $comid-rel /= primary. \r\n\r\n[1] \"Supplemental Tag - A SWID or CoSWID tag that allows additional\r\ninformation to be associated with a referenced SWID tag. This\r\nallows tools and users to record their own metadata about a\r\nsoftware component without modifying SWID primary or patch tags\r\ncreated by a software provider.\"\r\n[2] \"If the supplemental item (boolean) is set to \"true\", the tag SHOULD contain\r\nat least one link item with both the rel item value of\r\n\"supplemental\" and an href item\"",
+      "createdAt": "2021-01-27T22:10:36Z",
+      "updatedAt": "2021-01-29T16:45:52Z",
+      "closedAt": "2021-01-29T16:45:52Z",
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Resolution: Not need for tag-type as the linked-tags-entry relationship (tag-rel) is sufficient.",
+          "createdAt": "2021-01-29T16:45:52Z",
+          "updatedAt": "2021-01-29T16:45:52Z"
+        }
+      ]
+    },
+    {
+      "number": 13,
+      "id": "MDU6SXNzdWU3OTU0ODU4OTY=",
+      "title": "comid-rel values should be integers",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/13",
+      "state": "CLOSED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Assuming the namespace issue is resolved between $rel and $comid-rel the code point values should use integers instead of text strings. Currently they are text strings.",
+      "createdAt": "2021-01-27T22:12:53Z",
+      "updatedAt": "2021-01-29T20:15:33Z",
+      "closedAt": "2021-01-29T20:15:33Z",
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "change tag-rel expression where the tag-rel type from $comid-rel to $tag-rel-type\r\nremove $rel from tag-rel definition\r\ndefine code points as numbers (not strings) \r\nWe have use cases for: parent, root, supersedes, supplemental (for now)",
+          "createdAt": "2021-01-29T16:31:37Z",
+          "updatedAt": "2021-01-29T16:33:59Z"
+        }
+      ]
+    },
+    {
+      "number": 15,
+      "id": "MDU6SXNzdWU3OTcwMjk2NTU=",
+      "title": "tag-id-type definition",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/15",
+      "state": "CLOSED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "tag-id-type isn't defined fully. \r\nShould be tag-id-type /= bstr .size 16 / tstr",
+      "createdAt": "2021-01-29T16:47:26Z",
+      "updatedAt": "2021-02-04T21:52:56Z",
+      "closedAt": "2021-02-04T21:52:56Z",
+      "comments": []
+    },
+    {
+      "number": 17,
+      "id": "MDU6SXNzdWU4MDE2NjUzMTI=",
+      "title": "Add Identity claim",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/17",
+      "state": "CLOSED",
+      "author": "thomas-fossati",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "design"
+      ],
+      "body": "Extend CoMID to carry Identity claims (i.e., key material) that can be associated either with a Class or an (single or group) Instance of a Class.\r\n\r\nRequirements:\r\n* Support generic key material;\r\n* Support generic Identifiers with Instance, Class or Batch scope;\r\n* Standards based.",
+      "createdAt": "2021-02-04T21:56:31Z",
+      "updatedAt": "2021-02-08T17:33:21Z",
+      "closedAt": "2021-02-08T17:33:21Z",
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "For example:\r\nclaims-entry = {\r\n? ref-claims => reference-value / [2* reference-value],\r\n? end-claims => endorsed-value / [2* endorsed-value],\r\n? id-claims => identity-value / [2* identity-value],\r\n* $$claims-entry-extension,\r\n}\r\n; device-id is only present if the key material applies\r\n; to a specific instance. Otherwise, the class identifier\r\n; in the element-name defines the scope.\r\nidentity-value = {\r\n ? device-id => device-id-type,\r\n key-material => COSE_KeySet, ; see RFC8152, draft-ietf-cose-x509\r\n}\r\n\r\ndevice-id-type /= #6.47115(psa-instance-id-type)",
+          "createdAt": "2021-02-05T00:17:19Z",
+          "updatedAt": "2021-02-05T00:17:19Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Is there a #6.4711 for HardwareModuleName as defined in RFC4108 as a device-id-type?\r\ne.g. HardwareModuleName ::= SEQUENCE {\r\n        hwType OBJECT IDENTIFIER,\r\n        hwSerialNum OCTET STRING }\r\nThis might be a reasonable form since existing certificates may be using it.",
+          "createdAt": "2021-02-05T01:52:54Z",
+          "updatedAt": "2021-02-05T01:53:30Z"
+        },
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Closed by #25 ",
+          "createdAt": "2021-02-08T17:33:21Z",
+          "updatedAt": "2021-02-08T17:33:21Z"
+        }
+      ]
+    },
+    {
+      "number": 18,
+      "id": "MDU6SXNzdWU4MDE2NjYwMDI=",
+      "title": "Add Instance claim",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/18",
+      "state": "CLOSED",
+      "author": "thomas-fossati",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "design"
+      ],
+      "body": "Extend CoMID to carry per-instance claims (e.g., serial numbers, IMEIs, etc.)",
+      "createdAt": "2021-02-04T21:57:41Z",
+      "updatedAt": "2021-03-04T19:12:33Z",
+      "closedAt": "2021-03-04T19:12:33Z",
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "```\r\nclaims-entry = {\r\n  ? ref-claims => reference-value / [2* reference-value],\r\n  ? end-claims => endorsed-value / [2* endorsed-value],\r\n  ? inst-claims => instance-claim-entry,\r\n  * $$claims-entry-extension,\r\n}\r\n\r\ninstance-claim-entry = {\r\n  ? element-name,\r\n  ; TLVs where instance-type identifies the data type e.g. MAC address, serial# etc.\r\n  instance-type => instance-values / [2* instance-values],\r\n}\r\n\r\ninstance-type /= mac-address\r\ninstance-type /= serial-number\r\ninstance-type /= euid\r\ninstance-type /= guid\r\ninstance-type /= ip-addr\r\n\r\nfull-address = [[+ label], ip4, ip6]\r\nip4 = bstr .size 4\r\nip6 = bstr .size 16\r\nlabel = bstr .size (1..63)\r\n\r\nmac-address = 0\r\nserial-number = 1\r\neuid = 2\r\nguid = 3\r\nip-addr = 4\r\n\r\ninstance-value-type /= full-address\r\n; ...\r\n; Note: are there other well defined types under #6.4711 or EAT etc...\r\n```",
+          "createdAt": "2021-02-05T00:15:38Z",
+          "updatedAt": "2021-02-05T15:58:41Z"
+        },
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Have a look into [this](https://tools.ietf.org/html/draft-ietf-cbor-tags-oid-04)",
+          "createdAt": "2021-02-05T16:01:55Z",
+          "updatedAt": "2021-02-05T16:01:55Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Fixed in #38 ",
+          "createdAt": "2021-03-04T19:12:33Z",
+          "updatedAt": "2021-03-04T19:12:33Z"
+        }
+      ]
+    },
+    {
+      "number": 19,
+      "id": "MDU6SXNzdWU4MDE2Njk3NDc=",
+      "title": "Check CoMID relations against RFC8288",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/19",
+      "state": "OPEN",
+      "author": "thomas-fossati",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "help wanted"
+      ],
+      "body": "Review all the relations and check that they are consistent with Web linking conventions [[RFC 8288]](https://tools.ietf.org/html/rfc8288#section-2), i.e.  `<ctx> has a resource of type <rel type> at <target>`.",
+      "createdAt": "2021-02-04T22:03:42Z",
+      "updatedAt": "2021-02-05T00:28:00Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "We created corim-locator which contained RFC8288 related context.\r\ncorim-locator = {\r\n  href => any-uri, ; e.g. https://isv.example.mymodule.corim\r\n  ? thumbprint => hash-entry, ; the digest computed over mymodule.corim\r\n  ; **Note:should there be an extension point here?**\r\n}\r\n\r\nBy pulling the href out of the linked-tags-entry map the Verifier can break up the work into steps where a first step is to collect the relevant tags (and certs etc...) then build an internal structure that richly captures the linked-tags relationships.\r\n\r\nSince the href can be any-uri there can be a broad spectrum of possible content. \r\n\r\nAre we making things more complex by moving away from coswid link-entry that has href and relationship in the same map?",
+          "createdAt": "2021-02-05T00:28:00Z",
+          "updatedAt": "2021-02-05T00:28:00Z"
+        }
+      ]
+    },
+    {
+      "number": 20,
+      "id": "MDU6SXNzdWU4MDE2NzM5NjY=",
+      "title": "Patch and upgrade relations for CoMID",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/20",
+      "state": "CLOSED",
+      "author": "thomas-fossati",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "puiterwijk",
+        "thomas-fossati",
+        "henkbirkholz",
+        "yogeshbdeshpande"
+      ],
+      "labels": [
+        "design"
+      ],
+      "body": "If we want to support SW lifecycle for embedded firmware, we need to model the common cases of update and patch.  Similar to (Co)SWID we need to be able to say things like: _\"MyFW 1.1.0 is an update of MyFW 1.0.0\"_ or _\"YourFW 1.0.1 is a patch of YourFW 1.0.0\"_ without having to make assumptions on the versioning scheme in use, i.e., by means of an explicit type relation.",
+      "createdAt": "2021-02-04T22:11:19Z",
+      "updatedAt": "2021-03-04T17:32:57Z",
+      "closedAt": "2021-03-04T17:32:57Z",
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "We have defined 'supersedes' relationship type. This gives 'update' semantics. \r\nWe were hoping to avoid the complexity of patch semantics - I think in part by being able to point to coswid. Does it work to say that if FW is patchable that the mfg'r should use coswid instead of comid?",
+          "createdAt": "2021-02-05T00:04:05Z",
+          "updatedAt": "2021-02-05T00:04:05Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "* `includes` The current module has additional module(s) identified by the linked tag(s). The union of all modules describes an acceptable _device_.\r\n* `or-includes` The current module has additional module(s) identified by the linked tag(s) that describe alternative acceptable modules. At least one of the alternatives is included to describe an acceptable _device_.\r\n* `supplements` The current module has additional claims that augment the claim set of the target module. The current tag module information must match the target module for the claims to be combined under the target.\r\n* `updates` The current module contains claims that fully replace the target module claims. This is applied when the module is updated or changes in some fashion. \r\n* `replaces` The current tag contains corrections to a previously issued tag. This tag replaces the target tag. The `tag-id` remains unchanged. The `tag-version` is incremented.\r\n* `patches` The current module contains claims that partially replace the target module claims. This is applied when the module is updated or changes in some fashion. The target module contains both valid and replaced claims.\r\n\r\n**Note:** `or-includes` relationship needs to consider how the CoMID schema represents _OR_ included modules such that it is clear that they are not _AND_ included. \r\n\r\n**Note:** `includes` and `or-includes` are providing fodder (building materials) for constructing _device pattern_ graphs, but I don't know if it was intended to overload the tag linking semantics with graph construction semantics. In a previous discussion we observed that possibly we needed a separate set of claims that focuses on graph construction. We also observed that the element-name _layer_ and _index_ can be used to capture some special case graph constructions such as the relative layering of elements within the current module and the existence of clone elements within the current module. These relationships are relative to the current module, but we don't have convention for relating modules to a graph. We also don't expect to see evidence that includes module information (unless it is also included as a claim where tcb-info / element-name identifies the module type). ",
+          "createdAt": "2021-02-12T21:46:30Z",
+          "updatedAt": "2021-02-17T14:02:30Z"
+        },
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "We should also say which relations are intra CoMID and which has CoMID->CoSWID semantics.\r\n\r\nIn particular, we need at least one CoMID->CoSWID relationship from the top-level CoMID (AKA \"the device\") to the the various SW packages that are expected to run on it.  And/or the other way around: we possibly need to extend CoSWID to add a new relation that has CoMID->CoSWID only semantics and says that a certain SW package runs on a certain module / device.",
+          "createdAt": "2021-02-19T17:10:00Z",
+          "updatedAt": "2021-02-19T17:10:00Z"
+        }
+      ]
+    },
+    {
+      "number": 21,
+      "id": "MDU6SXNzdWU4MDE2ODI5MjM=",
+      "title": "An Explicit type for CoMIDs",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/21",
+      "state": "OPEN",
+      "author": "thomas-fossati",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "design"
+      ],
+      "body": "Should we define a type qualifier to distinguish between Class, Instance and Identity CoMIDs?\r\n\r\nIntroducing a bit of rigidity in to the type system will make some things impossible (e.g., mixing Instance and Identity claims in the same CoMID), however it will give us some advantages:\r\n* Reduce cognitive dissonance;\r\n* Improve link semantics;\r\n* Limit attack surface;\r\n* Reduce implementation complexity.",
+      "createdAt": "2021-02-04T22:27:33Z",
+      "updatedAt": "2021-02-09T15:55:17Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Would it be possible to see an example of the type structure?\r\nI'm concerned that typing would require multiple corims (and therefore unnecessary signing/verify operations).\r\nIf the typing applies only to tags (comid and coswid) then the result will be an increase in tags and increase in number of links (linked-tags). \r\nThe semantics of linking needs to be revisited to make sure we're on the same page.\r\nCurrent semantics: \r\n(1) multiple tags in the same or different corim are not required to be semantically related.\r\n(2) claims in the same tag (claims-entry) means all claims are extant for the module (module-type). i.e. verifier accepts all asserted claims as being relevant to evidence that matches any one of the measurements found in extant claims.\r\n\r\nLinked-tags under 'parent' or 'supplemental' follows the semantics for (2). \r\nLinked-tags under 'supersedes' has different semantics from (2) in that extant claims are replaced by superseded claims. \r\n\r\nIf we have strong typing for the type of claim in addition to the above linked-tags relationships (essentially overloading relationship semantics with tag type semantics, then it isn't clear how both goals are met with the same relationship code point. We would have to add another field to link-type that is the tag-type IMO.\r\ne.g.\r\nlinked-tags-entry = {\r\n  tag-id => $tag-id-type,\r\n  tag-rel => $tag-rel-type,\r\n  ? tag-thumbprint => hash-entry, ; digest of the CBOR encoding of the concise-tag\r\n  ? tag-issuer => tag-issuer-type,\r\n  **? tag-type => $tag-type-type, ; choice: reference, endorsement, identity, instance, software??? aka links to coswid objects**\r\n}\r\n\r\nHowever, if a tag does mix types by included claims from any of the available in claims-entry then this construction has an ambiguous type signature. \r\n\r\nIt seems if typing is important that it could be applied by the implementation using type safe languages such as RUST.",
+          "createdAt": "2021-02-04T23:56:40Z",
+          "updatedAt": "2021-02-05T00:38:04Z"
+        },
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> Would it be possible to see an example of the type structure?\r\n\r\n(sketch quality alert!) at the top level I'm thinking of something like the following:\r\n```\r\nconcise-mid-tag = {\r\n  tag-id,\r\n  module-info,\r\n  claims,\r\n  linked-tags,\r\n  * $$extns,\r\n}\r\n```\r\nwhere `claims` is a choice between three different types:\r\n```\r\nclaims //= ( class => class-entry )\r\nclaims //= ( instance => [ instance-entry ] )\r\nclaims //= ( identity => [ identity-entry ] )\r\n\r\nclass = -1\r\ninstance = -2\r\nidentity = -3\r\n\r\nclass-entry = {\r\n  ; TODO class claims\r\n}\r\n\r\ninstance-entry = {\r\n  ; TODO instance claims\r\n}\r\n\r\nidentity-entry = {\r\n  ; TODO identity claims\r\n}\r\n```\r\n\r\n> I'm concerned that typing would require multiple corims (and therefore unnecessary signing/verify operations).\r\n\r\nno, one could stash any number of CoMIDs (of any type) inside the same CoRIM.  So there would be only one signature, if so desired.\r\n",
+          "createdAt": "2021-02-09T11:36:17Z",
+          "updatedAt": "2021-02-09T15:55:17Z"
+        }
+      ]
+    },
+    {
+      "number": 22,
+      "id": "MDU6SXNzdWU4MDE3NDc3OTY=",
+      "title": "Layer as an endorsed value claim",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/22",
+      "state": "CLOSED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "help wanted"
+      ],
+      "body": "In the use case where an OEM (Acme) integrates a sub-module from another vendor (Acorn). Acorn will have issued a manifest earlier in the supply time line. In so doing may have populated the layer value for element-name in a reference or endorsed claim set. \r\n\r\nLater, the OEM integrates the sub-module and in so doing re-assigns the layering from the original value. However, because layer is used to disambiguate the Acorn part it is problematic if Acme re-names it. \r\n\r\nBut given the layer is information supplied by Evidence of the final Acme device, the verifier may want to answer the question of which layering was intended by Acme.\r\n\r\nThe use case may involve Acorn having its own root of trust and separate boot sequence that involves multiple layers. So, there could be some information hiding semantics that should apply. \r\n\r\nIf there is a broad assumption that Acme can't clobber assertions made by Acorn then it would be illegal for Acme to reuse an Acorn element-name in order to assign a different value. Acme would have to use its own element-name (where Acme is the Vendor). \r\n\r\nA possible approach is to define an element-name type or possibly a module-type for \"composition\" that provides composite device construction directives. A directive would name the elements and what form of composition is intended. e.g. (Acmeboard) composes (Acornengine) at (Layer3).\r\n\r\nPossibly, it makes sense to create a different claims-entry type for this purpose?",
+      "createdAt": "2021-02-05T00:49:28Z",
+      "updatedAt": "2021-03-22T22:44:41Z",
+      "closedAt": "2021-03-22T22:44:40Z",
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "An OEM tag that links component tags where components have same layering but where OEM tag has different layering (e.g. OEM puts component A at layer 0 and component B at layer 1.) The overall layering can still be computed by a Verifier. Hence, it may not be necessary to explicitly define layering claims that overwrite sub-module layering assertions.",
+          "createdAt": "2021-03-22T22:44:40Z",
+          "updatedAt": "2021-03-22T22:44:40Z"
+        }
+      ]
+    },
+    {
+      "number": 23,
+      "id": "MDU6SXNzdWU4MDE3NjAwNzM=",
+      "title": "$tag-rel-type definitions cleanup",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/23",
+      "state": "CLOSED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Modify the tag-rel-type definitions to reflect the use cases we know we want so far. i.e. parent, supplemental and supersedes. ",
+      "createdAt": "2021-02-05T01:19:37Z",
+      "updatedAt": "2021-02-12T22:49:44Z",
+      "closedAt": "2021-02-12T22:49:44Z",
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Proposing a naming convention for $relationships where relationship names use present tense verb structure to aid in readability. For example, Tag-1 supplements Tag-2 rather than 'supplemental' where the language would be more like tag-1 has a supplemental relationship with tag-2. \r\n\r\nTherefore the following relationship ($tag-rel-type) values should be considered:\r\n- supplemental becomes 'supplements'\r\n- supersedes remains as is\r\n- parent becomes 'includes'\r\n- ancestor becomes 'updates'\r\nwe have not decided if patch is needed but if yes would be 'patches'\r\n\r\nWhen parsing the list of linked-tag-entry the semantics are: \"this tag <$tag-rel-type> tag-id=x\" (e.g. this page updates tag-id=7\r\n\r\n",
+          "createdAt": "2021-02-08T23:03:07Z",
+          "updatedAt": "2021-02-08T23:08:33Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "List of all relationships is documented in Issue #20 ",
+          "createdAt": "2021-02-12T22:49:44Z",
+          "updatedAt": "2021-02-12T22:49:44Z"
+        }
+      ]
+    },
+    {
+      "number": 26,
+      "id": "MDU6SXNzdWU4MDE3NzI0MzY=",
+      "title": "managing code point assignments",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/26",
+      "state": "CLOSED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Should we create a separate cddl file where code point names are defined and values assigned? \r\nThis will make it easier to see what names exists and what values have been assigned already. Currently they are scattered across all the files.",
+      "createdAt": "2021-02-05T01:50:49Z",
+      "updatedAt": "2021-03-22T23:12:12Z",
+      "closedAt": "2021-03-22T23:12:12Z",
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "fixed by PR #43",
+          "createdAt": "2021-03-22T23:12:12Z",
+          "updatedAt": "2021-03-22T23:12:12Z"
+        }
+      ]
+    },
+    {
+      "number": 27,
+      "id": "MDU6SXNzdWU4MDIwMTgxNzc=",
+      "title": "entity-entry is coswid specific",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/27",
+      "state": "CLOSED",
+      "author": "yogeshbdeshpande",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "design"
+      ],
+      "body": "cohmid use for link-entry expects or presumes it should carry roles that are are specific to cohmids, hence it does NOT address the role of ModuleCreator. Shall we have our own role or modify / extend the existing roles? \r\n\r\nNed: This is similar discussion to $rel / $relationships in link-entry. If it is problematic extending the $role namespace then we need to define a different namespece that is specific to cohmid. But that implies defining a cohmid specific entity-entry structure (I think) or possibly extending the coswid entity-entry structure with a cohmid specific role attribute e.g. $cohmid-role. \r\n\r\nYogesh: My preference would be to simply extend the $role namespace in CoSwid documentation. Lets attempt to keep all the possible roles in one namespace be it ModuleCreator or possibly new roles coming in future (like tagIntegrator, specific to entity responsible for CoRiM Manifest creation).\r\n\r\nThis keeps the role concept centrally located for future evolution and helps assigning multiple roles to an entity. Any differing views are Welcome!",
+      "createdAt": "2021-02-05T09:49:57Z",
+      "updatedAt": "2021-03-23T18:17:35Z",
+      "closedAt": "2021-03-23T18:17:35Z",
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "PR #53 closes this issue.",
+          "createdAt": "2021-03-23T18:17:35Z",
+          "updatedAt": "2021-03-23T18:17:35Z"
+        }
+      ]
+    },
+    {
+      "number": 28,
+      "id": "MDU6SXNzdWU4MDM3NzQ0OTY=",
+      "title": "Document structure",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/28",
+      "state": "CLOSED",
+      "author": "thomas-fossati",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "We should start thinking about the document structure.\r\n\r\nSurely we don't have to have text for all the sections for -00, but it'd be good to have agreement on what we think a ToC looks like.\r\n\r\nA few points, just to kick off the discussion:\r\n\r\n* Device decomposition;\r\n* Types of Endorsement: class, instance, identity;\r\n* Supply chain modelling: simple and complex;\r\n* CoRIM composition:\r\n  * CoMID;\r\n  * CoSWID;\r\n  * Relations.\r\n* CoRIM discovery",
+      "createdAt": "2021-02-08T17:30:45Z",
+      "updatedAt": "2021-03-23T11:40:37Z",
+      "closedAt": "2021-03-23T11:40:37Z",
+      "comments": [
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Henk has done this in 4a0c48a042cffc511180f854acaa16a20d53627f",
+          "createdAt": "2021-03-23T11:40:35Z",
+          "updatedAt": "2021-03-23T11:40:35Z"
+        }
+      ]
+    },
+    {
+      "number": 29,
+      "id": "MDU6SXNzdWU4MDQ4Njc0NTI=",
+      "title": "Updates relationship type",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/29",
+      "state": "CLOSED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Should we include 'updates' relationship type?\r\n\r\nThe use case is when a vendor provides an update to a previously released module. Normally, the updated corim will bump the tag-version number but the tag-id will remain the same. A search on tag-id alone would reveal both tags. The highest value tag-version is the current tag. \r\n\r\nThe current tag replaces the claims in the previous version tag. I think it is ambiguous whether the entire tag is replaced or just the claims. I'm leaning toward replacing the entire tag. \r\n\r\nNevertheless, it may be helpful for the new tag to include a link to the previous tag. This would make sense if the Attester points a hint to the previous tag, but discovers an updated tag. Having a pointer to the updated tag helps verifier find claims that have been invalidated and removes them.\r\n\r\nThere isn't an 'updates' relationship in swid/coswid. There is patch (which isn't a full update) and ancestor with seems to point the other direction - but I might be reading it wrong. I'm proposing using 'updates' for comid since it seems more clear.",
+      "createdAt": "2021-02-09T19:47:52Z",
+      "updatedAt": "2021-02-12T22:47:54Z",
+      "closedAt": "2021-02-12T22:47:54Z",
+      "comments": [
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "A few clarifying question:\r\n\r\n> The use case is when a vendor provides an update to a previously released module.\r\n\r\nBy _\"update to a previously released module\"_ do you mean updating the content of the Tag - adding or rectifying metadata -, or updating the underlying phy reality (e.g., circuitry and/or embedded FW)?\r\n\r\n> Normally, the updated corim will bump the tag-version number but the tag-id will remain the same.\r\n\r\nMy understanding is this should happen at the CoMID level rather than at the CoRIM?\r\n\r\n> A search on tag-id alone would reveal both tags. The highest value tag-version is the current tag.\r\n\r\n> The current tag replaces the claims in the previous version tag. I think it is ambiguous whether the entire tag is replaced or just the claims. I'm leaning toward replacing the entire tag.\r\n\r\nYes, semantics of tag-version (if we want CoMID to fully match CoSWID in this respect, which I think is desirable) is that the new version completely obliterates any older version.\r\n\r\n> Nevertheless, it may be helpful for the new tag to include a link to the previous tag. This would make sense if the Attester points a hint to the previous tag, but discovers an updated tag. Having a pointer to the updated tag helps verifier find claims that have been invalidated and removes them.\r\n\r\nThis could be done at the endorsement provisioning step based on existing input (tag-id and tag-version) alone.\r\n\r\n> There isn't an 'updates' relationship in swid/coswid. There is patch (which isn't a full update) and ancestor with seems to point the other direction - but I might be reading it wrong. I'm proposing using 'updates' for comid since it seems more clear.\r\n\r\nThat said, I'm all for `updates` and `patches` relations because I see a clear use case for embedded FW, where the semantics of updating a FW package and patching it are crystal clear.  Less so for the described scenario, where I think the existing mechanics are sufficient.\r\n\r\n",
+          "createdAt": "2021-02-10T08:52:25Z",
+          "updatedAt": "2021-02-10T13:50:11Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I believe the semantics for 'updates' should be: The new tag contains all the claims from the old tag that are still valid after applying an update to the module / elements. It replaces element-values that changed as a result of the update. It links to the old tag for reasons of audit, chain of custody, verification of vendor's intent to update the old tag. Version or SVN claims are updated. The tag-id is updated. The tag version is updated.\r\n\r\nThe semantics for 'patches' (I believe) should be: The new tag contains only claims that were changed by applying the patch. The union of the old and new tags is needed to complete the verification. Version (patch level) or SVN claims are updated. (I don't think patches is needed since 'updates' could be used also). The tag-id is the same (counterintuitive?). The tag version is updated.\r\n\r\nSemantics for 'replaces' (aka supersedes) should be: The new tag contains all the claims from the old tag, but corrects the errors that existed in the old tag. The underlying module isn't updated. The tag-id is not changed. The tag-version is incremented. \r\n\r\nNotes: link-entry map should have an extension point.  Remove issuer? should be a list of issuer?. Don't think thumbprint adds value. Don't need tag-version. ",
+          "createdAt": "2021-02-11T23:09:01Z",
+          "updatedAt": "2021-02-12T17:13:32Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "a description of proposed relationship types are described in Issue #23 ",
+          "createdAt": "2021-02-12T22:47:54Z",
+          "updatedAt": "2021-02-12T22:47:54Z"
+        }
+      ]
+    },
+    {
+      "number": 31,
+      "id": "MDU6SXNzdWU4MDc2MTE3NDI=",
+      "title": "module-metadata group",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/31",
+      "state": "CLOSED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "puiterwijk",
+        "thomas-fossati",
+        "henkbirkholz",
+        "yogeshbdeshpande"
+      ],
+      "labels": [],
+      "body": "We discussed creating a module-metadata group that expands into concise-mid-tag map. It would include the existing module related attributes and add module-vendor. The combination of module-vendor and module-type is universally unique. module-vendor-type might be the same as element-name vendor-type.\r\n\r\nNote: There is another issue that adds tag-vendor to tag-metadata so that tag-id is universally unique. Alternatively, we define tag-id-type such that it is universally unique. Similarly, corim-id also should be universally unique.",
+      "createdAt": "2021-02-12T23:27:24Z",
+      "updatedAt": "2021-03-04T17:28:28Z",
+      "closedAt": "2021-03-04T17:28:28Z",
+      "comments": []
+    },
+    {
+      "number": 32,
+      "id": "MDU6SXNzdWU4MDc2MTIzOTQ=",
+      "title": "corim-id and tag-id should be universally unique",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/32",
+      "state": "CLOSED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "thomas-fossati",
+        "yogeshbdeshpande"
+      ],
+      "labels": [
+        "design"
+      ],
+      "body": " tag-id-type should be universally unique. Similarly, corim-id also should be universally unique.\r\n\r\nWe could add 'vendor' to all these are define a type value that is universally unique such as GUID and UEID.\r\n\r\nNote that element-name 'type' is currently 'module-type-type' but this should be its own type value but can use the same set of type attributes. E.g.:\r\nelement-name = {\r\n...\r\n? type => element-type, ; note this is a class identifier\r\n...\r\n}\r\nelement-type /= tagged-bytes\r\nelement-type /= uuid-bytes\r\nelement-type /= implementation-id-bytes",
+      "createdAt": "2021-02-12T23:29:21Z",
+      "updatedAt": "2021-03-19T15:24:43Z",
+      "closedAt": "2021-03-19T15:24:43Z",
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "For corim-id the sample CDDL might be:\r\n\r\nunsigned-corim = {\r\n  corim-id => corim-id-type, ; this is an instance identifier, however multiple devices may leverage the same corim hence might still be privacy preserving.\r\n...\r\n}\r\ncorim-id-type /= tagged-bytes,\r\ncorim-id-type /= uuid-bytes,\r\ncorim-id-type /= implementation-id-bytes,\r\ncorim-id-type /= ueid,\r\n; corim-id-type /= tstr / bstr .size 16 ; remove this since it isn't universally unique.",
+          "createdAt": "2021-02-12T23:44:39Z",
+          "updatedAt": "2021-02-12T23:44:39Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Discusion: Could use the SID space",
+          "createdAt": "2021-03-04T18:04:38Z",
+          "updatedAt": "2021-03-04T18:04:38Z"
+        },
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I suggest doing:\r\n```\r\nuuid = #6.37(bstr .size 16)\r\n\r\ncorim-id = tstr / ~uuid\r\n```\r\n",
+          "createdAt": "2021-03-18T17:01:07Z",
+          "updatedAt": "2021-03-18T17:01:07Z"
+        }
+      ]
+    },
+    {
+      "number": 35,
+      "id": "MDU6SXNzdWU4MTI3MTM4NzM=",
+      "title": "claims shouldn't be an array of arrays ",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/35",
+      "state": "CLOSED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "claims is an array of clams-entry. claims-entry is a set of different type claims arrays. Either the claims-entry should be singleton cardinality or the various typed claims should be groups that are optionally included in claims-entry.",
+      "createdAt": "2021-02-20T21:50:06Z",
+      "updatedAt": "2021-03-04T17:58:07Z",
+      "closedAt": "2021-03-04T17:57:55Z",
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "fixed in #37 ",
+          "createdAt": "2021-03-04T17:58:07Z",
+          "updatedAt": "2021-03-04T17:58:07Z"
+        }
+      ]
+    },
+    {
+      "number": 36,
+      "id": "MDU6SXNzdWU4MTI3MTUxNDQ=",
+      "title": "Attestation Results as an input for matching claims in parent tag claims",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/36",
+      "state": "CLOSED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "design"
+      ],
+      "body": "Includes relationship doesn't have sufficient context to describe exactly how linked sub-trees graft into the parent tree.\r\n\r\nIn a scenario where two verifiers work together to process a sub-tree of a multi-tag device definition. The sub-tree tag could be evaluated (verified) to produce an Attestation Result. The result could contain an element-name of a parent tag that expects to match element-name of the sub-tree attestation result. \r\n\r\nThe attestation result need not be considered 'evidence' but could be depending on how the result was formatted. It could also produce an endorsed value format as its result.\r\n\r\n\r\n",
+      "createdAt": "2021-02-20T21:58:25Z",
+      "updatedAt": "2021-03-23T18:16:10Z",
+      "closedAt": "2021-03-23T18:16:10Z",
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "When Verifier produces an Attestation Result(AR) it could format the result in the form of an Endorsed-Value claim or a Reference-Value claim. The AR should have a tuple structure of the form  (element-name , AR-value). The Verifier needs to come up with an element-name. Possibly, the tag under evaluation should provide an element-name in tag metadata for this purpose? \r\n\r\nToday concise-mid-tag has 'module-name' with roughly corresponds to element-name.label.  We have discussed adding module-type and there is already a module version. \r\n\r\nLogically, the AR is yet another form of claims. So maybe the schema should provide guidance on how to form an AR - possibly by just re-using endorsed-value claims schema?",
+          "createdAt": "2021-02-24T18:27:31Z",
+          "updatedAt": "2021-02-24T18:27:31Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Closed by PR #52",
+          "createdAt": "2021-03-22T23:05:27Z",
+          "updatedAt": "2021-03-22T23:05:27Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Closing issue.",
+          "createdAt": "2021-03-23T18:16:10Z",
+          "updatedAt": "2021-03-23T18:16:10Z"
+        }
+      ]
+    },
+    {
+      "number": 40,
+      "id": "MDU6SXNzdWU4MjE1MjI2OTM=",
+      "title": "xcorim code points are duplicated",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/40",
+      "state": "OPEN",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "xcorim signature structure parallels signed-corim signature structure. Some of the code points are the same / replicated. Should clean this up and move them to corim-code-points.cddl file. ",
+      "createdAt": "2021-03-03T21:58:40Z",
+      "updatedAt": "2021-03-03T21:58:40Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 41,
+      "id": "MDU6SXNzdWU4MjIzMzM4ODk=",
+      "title": "Discuss and define relationship between CoMID and CoSWID",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/41",
+      "state": "CLOSED",
+      "author": "yogeshbdeshpande",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "yogeshbdeshpande"
+      ],
+      "labels": [],
+      "body": "While the current draft documents adequately the relationship between COMID and CoMID, however  the relationship which describes how CoMID is linked to CoSWID and also how CoSWID links to CoMID is not documented.\r\n\r\nThis not only needs an update to COMID CDDL, but also on the CoSWID CDDL, which will have an updated relation types to CoMID.",
+      "createdAt": "2021-03-04T17:14:11Z",
+      "updatedAt": "2021-03-11T23:18:35Z",
+      "closedAt": "2021-03-11T23:18:35Z",
+      "comments": []
+    },
+    {
+      "number": 44,
+      "id": "MDU6SXNzdWU4MjY1NDM5MTA=",
+      "title": "identity claims should allow element-name matching",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/44",
+      "state": "CLOSED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "thomas-fossati"
+      ],
+      "labels": [
+        "design"
+      ],
+      "body": "Currently, comid uses element-name for matching endorsed-value, reference-value and instance-value claims. However, identity claims use 'device ID'. This asymmetry means it isn't possible to associate a deviceID with a module or element. We intuitively rely on a credential (e.g. certificate) to make this association where the Subject Name or other certificate fields encodes the element-name information that the certificate binds to the deviceID value and key material. \r\nIn a DICE certificate, the element (TCB) is described with tcb-info which contains the element-name. The other fields contain the deviceID and key material. \r\nA more exact match would be possible if the Endorsement manifest included both pieces of information (element-name and deviceID/key material)",
+      "createdAt": "2021-03-09T19:52:41Z",
+      "updatedAt": "2021-03-23T18:15:27Z",
+      "closedAt": "2021-03-23T18:15:27Z",
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "There are two types of identity for a module. One is a cryptographic identity which we've modeled as identity-value and non-cryptographic identifiers we've currently modeled as instance-value which is a choice. I think this is the correct way to model cryptographic and non-cryptographic module identities. However, there may be a use case for returning arbitrary instance data with a manifest that possibly could be used as an identifier (or tracking number) but isn't the value used to identify / track the asset. Therefore, it make sense to have a bag of instance claims. Since we can have an array of instance-claims the array essentially is a bag of instance claims. But it isn't clear which is to be used to identify / track the module. In other words does it make sense to have a 'non-cryptographic-identity' that is an $$instance-claim-choice? (maybe this is over thinking)\r\n\r\nWe might want to reflect the semantics that the current 'identity-value' is a 'cryptographic-identity'. \r\n\r\nAs a style consideration, should the four types of claims use a more descriptive '-claim' rather than '-value' as the suffix? The claim consists of an key-value pair (which is element-name, element-value for the most part). So technically the bounding map is a claim.",
+          "createdAt": "2021-03-11T00:14:09Z",
+          "updatedAt": "2021-03-11T00:14:09Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Taking a closer look at identity-value map there isn't an extension point for it. I think it is reasonable that W3C DID will be a device ID type that relies on zero-knowledge proofs rather than keys. We don't need to include DID right now, but given a properly defined extension point, it could be added. Since there is an array of identity-claims it would be possible to have a bag of identities some key based some DID based etc.",
+          "createdAt": "2021-03-11T00:23:25Z",
+          "updatedAt": "2021-03-11T00:23:25Z"
+        },
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> Taking a closer look at identity-value map there isn't an extension point for it. I think it is reasonable that W3C DID will be a device ID type that relies on zero-knowledge proofs rather than keys. We don't need to include DID right now, but given a properly defined extension point, it could be added. Since there is an array of identity-claims it would be possible to have a bag of identities some key based some DID based etc.\r\n\r\nI agree with your assessment.  We could extend `$device-id-type` to accept values of type `uri` or, if we want to be more precise, a `did-uri` (i.e., a CDDL uri with the right regex constraint).   We would also need to make the key material claim optional.\r\n",
+          "createdAt": "2021-03-11T09:24:29Z",
+          "updatedAt": "2021-03-11T09:25:06Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Are you thinking the DID URL is sufficient or should it describe a DID Document? The DID spec says: \"Each DID document can express cryptographic material, verification methods, or services, which provide a set of mechanisms enabling a DID controller to prove control of the DID.\" I'm thinking the manifest claims should contain the cryptographic material (which I presume includes the ZKP ingredients). \r\n\r\nWe don't have to include it in the spec, but we should define it as if we were going to so the extension point is designed correctly. ",
+          "createdAt": "2021-03-12T00:02:42Z",
+          "updatedAt": "2021-03-12T00:03:43Z"
+        },
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Maybe I am misunderstanding the DID concept altogether, but I thought the whole thing was about decoupling the identity proof (DID document) from the identity itself (the URI pointing to the DID document).  By pulling in the entire DID document in the Identity claim it seems to me that we'd be going counter the DID principle?  (That said, I may be completely off, I probably need to re-read the DID spec.)",
+          "createdAt": "2021-03-12T09:23:01Z",
+          "updatedAt": "2021-03-12T09:23:01Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Resolution: module-metadata will change so that it has only 'element-name' and 'module-version' and an extension point.\r\n```\r\nmodule-metadata-type = {\r\n  ? 0 => element-name,\r\n  ? 1 => module-version,\r\n  * $$module-metadata-extension\r\n}\r\n```",
+          "createdAt": "2021-03-19T15:44:52Z",
+          "updatedAt": "2021-03-19T15:46:37Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "PR #52 addresses this issue",
+          "createdAt": "2021-03-23T18:15:27Z",
+          "updatedAt": "2021-03-23T18:15:27Z"
+        }
+      ]
+    },
+    {
+      "number": 50,
+      "id": "MDU6SXNzdWU4MzYxOTA3MTk=",
+      "title": "one-or-many",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/50",
+      "state": "CLOSED",
+      "author": "henkbirkholz",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "I really like one-or-more better",
+      "createdAt": "2021-03-19T16:50:18Z",
+      "updatedAt": "2021-03-23T11:31:18Z",
+      "closedAt": "2021-03-23T11:31:18Z",
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Is this resolved then? I'm confused.",
+          "createdAt": "2021-03-22T22:48:02Z",
+          "updatedAt": "2021-03-22T22:48:02Z"
+        },
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Yes it's closed now.  The confusion possibly comes from the fact that Henk pushed to master cutting GitHub's PR-Issue matching logics out of the loop.",
+          "createdAt": "2021-03-23T11:31:15Z",
+          "updatedAt": "2021-03-23T11:31:15Z"
+        }
+      ]
+    },
+    {
+      "number": 54,
+      "id": "MDU6SXNzdWU4MzgyMzA3MTQ=",
+      "title": "tag-metadata-type should be tag-metadata-entry",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/54",
+      "state": "CLOSED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "typographical consistency"
+      ],
+      "body": "A couple of places where the \"-entry\" vs. \"-type\" naming convention seems inconsistent.\r\ntag-metadata-type is defined as a map structure so probably should be tag-metadata-entry.\r\n\r\nThe same is true for module-metadata-type (should be module-metadata-entry)\r\n",
+      "createdAt": "2021-03-23T01:01:53Z",
+      "updatedAt": "2021-04-21T20:40:07Z",
+      "closedAt": "2021-04-21T20:40:07Z",
+      "comments": [
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "See also #58 and #59.",
+          "createdAt": "2021-03-23T11:32:56Z",
+          "updatedAt": "2021-03-23T11:32:56Z"
+        }
+      ]
+    },
+    {
+      "number": 55,
+      "id": "MDU6SXNzdWU4MzgyNDAyMjI=",
+      "title": "linked-tag-entry doesn't need 2 and 3",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/55",
+      "state": "OPEN",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Because linked-tags-entry depends on corim-locator to obtain rims with tags. The linked-tags-entry doesn't need hash-entry or tag-issuer-type (COSE_KeySet) to validate. Possibly corim-locator needs an issuer COSE_KeySet?",
+      "createdAt": "2021-03-23T01:22:56Z",
+      "updatedAt": "2021-04-12T20:29:57Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> The linked-tags-entry doesn't need hash-entry or tag-issuer-type (COSE_KeySet) to validate.\r\n\r\nOK\r\n\r\n> Possibly corim-locator needs an issuer COSE_KeySet?\r\n\r\nWhat would that be semantically?",
+          "createdAt": "2021-03-23T11:37:27Z",
+          "updatedAt": "2021-03-23T11:37:27Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Tag #3 was an issuer value that I presume was used like a trust anchor to facilitate verification. We didn't discuss whether it made sense for the schema to include trust anchors / verification credentials, as that has largely been left to verifiers to figure out. However, it may make sense for Endorsers to leave a hint about how to authenticate the href. But the hint shouldn't replace Appraisal Policy which presumably includes guidance on which Endorsers to trust.",
+          "createdAt": "2021-03-23T18:24:37Z",
+          "updatedAt": "2021-03-23T18:24:37Z"
+        },
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "#55 leaves the question: \"Possibly `corim-locator` needs an issuer COSE_KeySet?\" open.\r\n\r\nWe should decide whether we need it or no?",
+          "createdAt": "2021-04-12T20:29:57Z",
+          "updatedAt": "2021-04-12T20:29:57Z"
+        }
+      ]
+    },
+    {
+      "number": 56,
+      "id": "MDU6SXNzdWU4MzgyNDMxNzU=",
+      "title": "deny-id  in corim-meta should be removed",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/56",
+      "state": "CLOSED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "deny-id performs the same function as corim-id in unsigned-corim. Since signed-corim includes unsigned-corim, corim-id is used for deny lists.",
+      "createdAt": "2021-03-23T01:30:42Z",
+      "updatedAt": "2021-03-23T11:28:53Z",
+      "closedAt": "2021-03-23T11:28:53Z",
+      "comments": []
+    },
+    {
+      "number": 58,
+      "id": "MDU6SXNzdWU4MzgyNDkxNjc=",
+      "title": "$$instance-claim-choice should follow conventions code points",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/58",
+      "state": "CLOSED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "typographical consistency"
+      ],
+      "body": "why does $$instance-claim-choice define code points rather than use 0 => xxxx convention?",
+      "createdAt": "2021-03-23T01:44:09Z",
+      "updatedAt": "2021-04-21T20:40:08Z",
+      "closedAt": "2021-04-21T20:40:08Z",
+      "comments": [
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "My thinking is that once we have a stable data model we can have a think about which typographical conventions we want to adopted  do a consistency pass over the whole CDDL.  We should have a catch-all issue to that purpose (See also #59).",
+          "createdAt": "2021-03-23T11:22:56Z",
+          "updatedAt": "2021-03-23T11:28:36Z"
+        }
+      ]
+    },
+    {
+      "number": 59,
+      "id": "MDU6SXNzdWU4MzgyODM0Njk=",
+      "title": "inconsistent claims naming convention",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/59",
+      "state": "CLOSED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "typographical consistency"
+      ],
+      "body": "'value' was intended for use with 'reference' and not as an ending for the other claim types.\r\nPossibly we should construct with xyz-claim-entry convention?\r\n\r\ne.g.\r\nidentity-claim-entry\r\ninstance-claim-entry\r\nreference-claim-entry\r\nendorsed-claim-entry\r\n\r\n",
+      "createdAt": "2021-03-23T02:11:53Z",
+      "updatedAt": "2021-04-21T20:40:08Z",
+      "closedAt": "2021-04-21T20:40:08Z",
+      "comments": []
+    },
+    {
+      "number": 60,
+      "id": "MDU6SXNzdWU4MzgyODU3MjM=",
+      "title": "ip-addrs-key doesn't need to be one-or-more",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/60",
+      "state": "CLOSED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Since there can be one-or-more instance-claims if there are multiple ip addresses then each address, whether ipv4 or ipv6 can be selected from the instance-claim-choice. Just need to add each as a choice. \r\n\r\ne.g. \r\n```\r\n$$instance_claim {\r\n  0 : ip4-addr-type (bytes .size 4)\r\n  1 : ip6-addr-type (bytes .size 6)\r\n  2 : serial-number-type (text)\r\n  3 : ueid-type (ueid)\r\n  4 : uuid-type (uuid)\r\n  5 : mac-addr-type (bytes .size 6)\r\n}\r\n```",
+      "createdAt": "2021-03-23T02:17:23Z",
+      "updatedAt": "2021-03-26T10:43:44Z",
+      "closedAt": "2021-03-26T10:43:44Z",
+      "comments": [
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "It looked to me like a low-hanging optimisation that was worth grabbing.  I think having dual stack connectivity might be a pretty common case.  With your suggestion, if you want to add both IPv4 and IPv6 addresses you'd have to duplicate the element-name.",
+          "createdAt": "2021-03-23T11:27:46Z",
+          "updatedAt": "2021-03-23T11:27:46Z"
+        }
+      ]
+    },
+    {
+      "number": 61,
+      "id": "MDU6SXNzdWU4Mzg2MTY4NTI=",
+      "title": "Register `module-creator` in the Entity Role Values Registry",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/61",
+      "state": "OPEN",
+      "author": "thomas-fossati",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Add text in the draft to register the `module-creator` codepoint in the Software Tag Entity Role Values Registry.\r\n\r\n_Originally posted by @thomas-fossati in https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/53#r599476572_",
+      "createdAt": "2021-03-23T11:16:31Z",
+      "updatedAt": "2021-03-23T11:19:54Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
+  "pulls": [
+    {
+      "number": 7,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTYwMTA0MjQ1",
+      "title": "No any anymore & corim-meta placement & corim-meta COSE header member key",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/7",
+      "state": "MERGED",
+      "author": "henkbirkholz",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #3, #5, and #6",
+      "createdAt": "2021-01-22T17:22:50Z",
+      "updatedAt": "2021-01-28T17:36:32Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "0f35c73a9da8835051f706d72ec43e090be002f6",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "no-any-anymore",
+      "headRefOid": "418c0f5907d2bcc5aa10d0c22b153139f5eedc0c",
+      "closedAt": "2021-01-28T17:36:32Z",
+      "mergedAt": "2021-01-28T17:36:32Z",
+      "mergedBy": "henkbirkholz",
+      "mergeCommit": {
+        "oid": "942e26a8be7251e8aded89ad0d243634567e79ec"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTc0NTY2NTU5",
+          "commit": {
+            "abbreviatedOid": "884f3a3"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-01-22T19:44:42Z",
+          "updatedAt": "2021-01-22T19:45:17Z",
+          "comments": [
+            {
+              "originalPosition": 8,
+              "body": "Agree. linked-tags is more intuitive.",
+              "createdAt": "2021-01-22T19:44:42Z",
+              "updatedAt": "2021-01-27T22:04:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTc0NTY5NzEw",
+          "commit": {
+            "abbreviatedOid": "884f3a3"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-01-22T19:49:38Z",
+          "updatedAt": "2021-01-22T19:49:39Z",
+          "comments": [
+            {
+              "originalPosition": 10,
+              "body": "deny-id is the same as corim-id in unsigned-corim. We can remove it from corim-meta now that a rim identifier is included in the main body of the manifest.\r\nunsigned-corim = {\r\n  corim-id => corim-id-type,\r\n ...",
+              "createdAt": "2021-01-22T19:49:38Z",
+              "updatedAt": "2021-01-27T22:04:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTc0NTcwMjk4",
+          "commit": {
+            "abbreviatedOid": "884f3a3"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-01-22T19:50:32Z",
+          "updatedAt": "2021-01-22T19:51:16Z",
+          "comments": [
+            {
+              "originalPosition": 2,
+              "body": "+1",
+              "createdAt": "2021-01-22T19:50:32Z",
+              "updatedAt": "2021-01-27T22:04:17Z"
+            },
+            {
+              "originalPosition": 5,
+              "body": "+1",
+              "createdAt": "2021-01-22T19:50:47Z",
+              "updatedAt": "2021-01-27T22:04:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTc0NTg2NjE5",
+          "commit": {
+            "abbreviatedOid": "884f3a3"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-01-22T20:15:27Z",
+          "updatedAt": "2021-01-22T20:15:27Z",
+          "comments": [
+            {
+              "originalPosition": 25,
+              "body": "Are these #6. global identifiers officially assigned now?",
+              "createdAt": "2021-01-22T20:15:27Z",
+              "updatedAt": "2021-01-27T22:04:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTc0NTg3NDU4",
+          "commit": {
+            "abbreviatedOid": "884f3a3"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-01-22T20:16:46Z",
+          "updatedAt": "2021-01-22T20:19:53Z",
+          "comments": [
+            {
+              "originalPosition": 25,
+              "body": "Is 'signed-coswid' the right way to include coswid? Shouldn't it be unsigned?",
+              "createdAt": "2021-01-22T20:16:46Z",
+              "updatedAt": "2021-01-27T22:04:17Z"
+            },
+            {
+              "originalPosition": 26,
+              "body": "I don't think we intended to have nested signatures. The rim signature suffices. coswid and comid tags should be unsigned IMO.",
+              "createdAt": "2021-01-22T20:19:14Z",
+              "updatedAt": "2021-01-27T22:04:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTc3Nzg5MDY4",
+          "commit": {
+            "abbreviatedOid": "884f3a3"
+          },
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-01-27T21:49:37Z",
+          "updatedAt": "2021-01-27T21:49:38Z",
+          "comments": [
+            {
+              "originalPosition": 26,
+              "body": "discussed in #2 ",
+              "createdAt": "2021-01-27T21:49:37Z",
+              "updatedAt": "2021-01-27T22:04:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTc3Nzk1MTQ4",
+          "commit": {
+            "abbreviatedOid": "884f3a3"
+          },
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-01-27T21:53:34Z",
+          "updatedAt": "2021-01-27T21:53:35Z",
+          "comments": [
+            {
+              "originalPosition": 25,
+              "body": "Probably we should allow for both? You could peel a signed CoSWID out of its COSE envelope, I assume. I wonder, if there are supply-chain use-cases that would benefit from the option of including the original signature. If only unsigned CoSWID are allowed, you off-load more trust-relationships to the CoRIM signer, I think.\r\n\r\nAt the moment, the actually reason concise-tag uses signed-coswid is the chaining of available CDDL definitions. But, allowing for both should be discussed before falling back to unsigned CoSWID",
+              "createdAt": "2021-01-27T21:53:35Z",
+              "updatedAt": "2021-01-27T22:04:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTc3Nzk2NDQy",
+          "commit": {
+            "abbreviatedOid": "884f3a3"
+          },
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-01-27T21:55:21Z",
+          "updatedAt": "2021-01-27T21:55:21Z",
+          "comments": [
+            {
+              "originalPosition": 25,
+              "body": "I replaced \"TBD\" with \"4711\" so that the CDDL tool can validate the consistency of the CDDL definitions. \"#6.47116\" therefore still is a placeholder - the numeric placeholder simply allows for successful checking.",
+              "createdAt": "2021-01-27T21:55:21Z",
+              "updatedAt": "2021-01-27T22:04:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTc3Nzk3MzY2",
+          "commit": {
+            "abbreviatedOid": "884f3a3"
+          },
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-01-27T21:56:43Z",
+          "updatedAt": "2021-01-27T21:56:43Z",
+          "comments": [
+            {
+              "originalPosition": 8,
+              "body": "fixed in https://github.com/ietf-rats/draft-birkholz-rats-corim/commit/a08322a85e93cc998ec3f33667926a6e724abd8d",
+              "createdAt": "2021-01-27T21:56:43Z",
+              "updatedAt": "2021-01-27T22:04:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTc3ODA0MjM1",
+          "commit": {
+            "abbreviatedOid": "418c0f5"
+          },
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-01-27T22:06:56Z",
+          "updatedAt": "2021-01-27T22:06:56Z",
+          "comments": [
+            {
+              "originalPosition": 10,
+              "body": "Let me repeat that back to make sure: corim-meta has moved to the body, yes? Then my action was rather counter productive. Let's fix this during the next call.",
+              "createdAt": "2021-01-27T22:06:56Z",
+              "updatedAt": "2021-01-27T22:06:56Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTc4NTY2OTEw",
+          "commit": {
+            "abbreviatedOid": "418c0f5"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-01-28T17:21:50Z",
+          "updatedAt": "2021-01-28T17:21:50Z",
+          "comments": [
+            {
+              "originalPosition": 8,
+              "body": "There is a COSE way to do this. Maybe we don't need signer.",
+              "createdAt": "2021-01-28T17:21:50Z",
+              "updatedAt": "2021-01-28T17:21:50Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTc4NTY3Mzg5",
+          "commit": {
+            "abbreviatedOid": "418c0f5"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-01-28T17:22:22Z",
+          "updatedAt": "2021-01-28T17:22:22Z",
+          "comments": [
+            {
+              "originalPosition": 9,
+              "body": "Move into unsigned-corim",
+              "createdAt": "2021-01-28T17:22:22Z",
+              "updatedAt": "2021-01-28T17:22:22Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTc4NTY5MTUz",
+          "commit": {
+            "abbreviatedOid": "418c0f5"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-01-28T17:24:20Z",
+          "updatedAt": "2021-01-28T17:24:20Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTYyNzYzMTg2",
+      "title": "first stab at auto-assembly of the CDDL",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/9",
+      "state": "MERGED",
+      "author": "thomas-fossati",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #1 ",
+      "createdAt": "2021-01-27T20:14:07Z",
+      "updatedAt": "2021-01-28T17:08:26Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "ce8d053c8b4eb0189dbdb334c03846afeed9bd6b",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "make-it",
+      "headRefOid": "ba1cde317fff3b946f60c0c01e9fa10984dad89d",
+      "closedAt": "2021-01-28T17:08:25Z",
+      "mergedAt": "2021-01-28T17:08:25Z",
+      "mergedBy": "thomas-fossati",
+      "mergeCommit": {
+        "oid": "10d9e54eedf4cb043da69e40d0c4bf84f762cd1a"
+      },
+      "comments": [
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> checked out [64426e7](https://github.com/ietf-rats/draft-birkholz-rats-corim/commit/64426e7dba70ba80b6bc3a18c6ef08f3908ba459) and ran make in my local tool-chain. CDDL seems to build fine! \\o/\r\n\r\ncool!\r\n\r\n> Not sure about the corresponding commit message though. CircleCI tells me in Print Configuration:\r\n> [...]\r\n> That does not seem to include the cddl tool.\r\n\r\nthe cddl tool is installed on the fly as a precondition of the `cddl-lint` target:\r\n```\r\n.PHONY: cddl-lint\r\ncddl-lint: $(CDDL_FULL) cddl-install\r\n        $(cddl) $< generate 10 &> /dev/null\r\n\r\nlint:: cddl-lint\r\n\r\n.PHONY: cddl-install\r\ncddl-install:\r\n        @hash cddl 2>/dev/null || gem install cddl\r\n```\r\nit's not part of the id-template docker image, that might be the reason why you don't see it there.",
+          "createdAt": "2021-01-27T23:33:17Z",
+          "updatedAt": "2021-01-27T23:33:17Z"
+        },
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "ba1cde3 rebases on top of Henk's a08322a : it should be ready for merge now.",
+          "createdAt": "2021-01-28T09:58:51Z",
+          "updatedAt": "2021-01-28T10:00:15Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTc3ODE1ODU3",
+          "commit": {
+            "abbreviatedOid": "64426e7"
+          },
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "checked out https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/9/commits/64426e7dba70ba80b6bc3a18c6ef08f3908ba459 and ran make in my local tool-chain. CDDL seems to build fine! \\o/\r\n\r\nNot sure about the corresponding commit message though. CircleCI tells me in Print Configuration:\r\n\r\n> #!/bin/bash -eo pipefail\r\n> xml2rfc --version\r\n> gem list -q kramdown-rfc2629\r\n> echo -n 'mmark '; mmark --version\r\n> \r\n> xml2rfc 3.5.0\r\n> kramdown-rfc2629 (1.3.24)\r\n> mmark 2.2.9\r\n> \r\n> CircleCI received exit code 0\r\n\r\nThat does not seem to include the cddl tool.",
+          "createdAt": "2021-01-27T22:25:03Z",
+          "updatedAt": "2021-01-27T22:25:03Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 14,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTY0MTAwNDIw",
+      "title": "proposal for tag-rel => $tag-rel-type",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/14",
+      "state": "MERGED",
+      "author": "henkbirkholz",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #13 ",
+      "createdAt": "2021-01-29T16:36:46Z",
+      "updatedAt": "2021-01-29T20:15:34Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "942e26a8be7251e8aded89ad0d243634567e79ec",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "rel-refactoring",
+      "headRefOid": "9323c4fc2620dc596380331f1059a8ad376f11c6",
+      "closedAt": "2021-01-29T20:15:34Z",
+      "mergedAt": "2021-01-29T20:15:33Z",
+      "mergedBy": "henkbirkholz",
+      "mergeCommit": {
+        "oid": "22014b92fcc2422eb34c8be359c1f75be0e39cf5"
+      },
+      "comments": [
+        {
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Now we have to cherry pick semantics from the CoSWID realm we also want -copy- here.\r\n\r\n> ; \"rel\" integer indexes\r\n> ancestor=1\r\n> component=2\r\n> feature=3\r\n> installationmedia=4\r\n> packageinstaller=5\r\n> parent=6\r\n> patches=7\r\n> requires=8\r\n> see-also=9\r\n> supersedes=10\r\n> ; supplemental=11 ; this is already defined earlier",
+          "createdAt": "2021-01-29T16:38:37Z",
+          "updatedAt": "2021-01-29T16:38:37Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTc5NDM0OTk1",
+          "commit": {
+            "abbreviatedOid": "9323c4f"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-01-29T16:48:10Z",
+          "updatedAt": "2021-01-29T16:48:10Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 16,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTY0MTE2MjYw",
+      "title": "cleanup tag-id-type",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/16",
+      "state": "MERGED",
+      "author": "thomas-fossati",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #15",
+      "createdAt": "2021-01-29T17:04:39Z",
+      "updatedAt": "2021-02-04T21:52:57Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "22014b92fcc2422eb34c8be359c1f75be0e39cf5",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "tag-type",
+      "headRefOid": "d9ff9bd2c0a4485813da8ec950d6c4eef1a57dd3",
+      "closedAt": "2021-02-04T21:52:56Z",
+      "mergedAt": "2021-02-04T21:52:56Z",
+      "mergedBy": "thomas-fossati",
+      "mergeCommit": {
+        "oid": "040b5d04749f88543ce0e06271485e3681a24296"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 24,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTY4MDIzMTY4",
+      "title": "Issue #23 - Cleaned up tag-rel-type values",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/24",
+      "state": "MERGED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Modified to include parent, supplemental, supersedes",
+      "createdAt": "2021-02-05T01:27:27Z",
+      "updatedAt": "2021-02-05T15:23:10Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "040b5d04749f88543ce0e06271485e3681a24296",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "Issue-23",
+      "headRefOid": "62bc44f00cf55f128f26118e1df6669a9954eecc",
+      "closedAt": "2021-02-05T15:23:10Z",
+      "mergedAt": "2021-02-05T15:23:10Z",
+      "mergedBy": "nedmsmith",
+      "mergeCommit": {
+        "oid": "1743f7df48186faee8d830601a602ddbec01a07f"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 25,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTY4MDI5MjQ4",
+      "title": "Issue #17 - Add Identity claims",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/25",
+      "state": "MERGED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Added identity-claim to claims-entry.",
+      "createdAt": "2021-02-05T01:49:04Z",
+      "updatedAt": "2021-02-05T15:21:40Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "040b5d04749f88543ce0e06271485e3681a24296",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "issue-17-add-identity-claim",
+      "headRefOid": "036ccb039b1344be325b3f708384ecdd53b38ae1",
+      "closedAt": "2021-02-05T15:21:39Z",
+      "mergedAt": "2021-02-05T15:21:39Z",
+      "mergedBy": "nedmsmith",
+      "mergeCommit": {
+        "oid": "ccb6cb1b326a04d2df4219e79372b4472b0084a2"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 30,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTcyNjU1NjI4",
+      "title": "Update concise-mid-tag.cddl",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/30",
+      "state": "MERGED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "define tag-issuer-type as COSE KeySet.",
+      "createdAt": "2021-02-12T17:13:16Z",
+      "updatedAt": "2021-02-12T22:42:08Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "1743f7df48186faee8d830601a602ddbec01a07f",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "link-issuer-identification",
+      "headRefOid": "a139aaa7caa9091400e6454d79399acd81d1ebb3",
+      "closedAt": "2021-02-12T22:41:32Z",
+      "mergedAt": "2021-02-12T22:41:32Z",
+      "mergedBy": "nedmsmith",
+      "mergeCommit": {
+        "oid": "5c1fe22164dfd3effe15b2188f56e8d3bdf9b0f0"
+      },
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "updates tag-issuer-type to be a COSE KeySet.",
+          "createdAt": "2021-02-12T22:42:08Z",
+          "updatedAt": "2021-02-12T22:42:08Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 33,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTczNzQzNzk3",
+      "title": "Add a module-metadata type",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/33",
+      "state": "MERGED",
+      "author": "thomas-fossati",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Do some CDDL cleanup around type definitions, etc. so that the cddl-lint\r\nrule works again.\r\n\r\nFixes #31",
+      "createdAt": "2021-02-15T19:03:54Z",
+      "updatedAt": "2021-03-04T17:28:42Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "5c1fe22164dfd3effe15b2188f56e8d3bdf9b0f0",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "issue-31",
+      "headRefOid": "ca55ccbb6539f869056b9337559c41ce7dac6f27",
+      "closedAt": "2021-03-04T17:28:28Z",
+      "mergedAt": "2021-03-04T17:28:28Z",
+      "mergedBy": "nedmsmith",
+      "mergeCommit": {
+        "oid": "359a021225ee1cdcbcd3ab412907954feb1d6545"
+      },
+      "comments": [
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "DNS troubles in the CI pipeline:\r\n\r\n```\r\n*** Failed to open TCP connection to www.rfc-editor.org:443 (getaddrinfo: Try again) while fetching https://www.rfc-editor.org/refs/bibxml/reference.RFC.2119.xml\r\n```",
+          "createdAt": "2021-02-15T19:28:47Z",
+          "updatedAt": "2021-02-15T19:28:47Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "added index to module metadata",
+          "createdAt": "2021-03-04T17:28:20Z",
+          "updatedAt": "2021-03-04T17:28:20Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTkyNTM5MjY3",
+          "commit": {
+            "abbreviatedOid": "ebd8f82"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-17T19:16:10Z",
+          "updatedAt": "2021-02-17T19:19:13Z",
+          "comments": [
+            {
+              "originalPosition": 54,
+              "body": "Can ueid be used as a class identifier? My intuition is UEID is, for example, a IMEI# which is a bit like a serial #. But otherwise, it is just a large number that depends on usage context to reveal what number is actually encoded. Just wondering if we have use case support for adding it right now.",
+              "createdAt": "2021-02-17T19:16:10Z",
+              "updatedAt": "2021-03-04T17:23:14Z"
+            },
+            {
+              "originalPosition": 119,
+              "body": "If we're using it as a device instance identifier here, does it make sense to use it as a module class identifier in module-metadata? ",
+              "createdAt": "2021-02-17T19:18:27Z",
+              "updatedAt": "2021-03-04T17:23:14Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTkyNjQyNzkx",
+          "commit": {
+            "abbreviatedOid": "ebd8f82"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-17T21:27:30Z",
+          "updatedAt": "2021-02-17T21:27:30Z",
+          "comments": [
+            {
+              "originalPosition": 54,
+              "body": "I think you are right, will remove it.",
+              "createdAt": "2021-02-17T21:27:30Z",
+              "updatedAt": "2021-03-04T17:23:14Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTkyNjQzMjkz",
+          "commit": {
+            "abbreviatedOid": "ebd8f82"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-17T21:28:13Z",
+          "updatedAt": "2021-02-17T21:28:13Z",
+          "comments": [
+            {
+              "originalPosition": 119,
+              "body": "\ud83d\udc4d  Will fix.",
+              "createdAt": "2021-02-17T21:28:13Z",
+              "updatedAt": "2021-03-04T17:23:14Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTkyNjQ0NjYw",
+          "commit": {
+            "abbreviatedOid": "ebd8f82"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-17T21:30:00Z",
+          "updatedAt": "2021-02-17T21:30:01Z",
+          "comments": [
+            {
+              "originalPosition": 54,
+              "body": "Done in f68c355",
+              "createdAt": "2021-02-17T21:30:01Z",
+              "updatedAt": "2021-03-04T17:23:14Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk3Nzk4NDI2",
+          "commit": {
+            "abbreviatedOid": "ebd8f82"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-24T18:32:18Z",
+          "updatedAt": "2021-03-04T17:17:58Z",
+          "comments": [
+            {
+              "originalPosition": 41,
+              "body": "Could there be multiple modules in a device / system that have the same vendor, type, version etc... such that there should be an 'index' attribute also? See Issue #36 ",
+              "createdAt": "2021-02-24T18:32:18Z",
+              "updatedAt": "2021-03-04T17:23:14Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA0MzU4NjI2",
+          "commit": {
+            "abbreviatedOid": "ebd8f82"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-04T17:22:39Z",
+          "updatedAt": "2021-03-04T17:22:39Z",
+          "comments": [
+            {
+              "originalPosition": 47,
+              "body": "```suggestion\r\n  ? 0 => module-name,\r\n  ? 1 => $module-type,\r\n  ? 2 => module-version,\r\n  ? 3 => module-vendor,\r\n  ? 4 => module-index,\r\n  * $$module-metadata-extension\r\n}\r\n```",
+              "createdAt": "2021-03-04T17:22:39Z",
+              "updatedAt": "2021-03-04T17:23:14Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA0MzYzNDk0",
+          "commit": {
+            "abbreviatedOid": "ca55ccb"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-03-04T17:27:36Z",
+          "updatedAt": "2021-03-04T17:27:36Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 34,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTc1MDEzNTQ0",
+      "title": "Update CoMID relations",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/34",
+      "state": "MERGED",
+      "author": "thomas-fossati",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This PR updates the list of CoMID relations as per discussion captured in #20.\r\n\r\nIt also cleans up the CDDL a bit.",
+      "createdAt": "2021-02-17T15:43:40Z",
+      "updatedAt": "2021-03-04T17:33:01Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "5c1fe22164dfd3effe15b2188f56e8d3bdf9b0f0",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "issue-20",
+      "headRefOid": "f68c355074fefcfb6f69f65b5e04ee567997579d",
+      "closedAt": "2021-03-04T17:32:56Z",
+      "mergedAt": "2021-03-04T17:32:56Z",
+      "mergedBy": "nedmsmith",
+      "mergeCommit": {
+        "oid": "9e006c01a976924c5ee14b49339204838a4a66d4"
+      },
+      "comments": [
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "(This branch is on top of #33)",
+          "createdAt": "2021-02-17T15:47:15Z",
+          "updatedAt": "2021-02-17T15:47:15Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTkyNTQzNzcw",
+          "commit": {
+            "abbreviatedOid": "48c74ec"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-17T19:21:56Z",
+          "updatedAt": "2021-02-17T19:22:29Z",
+          "comments": [
+            {
+              "originalPosition": 163,
+              "body": "Do we want to define 'patches' yet? Hoping to avoid this complexity if possible.",
+              "createdAt": "2021-02-17T19:21:56Z",
+              "updatedAt": "2021-02-17T21:29:23Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTkyNjQyMjYx",
+          "commit": {
+            "abbreviatedOid": "48c74ec"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-17T21:26:46Z",
+          "updatedAt": "2021-02-17T21:26:47Z",
+          "comments": [
+            {
+              "originalPosition": 163,
+              "body": "It is the tool we were planning to use in order to model FW patch releases.",
+              "createdAt": "2021-02-17T21:26:46Z",
+              "updatedAt": "2021-02-17T21:29:23Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTkyNjQzNzY3",
+          "commit": {
+            "abbreviatedOid": "48c74ec"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-17T21:28:52Z",
+          "updatedAt": "2021-02-17T21:28:52Z",
+          "comments": [
+            {
+              "originalPosition": 69,
+              "body": "```suggestion\r\n```",
+              "createdAt": "2021-02-17T21:28:52Z",
+              "updatedAt": "2021-02-17T21:29:23Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk3ODI1MTMw",
+          "commit": {
+            "abbreviatedOid": "f68c355"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-24T19:02:42Z",
+          "updatedAt": "2021-03-04T17:31:00Z",
+          "comments": [
+            {
+              "originalPosition": 163,
+              "body": "Is it not possible to implement a patch process using 'updates' relationship?",
+              "createdAt": "2021-02-24T19:02:42Z",
+              "updatedAt": "2021-03-04T17:31:00Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 37,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTgxMDEyMTgx",
+      "title": "issue #35 remove array of claims-entry",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/37",
+      "state": "MERGED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Since each of the claims in claims-entry are arrays, there isn't a need for an array of arrays",
+      "createdAt": "2021-02-26T17:28:38Z",
+      "updatedAt": "2021-03-04T17:30:19Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "5c1fe22164dfd3effe15b2188f56e8d3bdf9b0f0",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "issue-35",
+      "headRefOid": "cdf4657cd6120160529d425ad422c71ba15c755f",
+      "closedAt": "2021-03-04T17:30:11Z",
+      "mergedAt": "2021-03-04T17:30:11Z",
+      "mergedBy": "nedmsmith",
+      "mergeCommit": {
+        "oid": "ca79f44b771ec9586624b14dcd78a9204df45282"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA0MzI0Njky",
+          "commit": {
+            "abbreviatedOid": "cdf4657"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-03-04T16:52:30Z",
+          "updatedAt": "2021-03-04T16:52:30Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 38,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTgxMDI1OTg4",
+      "title": "Issue #18 instance claim",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/38",
+      "state": "MERGED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Adds instance-claims entry to claims-entry",
+      "createdAt": "2021-02-26T17:54:52Z",
+      "updatedAt": "2021-03-04T17:36:58Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "5c1fe22164dfd3effe15b2188f56e8d3bdf9b0f0",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "issue-#18-instance-claims",
+      "headRefOid": "51590f43db0098a3b34880b0c9b50222f03fc688",
+      "closedAt": "2021-03-04T17:36:53Z",
+      "mergedAt": "2021-03-04T17:36:53Z",
+      "mergedBy": "nedmsmith",
+      "mergeCommit": {
+        "oid": "cbc9c5a5400d285d3c30270429d751dbc5baf4b0"
+      },
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "PS: For the case where an Owner provides a supplemental tag at onboarding, it may be appropriate for the Owner to assign an asset tag value. This could be another type of instance value we want incorporated. ",
+          "createdAt": "2021-03-04T01:08:28Z",
+          "updatedAt": "2021-03-04T01:08:28Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 39,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTg0MjA4MjY4",
+      "title": "Create comid-code-points",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/39",
+      "state": "MERGED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Adding file for centralizing code points issue #26",
+      "createdAt": "2021-03-03T19:25:35Z",
+      "updatedAt": "2021-03-08T23:46:40Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "cbc9c5a5400d285d3c30270429d751dbc5baf4b0",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "Issue-#26-common-file-for-code-points",
+      "headRefOid": "9f74eadccc07d4ab1c193ae7ac2134bd81c2ae4f",
+      "closedAt": "2021-03-08T23:46:40Z",
+      "mergedAt": "2021-03-08T23:46:40Z",
+      "mergedBy": "nedmsmith",
+      "mergeCommit": {
+        "oid": "3fac07d694817f5c18dc01faee29c3bce2bcc792"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 42,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTg1Njk0OTI2",
+      "title": "clean up the CoMID module",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/42",
+      "state": "MERGED",
+      "author": "thomas-fossati",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "As discussed at the last meeting, this patch brings the CoMID CDDL back in to \"successfully validated\" status",
+      "createdAt": "2021-03-05T15:32:34Z",
+      "updatedAt": "2021-03-10T22:17:34Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "3fac07d694817f5c18dc01faee29c3bce2bcc792",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "comid-cddl-cleanup",
+      "headRefOid": "dbbcf1feea108379ea099efed956316880ec6632",
+      "closedAt": "2021-03-10T22:17:34Z",
+      "mergedAt": "2021-03-10T22:17:34Z",
+      "mergedBy": "thomas-fossati",
+      "mergeCommit": {
+        "oid": "f2c829551796dd9b48fab7e94a3128f940e1f8d2"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA1NDEwNjM2",
+          "commit": {
+            "abbreviatedOid": "222cced"
+          },
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-05T16:46:30Z",
+          "updatedAt": "2021-03-05T16:46:30Z",
+          "comments": [
+            {
+              "originalPosition": 162,
+              "body": "From the top of the head: is this (e.g. vendor) not a conflict with another cddl fragment?",
+              "createdAt": "2021-03-05T16:46:30Z",
+              "updatedAt": "2021-03-10T22:15:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA1NDExNDg5",
+          "commit": {
+            "abbreviatedOid": "222cced"
+          },
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-05T16:47:29Z",
+          "updatedAt": "2021-03-05T16:47:29Z",
+          "comments": [
+            {
+              "originalPosition": 161,
+              "body": "this (e.g. label) is definitely defined somewhere else :-) do we want to create our own scope specific types here, e.g. \"element-label\"",
+              "createdAt": "2021-03-05T16:47:29Z",
+              "updatedAt": "2021-03-10T22:15:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA1NDEyMzcw",
+          "commit": {
+            "abbreviatedOid": "222cced"
+          },
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-05T16:48:29Z",
+          "updatedAt": "2021-03-05T16:48:29Z",
+          "comments": [
+            {
+              "originalPosition": 84,
+              "body": "Yeah... \r\n\r\n? element-name => element-name-entry\r\n\r\n(+ renaming existing element-name)\r\n(+ element-name = 0)",
+              "createdAt": "2021-03-05T16:48:29Z",
+              "updatedAt": "2021-03-10T22:15:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA1NDEzMTcy",
+          "commit": {
+            "abbreviatedOid": "222cced"
+          },
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-05T16:49:20Z",
+          "updatedAt": "2021-03-05T16:49:20Z",
+          "comments": [
+            {
+              "originalPosition": 157,
+              "body": "yes. in all cases, see below",
+              "createdAt": "2021-03-05T16:49:20Z",
+              "updatedAt": "2021-03-10T22:15:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA1NDEzNTQw",
+          "commit": {
+            "abbreviatedOid": "222cced"
+          },
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-05T16:49:47Z",
+          "updatedAt": "2021-03-05T16:49:47Z",
+          "comments": [
+            {
+              "originalPosition": 176,
+              "body": "sounds legit",
+              "createdAt": "2021-03-05T16:49:47Z",
+              "updatedAt": "2021-03-10T22:15:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA1NDE0NDQ5",
+          "commit": {
+            "abbreviatedOid": "222cced"
+          },
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-05T16:50:48Z",
+          "updatedAt": "2021-03-05T16:50:48Z",
+          "comments": [
+            {
+              "originalPosition": 193,
+              "body": "bitmask? there is potentially useful cddl for that. useful?",
+              "createdAt": "2021-03-05T16:50:48Z",
+              "updatedAt": "2021-03-10T22:15:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA1NDE4NTU2",
+          "commit": {
+            "abbreviatedOid": "222cced"
+          },
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-05T16:55:34Z",
+          "updatedAt": "2021-03-05T16:55:35Z",
+          "comments": [
+            {
+              "originalPosition": 206,
+              "body": "Probably we already agreed on extension points (sockets) and actually no any-attributes at all in this scope? Have to reconfirm.",
+              "createdAt": "2021-03-05T16:55:35Z",
+              "updatedAt": "2021-03-10T22:15:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA1NDIxNTI1",
+          "commit": {
+            "abbreviatedOid": "222cced"
+          },
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "looks good, in general\r\nsome comments in-line",
+          "createdAt": "2021-03-05T16:58:57Z",
+          "updatedAt": "2021-03-05T16:58:57Z",
+          "comments": []
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA2ODEyNTcz",
+          "commit": {
+            "abbreviatedOid": "222cced"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-08T23:49:02Z",
+          "updatedAt": "2021-03-08T23:49:02Z",
+          "comments": [
+            {
+              "originalPosition": 193,
+              "body": "Henk can you open a PR that has the bitmask CDDL you envisage?",
+              "createdAt": "2021-03-08T23:49:02Z",
+              "updatedAt": "2021-03-10T22:15:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA2ODE4NDgx",
+          "commit": {
+            "abbreviatedOid": "222cced"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-09T00:01:58Z",
+          "updatedAt": "2021-03-09T00:02:10Z",
+          "comments": [
+            {
+              "originalPosition": 216,
+              "body": "Need to remove any-attribute and only allow extension point extensibility",
+              "createdAt": "2021-03-09T00:01:58Z",
+              "updatedAt": "2021-03-10T22:15:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA2ODIxNjA2",
+          "commit": {
+            "abbreviatedOid": "222cced"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-09T00:09:11Z",
+          "updatedAt": "2021-03-09T00:09:11Z",
+          "comments": [
+            {
+              "originalPosition": 161,
+              "body": "It feels awkward to have element repetition as in element-name.element-label although you end up with similar sort of repetition if you defined every field as a type and use a scalar RHS code point as in element-name = { 0 => element-label-type, ...} ... element-label-type /= text. \r\n\r\nSome of this feels like stylistic differences, maybe we just need to adopt a style guideline and be consistent?",
+              "createdAt": "2021-03-09T00:09:11Z",
+              "updatedAt": "2021-03-10T22:15:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA3Mjg1MjY4",
+          "commit": {
+            "abbreviatedOid": "151e7d0"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-09T11:11:48Z",
+          "updatedAt": "2021-03-09T14:03:33Z",
+          "comments": [
+            {
+              "originalPosition": 84,
+              "body": "this comment is a tad cryptic :-)",
+              "createdAt": "2021-03-09T11:11:48Z",
+              "updatedAt": "2021-03-10T22:15:17Z"
+            },
+            {
+              "originalPosition": 161,
+              "body": "Yes, we seem to be utterly inconsistent atm :-)\r\nI like raw codepoint on the LHS, and symbolic type on the RHS.  We have it that way in `tag-metadata-type` and `module-metadata-type` and `linked-type-entries`... But aside from the stylistic aspects, which will eventually converge, here we need to divorce the codepoint space from SWID.  I will do update with the raw-LHS/symbolic-RHS convention for the time being.",
+              "createdAt": "2021-03-09T11:19:59Z",
+              "updatedAt": "2021-03-10T22:15:17Z"
+            },
+            {
+              "originalPosition": 162,
+              "body": "The validator doesn't complain.  That said, I'll remove any possible ambiguity for the time being by using raw code points.",
+              "createdAt": "2021-03-09T11:26:19Z",
+              "updatedAt": "2021-03-10T22:15:17Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 43,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTg3MjE3Njg5",
+      "title": "removed code points",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/43",
+      "state": "CLOSED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "code points are moved to a separate cddl file",
+      "createdAt": "2021-03-09T00:13:39Z",
+      "updatedAt": "2021-03-12T09:53:05Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "comid-cddl-cleanup",
+      "baseRefOid": "151e7d09cfc1df0600083b03a6907835e1e1e72d",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "removed-code-points",
+      "headRefOid": "3df115423120a4b5ea3323e732167067c6bc9dd0",
+      "closedAt": "2021-03-12T09:53:05Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "This is now OBE (#46)",
+          "createdAt": "2021-03-12T09:53:04Z",
+          "updatedAt": "2021-03-12T09:53:04Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 45,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTg5NTgxOTE5",
+      "title": "Issue #41 link rel for coswid",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/45",
+      "state": "CLOSED",
+      "author": "yogeshbdeshpande",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "yogeshbdeshpande"
+      ],
+      "labels": [],
+      "body": "",
+      "createdAt": "2021-03-10T12:57:26Z",
+      "updatedAt": "2021-03-12T09:54:15Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "3fac07d694817f5c18dc01faee29c3bce2bcc792",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "Issue-#41-link-rel-for-coswid",
+      "headRefOid": "8184a85c86284b1bf2997c68d3b44b158f34a34a",
+      "closedAt": "2021-03-12T09:54:15Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "This is OBE (#47)",
+          "createdAt": "2021-03-12T09:54:15Z",
+          "updatedAt": "2021-03-12T09:54:15Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA4ODcyNTE0",
+          "commit": {
+            "abbreviatedOid": "c216cc0"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-10T15:52:23Z",
+          "updatedAt": "2021-03-10T15:52:24Z",
+          "comments": [
+            {
+              "originalPosition": 25,
+              "body": "This should be a [markdown table](https://www.markdownguide.org/extended-syntax/#tables), so something like:\r\n\r\n```\r\n| Index | Relationship Type | Definition |\r\n|---\r\n| 13 | runs-on | links to a CoMID tag describing the module on which this software runs |\r\n...\r\n{: #tbl-new-coswid-to-comid-link-relations title=\"New CoSWID to CoMID Link Relations\"}\r\n```\r\n\r\nAlso note the ref anchor, so that the table can be easily referenced from other document sites.",
+              "createdAt": "2021-03-10T15:52:23Z",
+              "updatedAt": "2021-03-11T18:24:52Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA5OTg5NjU4",
+          "commit": {
+            "abbreviatedOid": "9a72c7c"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-11T16:55:30Z",
+          "updatedAt": "2021-03-11T16:55:31Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "This section should happen earlier.  Privacy considerations are quite down in the ToC.  Also:\r\n\r\n```suggestion\r\n# Concise SWID Data Extensions\r\n```",
+              "createdAt": "2021-03-11T16:55:31Z",
+              "updatedAt": "2021-03-11T18:24:52Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA5OTkxMzUx",
+          "commit": {
+            "abbreviatedOid": "9a72c7c"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-11T16:57:08Z",
+          "updatedAt": "2021-03-11T16:57:09Z",
+          "comments": [
+            {
+              "originalPosition": 6,
+              "body": "Section numbering is created automatically.  At the MD level we only specify the heading nesting level by increasing the number of `#` signs prepended:\r\n\r\n```suggestion\r\n## Link-entry Map\r\n```",
+              "createdAt": "2021-03-11T16:57:08Z",
+              "updatedAt": "2021-03-11T18:24:52Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA5OTkyODYz",
+          "commit": {
+            "abbreviatedOid": "9a72c7c"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-11T16:58:30Z",
+          "updatedAt": "2021-03-11T16:58:30Z",
+          "comments": [
+            {
+              "originalPosition": 9,
+              "body": "```suggestion\r\nThe link-entry map is extended to specify new type relations between CoSWID and CoMID.  Specifically, typed relations with a CoSWID context and a CoMID target.\r\n```",
+              "createdAt": "2021-03-11T16:58:30Z",
+              "updatedAt": "2021-03-11T18:24:52Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA5OTk2MDYz",
+          "commit": {
+            "abbreviatedOid": "9a72c7c"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-11T17:01:23Z",
+          "updatedAt": "2021-03-11T17:01:24Z",
+          "comments": [
+            {
+              "originalPosition": 15,
+              "body": "```suggestion\r\nWhen using CoSWID to CoMID relations, the following optional elements of the link-entry map MUST NOT used:\r\n\r\n* artifact\r\n* ownership\r\n* use\r\n```",
+              "createdAt": "2021-03-11T17:01:23Z",
+              "updatedAt": "2021-03-11T18:24:52Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjEwMDA5MjM3",
+          "commit": {
+            "abbreviatedOid": "9a72c7c"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-11T17:14:14Z",
+          "updatedAt": "2021-03-11T17:14:14Z",
+          "comments": [
+            {
+              "originalPosition": 10,
+              "body": "this is already in CoSWID, no need to repeat it.\r\n```suggestion\r\n```",
+              "createdAt": "2021-03-11T17:14:14Z",
+              "updatedAt": "2021-03-11T18:24:52Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjEwMDE1Mzk5",
+          "commit": {
+            "abbreviatedOid": "9a72c7c"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-11T17:20:27Z",
+          "updatedAt": "2021-03-11T17:20:27Z",
+          "comments": [
+            {
+              "originalPosition": 33,
+              "body": "This table should go in the IANA section below.  Instead, this section should, for each new relation defined, provide the semantic details.",
+              "createdAt": "2021-03-11T17:20:27Z",
+              "updatedAt": "2021-03-11T18:24:52Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjEwMDE5MTI0",
+          "commit": {
+            "abbreviatedOid": "9a72c7c"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-11T17:24:11Z",
+          "updatedAt": "2021-03-11T17:24:12Z",
+          "comments": [
+            {
+              "originalPosition": 19,
+              "body": "Is this further section really needed?  I think this should be in the context of the section above (i.e., \"Link-entry Map\")",
+              "createdAt": "2021-03-11T17:24:11Z",
+              "updatedAt": "2021-03-11T18:24:52Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjEwMDIwMzI1",
+          "commit": {
+            "abbreviatedOid": "9a72c7c"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-11T17:25:21Z",
+          "updatedAt": "2021-03-11T17:25:22Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "Ditto",
+              "createdAt": "2021-03-11T17:25:22Z",
+              "updatedAt": "2021-03-11T18:24:52Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjEwMDIxMDkz",
+          "commit": {
+            "abbreviatedOid": "9a72c7c"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-11T17:26:09Z",
+          "updatedAt": "2021-03-11T17:26:09Z",
+          "comments": [
+            {
+              "originalPosition": 58,
+              "body": "You also need to add the `trusted`/`untrusted` registration.",
+              "createdAt": "2021-03-11T17:26:09Z",
+              "updatedAt": "2021-03-11T18:24:52Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjEwMTI4MDU5",
+          "commit": {
+            "abbreviatedOid": "8184a85"
+          },
+          "author": "yogeshbdeshpande",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-11T19:05:18Z",
+          "updatedAt": "2021-03-11T19:05:18Z",
+          "comments": [
+            {
+              "originalPosition": 33,
+              "body": "This is how it is documented in CoSWID specification in an exact manner! Hence I replicated the tabular syntax from\r\nSection 4.4 of CoSWID specification!",
+              "createdAt": "2021-03-11T19:05:18Z",
+              "updatedAt": "2021-03-11T19:05:18Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjEwMTI4MzQ2",
+          "commit": {
+            "abbreviatedOid": "8184a85"
+          },
+          "author": "yogeshbdeshpande",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-11T19:05:39Z",
+          "updatedAt": "2021-03-11T19:05:40Z",
+          "comments": [
+            {
+              "originalPosition": 19,
+              "body": "This is how it is documented in CoSWID specification in an exact manner! Hence I replicated the tabular syntax from\r\nSection 4.4 of CoSWID specification!",
+              "createdAt": "2021-03-11T19:05:39Z",
+              "updatedAt": "2021-03-11T19:05:40Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjEwMTI4NzEz",
+          "commit": {
+            "abbreviatedOid": "8184a85"
+          },
+          "author": "yogeshbdeshpande",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-11T19:06:06Z",
+          "updatedAt": "2021-03-11T19:06:07Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "Not applicable now!",
+              "createdAt": "2021-03-11T19:06:06Z",
+              "updatedAt": "2021-03-11T19:06:07Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjEwMTI4ODcy",
+          "commit": {
+            "abbreviatedOid": "8184a85"
+          },
+          "author": "yogeshbdeshpande",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-11T19:06:17Z",
+          "updatedAt": "2021-03-11T19:06:17Z",
+          "comments": [
+            {
+              "originalPosition": 58,
+              "body": "Not Applicable now!",
+              "createdAt": "2021-03-11T19:06:17Z",
+              "updatedAt": "2021-03-11T19:06:17Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 46,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTkwMjI4NzAx",
+      "title": "move map keys into comid-code-points and remove unused code points",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/46",
+      "state": "MERGED",
+      "author": "thomas-fossati",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This is cleanup part two.",
+      "createdAt": "2021-03-10T22:31:20Z",
+      "updatedAt": "2021-03-10T22:31:28Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "f2c829551796dd9b48fab7e94a3128f940e1f8d2",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "code-points",
+      "headRefOid": "7f91ecbf3f7328a32f346a7960fad0fb2c4ce3a1",
+      "closedAt": "2021-03-10T22:31:28Z",
+      "mergedAt": "2021-03-10T22:31:28Z",
+      "mergedBy": "thomas-fossati",
+      "mergeCommit": {
+        "oid": "c0e5f09cc500a06b9a299f9ea02f56ef7ff403c9"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 47,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTkxMTExMTQ4",
+      "title": "Address CoSWID to CoMID relations",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/47",
+      "state": "MERGED",
+      "author": "yogeshbdeshpande",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #41",
+      "createdAt": "2021-03-11T19:13:39Z",
+      "updatedAt": "2021-03-12T09:50:57Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "4a0c48a042cffc511180f854acaa16a20d53627f",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "Issue-#41-link-rel-from-coswid-comid",
+      "headRefOid": "d797a3061a525a0ed7100fc164a3dffca20ae4bf",
+      "closedAt": "2021-03-11T23:18:35Z",
+      "mergedAt": "2021-03-11T23:18:35Z",
+      "mergedBy": "yogeshbdeshpande",
+      "mergeCommit": {
+        "oid": "697cf7f2a765afdd3c6f30876122ff0fa5307572"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjEwMjAwMTE0",
+          "commit": {
+            "abbreviatedOid": "a28ba76"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-11T20:34:23Z",
+          "updatedAt": "2021-03-11T20:34:24Z",
+          "comments": [
+            {
+              "originalPosition": 16,
+              "body": "The ISO SWID TAGs spec also allows use of any IANA link relations defined in (http:// www .iana .org/ assignments/ link -relations/ link -relations .xhtml). I think we want to disallow anything that isn't specifically allowed here for use with CoSWID to CoMID.",
+              "createdAt": "2021-03-11T20:34:24Z",
+              "updatedAt": "2021-03-11T23:15:00Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjEwMjAyMDgx",
+          "commit": {
+            "abbreviatedOid": "a28ba76"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "I approve of the proposed changes with consideration for the item I commented on.",
+          "createdAt": "2021-03-11T20:36:57Z",
+          "updatedAt": "2021-03-11T20:36:57Z",
+          "comments": []
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjEwMzAwMjY5",
+          "commit": {
+            "abbreviatedOid": "a28ba76"
+          },
+          "author": "yogeshbdeshpande",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-11T23:00:04Z",
+          "updatedAt": "2021-03-11T23:00:04Z",
+          "comments": [
+            {
+              "originalPosition": 16,
+              "body": "Ok, I will add this specific clarification in the text!",
+              "createdAt": "2021-03-11T23:00:04Z",
+              "updatedAt": "2021-03-11T23:15:00Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjEwNjE0ODE4",
+          "commit": {
+            "abbreviatedOid": "d797a30"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-12T09:49:30Z",
+          "updatedAt": "2021-03-12T09:49:30Z",
+          "comments": [
+            {
+              "originalPosition": 23,
+              "body": "spurious \"4.4.\": section numbering is automated",
+              "createdAt": "2021-03-12T09:49:30Z",
+              "updatedAt": "2021-03-12T09:49:31Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjEwNjE2MDQ5",
+          "commit": {
+            "abbreviatedOid": "d797a30"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-12T09:50:57Z",
+          "updatedAt": "2021-03-12T09:50:57Z",
+          "comments": [
+            {
+              "originalPosition": 38,
+              "body": "hardcoded references to section (i.e., \"Section 6.2.7.\") is going to break.  You need to add an anchor in the referenced section and put a link here to that.",
+              "createdAt": "2021-03-12T09:50:57Z",
+              "updatedAt": "2021-03-12T09:50:57Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 48,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTk0NzcxMTM5",
+      "title": "cleanup markdown refs and anchors",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/48",
+      "state": "MERGED",
+      "author": "thomas-fossati",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2021-03-17T14:36:25Z",
+      "updatedAt": "2021-03-18T16:10:21Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "697cf7f2a765afdd3c6f30876122ff0fa5307572",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "cleanup-coswid-to-comid",
+      "headRefOid": "5223fdd1a551c3dc7a99e4cf4c731f0ba1e69150",
+      "closedAt": "2021-03-18T16:10:18Z",
+      "mergedAt": "2021-03-18T16:10:18Z",
+      "mergedBy": "thomas-fossati",
+      "mergeCommit": {
+        "oid": "2df68b965ee52bf8bc47d953dedd9ce86c1bddfb"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 49,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTk1ODUzODY0",
+      "title": "use the uuid alias instead of raw bstr .size 16",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/49",
+      "state": "MERGED",
+      "author": "thomas-fossati",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #32",
+      "createdAt": "2021-03-18T19:11:00Z",
+      "updatedAt": "2021-03-19T15:24:54Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "2df68b965ee52bf8bc47d953dedd9ce86c1bddfb",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "explicit-uuid-as-tag-id",
+      "headRefOid": "9b5eac7d5687dd972bd22dbe02de292705e7057d",
+      "closedAt": "2021-03-19T15:24:43Z",
+      "mergedAt": "2021-03-19T15:24:42Z",
+      "mergedBy": "nedmsmith",
+      "mergeCommit": {
+        "oid": "26e375169c40bea3bb014391ba16fc77db81e9c3"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjE2NTIxNjI0",
+          "commit": {
+            "abbreviatedOid": "9b5eac7"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-03-19T15:24:33Z",
+          "updatedAt": "2021-03-19T15:24:33Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 51,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTk2NzM1MDU0",
+      "title": "added text for generics",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/51",
+      "state": "CLOSED",
+      "author": "henkbirkholz",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "fixes #50 ",
+      "createdAt": "2021-03-19T16:50:35Z",
+      "updatedAt": "2021-03-19T16:51:41Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "26e375169c40bea3bb014391ba16fc77db81e9c3",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "2nd-content-pass",
+      "headRefOid": "16cceb6f9a6f1b5f19bc8c956c6e0a05776fc270",
+      "closedAt": "2021-03-19T16:51:41Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 52,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTk4MzkxNDYy",
+      "title": "Issue #44 element-name-matching",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/52",
+      "state": "MERGED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Changed module-metadata to use element-name directly and added element-name to identity-type (claim)",
+      "createdAt": "2021-03-22T22:57:02Z",
+      "updatedAt": "2021-03-23T17:47:24Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "9e998954afd816cfb0afb1a4776dd21e2e239501",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "Issue-#44-element-name-matching",
+      "headRefOid": "308696d8481b6a4ee26d567b717202469070eec1",
+      "closedAt": "2021-03-23T17:47:24Z",
+      "mergedAt": "2021-03-23T17:47:24Z",
+      "mergedBy": "thomas-fossati",
+      "mergeCommit": {
+        "oid": "fdf7ba08a33ca4a33e4f1eef8b8bc8d518f2e6bd"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjE4NDYxNTAz",
+          "commit": {
+            "abbreviatedOid": "308696d"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "LGTM, thanks!\r\n\r\nI have inlined a couple of comments.",
+          "createdAt": "2021-03-23T11:08:15Z",
+          "updatedAt": "2021-03-23T11:09:53Z",
+          "comments": [
+            {
+              "originalPosition": 10,
+              "body": "Why don't we go a step further and put version too in the element-name?",
+              "createdAt": "2021-03-23T11:08:15Z",
+              "updatedAt": "2021-03-23T11:09:53Z"
+            },
+            {
+              "originalPosition": 34,
+              "body": "Maybe we could rename element-name to class-identifier?",
+              "createdAt": "2021-03-23T11:09:11Z",
+              "updatedAt": "2021-03-23T11:09:53Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjE4ODI2MDkx",
+          "commit": {
+            "abbreviatedOid": "308696d"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-23T16:41:53Z",
+          "updatedAt": "2021-03-23T16:41:54Z",
+          "comments": [
+            {
+              "originalPosition": 10,
+              "body": "We have had lengthy internal discussion about it. The argument for not doing it seems to be that it is a slippery slope as you could ask the same question about SVN and possibly others. The reasoning behind a logical composition based on element-name is the composition is the same 'thing' independent of versioning. If a SW update to a NIC could change it into a TPM (lets say) then it would make sense to regard version as an element-name ingredient. ",
+              "createdAt": "2021-03-23T16:41:53Z",
+              "updatedAt": "2021-03-23T16:41:54Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjE4ODM2MDUz",
+          "commit": {
+            "abbreviatedOid": "308696d"
+          },
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-23T16:50:32Z",
+          "updatedAt": "2021-03-23T16:50:33Z",
+          "comments": [
+            {
+              "originalPosition": 10,
+              "body": "I guess turning your phone into a brick does not count here, right?",
+              "createdAt": "2021-03-23T16:50:32Z",
+              "updatedAt": "2021-03-23T16:50:33Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 53,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTk4Mzk2NDc2",
+      "title": "Issue #27 add module-creator role",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/53",
+      "state": "MERGED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Added $role for module creator. comid includes coswid roles in the concise module tag map.",
+      "createdAt": "2021-03-22T23:09:47Z",
+      "updatedAt": "2021-03-23T13:10:07Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "9e998954afd816cfb0afb1a4776dd21e2e239501",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "issue#27",
+      "headRefOid": "3c9ec797a0ab0a927c1bb9f30d80750f1faeda4b",
+      "closedAt": "2021-03-23T11:17:06Z",
+      "mergedAt": "2021-03-23T11:17:06Z",
+      "mergedBy": "thomas-fossati",
+      "mergeCommit": {
+        "oid": "9ce1e6a90d6cba3e29001f34e502528fd3258264"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjE4NDY1MzQ4",
+          "commit": {
+            "abbreviatedOid": "3c9ec79"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "LGTM",
+          "createdAt": "2021-03-23T11:12:53Z",
+          "updatedAt": "2021-03-23T11:13:38Z",
+          "comments": []
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjE4NDY3Mzg4",
+          "commit": {
+            "abbreviatedOid": "3c9ec79"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-23T11:15:19Z",
+          "updatedAt": "2021-03-23T11:15:19Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "We should add this to the IANA section of the draft: the `module-creator` codepoint needs to be added to the Software Tag Entity Role Values Registry.",
+              "createdAt": "2021-03-23T11:15:19Z",
+              "updatedAt": "2021-03-23T11:15:19Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjE4NTY2OTQ0",
+          "commit": {
+            "abbreviatedOid": "3c9ec79"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-23T13:10:07Z",
+          "updatedAt": "2021-03-23T13:10:07Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "arg, my fault not catching it... this should have gone to `concise-swid-tag-ext.cddl`.  I will fix it in the migration.",
+              "createdAt": "2021-03-23T13:10:07Z",
+              "updatedAt": "2021-03-23T13:10:07Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 57,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTk4NDUzNjE5",
+      "title": "Issue #56",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/57",
+      "state": "MERGED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "deleted deny-id",
+      "createdAt": "2021-03-23T01:32:20Z",
+      "updatedAt": "2021-03-23T11:16:47Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "9e998954afd816cfb0afb1a4776dd21e2e239501",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "Issue-#56-remove-deny-id",
+      "headRefOid": "5a1419b531d1f788400e0a5348076837b98776f1",
+      "closedAt": "2021-03-23T11:16:47Z",
+      "mergedAt": "2021-03-23T11:16:47Z",
+      "mergedBy": "thomas-fossati",
+      "mergeCommit": {
+        "oid": "0003b0b27d4355359771534ecd5a0d305bacb296"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjE4NDYzMjQ5",
+          "commit": {
+            "abbreviatedOid": "5a1419b"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "LGTM",
+          "createdAt": "2021-03-23T11:10:22Z",
+          "updatedAt": "2021-03-23T11:10:22Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 62,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTk5NjcwODQ2",
+      "title": "CDDL is a submodule",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/62",
+      "state": "CLOSED",
+      "author": "thomas-fossati",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The master copy of the CoRIM CDDL is stored in the [ietf-corim-cddl](https://github.com/ietf-rats/ietf-corim-cddl) repo.\r\n\r\nThis PR uses that repo as a submodule of draft-birkholz-rats-corim",
+      "createdAt": "2021-03-24T13:02:58Z",
+      "updatedAt": "2021-03-24T20:25:02Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "fdf7ba08a33ca4a33e4f1eef8b8bc8d518f2e6bd",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "submodulise-cddl",
+      "headRefOid": "62a2028488d560e90fd29b3f57f06b5826a6667b",
+      "closedAt": "2021-03-24T20:25:02Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 63,
+      "id": "MDExOlB1bGxSZXF1ZXN0NjAwMDQ2MTU2",
+      "title": "Try it again tom",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/63",
+      "state": "MERGED",
+      "author": "thomas-fossati",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2021-03-24T20:24:52Z",
+      "updatedAt": "2021-03-24T20:30:00Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "fdf7ba08a33ca4a33e4f1eef8b8bc8d518f2e6bd",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "try-it-again-tom",
+      "headRefOid": "947d557db41c268e0e2aa536a212e3ff451af915",
+      "closedAt": "2021-03-24T20:30:00Z",
+      "mergedAt": "2021-03-24T20:30:00Z",
+      "mergedBy": "thomas-fossati",
+      "mergeCommit": {
+        "oid": "02f00472c70b3bcf30ba08081fafd4c551030996"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 64,
+      "id": "MDExOlB1bGxSZXF1ZXN0NjA3NTIzMjM0",
+      "title": "rename m- relations",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/64",
+      "state": "MERGED",
+      "author": "thomas-fossati",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes ietf-rats/ietf-corim-cddl#9",
+      "createdAt": "2021-04-01T16:26:02Z",
+      "updatedAt": "2021-04-01T16:30:13Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "4136e8728c6412d194933c23f28cb58994fd6b7d",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "rename-m-rels",
+      "headRefOid": "71ccd80efeb9f49da8a5f5e691daa2ead2c53550",
+      "closedAt": "2021-04-01T16:30:13Z",
+      "mergedAt": "2021-04-01T16:30:13Z",
+      "mergedBy": "nedmsmith",
+      "mergeCommit": {
+        "oid": "0e2a95933dff78c137427a629366a14d4eb04327"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjI2NDQ4MTM4",
+          "commit": {
+            "abbreviatedOid": "71ccd80"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-04-01T16:30:04Z",
+          "updatedAt": "2021-04-01T16:30:04Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 65,
+      "id": "MDExOlB1bGxSZXF1ZXN0NjI1ODYxNzU0",
+      "title": "Incorporating content and sections illustrating the information model in English text",
+      "url": "https://github.com/ietf-rats/draft-birkholz-rats-corim/pull/65",
+      "state": "OPEN",
+      "author": "henkbirkholz",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2021-04-29T07:42:33Z",
+      "updatedAt": "2021-04-29T08:28:20Z",
+      "baseRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "baseRefName": "master",
+      "baseRefOid": "ea408455dcca333b56a603f0f473ba97f5691ae2",
+      "headRepository": "ietf-rats/draft-birkholz-rats-corim",
+      "headRefName": "not-a-butcher",
+      "headRefOid": "7bced8a6f2c2078ea4c0491273c37b2074f13770",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The content of this branch is flagged as a draft as it includes proposals that we will have to agree on (or not) and then massage the content to reflect the consensus.",
+          "createdAt": "2021-04-29T07:45:30Z",
+          "updatedAt": "2021-04-29T07:45:30Z"
+        },
+        {
+          "author": "thomas-fossati",
+          "authorAssociation": "COLLABORATOR",
+          "body": "LOLz for the branch name :-)",
+          "createdAt": "2021-04-29T08:21:20Z",
+          "updatedAt": "2021-04-29T08:21:20Z"
+        }
+      ],
+      "reviews": []
+    }
+  ]
+}
