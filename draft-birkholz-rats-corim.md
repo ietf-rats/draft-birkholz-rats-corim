@@ -100,7 +100,7 @@ While each specification defines its own start rule, only CoMID and CoSWID are s
 
 While stand-alone CoSWIDs can be signed, CoMID are not intended to be signed themselves. In order to provide a proof of authenticity and to be temper-evident, CoMIDs MUST be wrapped in a CoRIM that is then signed.
 
-This document uses the Concise Data Definition Language (CDDL {{RFC8610}}) to define the specification for CoRIM and CoMID, as well as the extensions to CoSWID. The CDDL definitions provided define nested structures. Typically, the CDDL types used for nesting are maps. Every key used in the maps is a named type that is associated with an corresponding uint via a block of rules appended at the end of the CDDL definition.
+This document uses the Concise Data Definition Language (CDDL {{RFC8610}}) to define the specification for CoRIM and CoMID, as well as the extensions to CoSWID. The CDDL definitions provided define nested containers. Typically, the CDDL types used for nested containers are maps. Every key used in the maps is a named type that is associated with an corresponding uint via a block of rules appended at the end of the CDDL definition.
 
 Every set of uint keys that is used in the context of the collision domain of map is intended to be collision-free (each key is intended to be unique in the scope of a map, not a multimap). To accomplish that, for each map there is a registry for the map members of that map <!-- FIXME: ref to IANA sections --> 
 
@@ -124,6 +124,10 @@ Both types of extensibility also allow for the definition of new nested maps tha
 
 The semantics of the information elements (attributes) defined by CoRIM, CoMID, and CoSWID are sometimes very similar, but do not share the same scope or are slightly different. In order to not overload the semantics of the already existing semantics of the software-centric IANA registries of CoSWID with, for example, hardware-centric semantics of CoMID, new type names are introduce. For example: both CoSWID and CoMID define a tag-id. As CoSWID already specifies "tag-id", CoMID prefixes that type name with "comid." to disambiguate the context, resulting in "comid.tag-id". This prefixing provides a well-defined scope for the use of that the named type defined in this document and guarantees interoperability (no type name collisions) with the CoSWID CDDL definition. Effectively, the prefixes used in this specification enable simple hierarchical namespaces. The prefixing introduced is also based on the anticipated namespace features for CDDL. <!-- FIXME: ref to upcoming CDDL Namespaces I-D -->
 
+## CDDL Generic Types
+
+FIXME: name and describe all generic type definitions, such as non-empty or one-or-more, and illustrate their purpose.
+
 ## Concise RIM extension points
 
 The following CDDL sockets (extension points) are defined in the CoRIM specification, which allow the addition of new information structures to their respective CDDL groups.
@@ -131,6 +135,16 @@ The following CDDL sockets (extension points) are defined in the CoRIM specifica
 | Map Name | CDDL Socket | Defined in
 |---
 | concise-mid-tag | $$comid-extension | {{model-concise-mid-tag}}
+| tag-identity-map | $$tag-identity-map-extension | {{model-tag-identity-map}}
+| module-entity-map | $$module-entity-map-extension | {{model-module-entity-map}}
+| linked-tag-map | $$linked-tag-map-extension | {{model-linked-tag-map}}
+| claims-map | $$claims-map-extension | {{model-claims-map}}
+| identity-claim-map | $$identity-claim-map-extension | {{model-identity-claim-map}}
+| instance-claim-map | $$instance-claim-map-extension | {{model-instance-claim-map}}
+| element-name-map | $$element-name-map-extension | {{model-element-name-map}}
+| element-value-map | $$element-value-map-extension | {{model-element-value-map}}
+| endorsed-claim-map | $$endorsed-claim-map-extension | {{model-endorsed-claim-map}}
+| reference-claim-map | $$reference-claim-map-extension | {{model-reference-claim-map}}
 {: #comid-extension-group-sockets title="CoMID CDDL Group Extension Points"}
 
 # Concise RIM Data Definition
@@ -145,43 +159,419 @@ start = corim
 ~~~
 
 {: #model-concise-mid-tag}
-## The concise-mid-tag Map
+## The concise-mid-tag Container
 
 The CDDL specification for the root concise-mid-tag map is as follows. This rule and its constraints MUST be followed when creating or validating a CoMID tag:
 
 ~~~ CDDL
 concise-mid-tag = {
-  ? comid.language => language-type
-  comid.tag-metadata => tag-metadata-map
-  ? comid.module-metadata => module-metadata-map
-  ? comid.entity => one-or-more<module-entity-map>
-  ? comid.linked-tags => one-or-more<linked-tag-map>
-  ? comid.claims => claims-map
-  * $$concise-mid-tag-extension
+  ? comid.language => language-type,
+  comid.tag-identity => tag-identity-map,
+  ? comid.module-name => element-name-map,
+  ? comid.entity => one-or-more<module-entity-map>,
+  ? comid.linked-tags => one-or-more<linked-tag-map>,
+  ? comid.claims => claims-map,
+  * $$concise-mid-tag-extension,
 }
 ~~~
 
 The following describes each member of the concise-mid-tag root map.
 
-- comid.language:
+comid.language:
 
-- comid.tag-identity:
+: FIXME
 
-- comid.module-name:
+comid.tag-identity:
 
-- comid.entity:
+: FIXME
 
-- comid.linked-tags:
+comid.module-name:
 
-- comid.claims:
+: FIXME
 
-- $$comid-mid-tag-extension: This CDDL socket is used to add new information structures to the concise-mid-tag root map. See FIXME.
+comid.entity:
 
-## The tag-identity-map Map
+: FIXME
 
-- tag-id:
+comid.linked-tags:
 
-- tag-version:
+: FIXME
+
+comid.claims:
+
+: FIXME
+
+$$comid-mid-tag-extension:
+
+: This CDDL socket is used to add new information elements to the concise-mid-tag root container. See FIXME.
+
+{: #model-tag-identity-map}
+## The tag-identity-map Container
+
+The CDDL specification for the root tag-identity-map includes all identifying attributes that enable a consumer of information to anticipate required capabilities to process the corresponding tag that map is included in. This rule and its constraints MUST be followed when creating or validating a CoMID tag:
+
+~~~ CDDL
+tag-identity-map = {
+  comid.tag-id => $tag-id-type-choice
+  comid.tag-version => tag-version-type
+  * $$tag-identity-map-extension
+}
+~~~
+
+The following describes each member of the tag-identity-map container.
+
+comid.tag-id:
+
+: FIXME
+
+comid.tag-version:
+
+: FIXME
+
+$$tag-metadata-map-extension:
+
+: This CDDL socket is used to add new information elements to the concise-mid-tag root container. See FIXME.
+
+{: #model-module-entity-map}
+## The module-entity-map Container
+
+This Container provides qualifying attributes that provide more context information describing the module as well its origin and purpose. This rule and its constraints MUST be followed when creating or validating a CoMID tag:
+
+~~~ CDDL
+module-entity-map = {
+  comid.entity-name => text
+  ? comid.reg-id => uri
+  comid.role => one-or-more<$module-role-type-choice>
+  * $$module-entity-map-extension
+}
+~~~
+
+The following describes each member of the tag-identity-map container.
+
+comid.entity-name:
+
+: FIXME
+
+comid.reg-id:
+
+: FIXME
+
+comid.role:
+
+: FIXME
+
+$$module-entity-map-extension:
+
+: This CDDL socket is used to add new information elements to the module-entity-map container. See FIXME.
+
+{: #model-linked-tag-map}
+## The linked-tag-map Container
+
+FIXME: description
+
+~~~ CDDL
+linked-tag-map = {
+  comid.linked-tag-id => $tag-id-type-choice
+  comid.tag-rel => $tag-rel-type-choice
+}
+~~~
+
+The following describes each member of the linked-tag-map container.
+
+comid.linked-tag-id:
+
+: FIXME
+
+comid.tag-rel:
+
+: FIXME
+
+{: #model-claims-map}
+## The claims-map Container
+
+FIXME: description
+
+~~~ CDDL
+claims-map = non-empty<{
+  ? comid.reference-claims => one-or-more<reference-claim-map>
+  ? comid.endorsements => one-or-more<endorsed-claim-map>
+  ? comid.identity-claims => one-or-more<identity-claim-map>
+  ? comid.instance-claims => one-or-more<instance-claim-map>
+  * $$claims-map-extension
+}>
+~~~
+
+The following describes each member of the claims-map container.
+
+comid.reference-claims:
+
+: FIXME
+
+comid.endorsements:
+
+: FIXME
+
+comid.identity-claims:
+
+: FIXME
+
+comid.instance-claims:
+
+: FIXME
+
+$$claims-map-extension:
+
+: This CDDL socket is used to add new information elements to the claims-map container. See FIXME.
+
+identity-claim-map = {
+  ? comid.element-name => element-name-map
+  ? comid.device-id => $device-id-type-choice
+  comid.key-material => COSE_KeySet
+  * $$identity-claim-map-extension
+}
+
+{: #model-identity-claim-map}
+## The identity-claim-map Container
+
+FIXME: description
+
+~~~ CDDL
+identity-claim-map = {
+  ? comid.element-name => element-name-map
+  ? comid.device-id => $device-id-type-choice
+  comid.key-material => COSE_KeySet
+  * $$identity-claim-map-extension
+}
+~~~
+
+The following describes each member of the identity-claim-map container.
+
+comid.element-name:
+
+: FIXME
+
+comid.device-id:
+
+: FIXME
+
+comid.key-material:
+
+: FIXME
+
+$$identity-claim-map-extension:
+
+: This CDDL socket is used to add new information elements to the claims-map container. See FIXME.
+
+{: #model-instance-claim-map}
+## The instance-claim-map Container
+
+FIXME: description
+
+~~~ CDDL
+instance-claim-map = {
+  ? comid.element-name => element-name-map
+  $$instance-value-group-choice
+}
+~~~
+
+The following describes each member of the instance-claim-map container.
+
+comid.element-name:
+
+: FIXME
+
+$$instance-value-group-choice:
+
+: This CDDL socket is used to add new information elements to the instance-claim-map container. See FIXME.
+
+## The instance-value-group-choice Enumeration
+
+This group choice allows for exactly one type of named instance claim per instance-claim map. If more than one instance-claim type has to be represented, an array of instance-claim-map entries for comid.instance-claims has to be created (enabled via the one-or-more\<instance-claim-map\> generic type).
+
+~~~ CDDL
+$$instance-value-group-choice //= (
+  comid.mac-addr => mac-addr-type-choice //
+  comid.ip-addr => ip-addr-type-choice //
+  comid.serial-number => serial-number-type //
+  comid.ueid => ueid-type //
+  comid.uuid => uuid-type
+)
+~~~
+
+The following describes each member of the instance-value-group-choice enumeration.
+
+comid.mac-addr:
+
+: FIXME
+
+comid.ip-addr:
+
+: FIXME
+
+comid.serial-number:
+
+: FIXME
+
+comid.ueid:
+
+: FIXME
+
+comid.uuid:
+
+: FIXME
+
+{: #model-element-name-map}
+## The element-name-map Container
+
+FIXME: description
+
+~~~ CDDL
+element-name-map = non-empty<{
+  ? comid.label => label-type
+  ? comid.vendor => vendor-type
+  ? comid.class-id => $class-id-type-choice
+  ? comid.model => model-type
+  ? comid.layer => layer-type
+  ? comid.index => index-type
+}>
+~~~
+
+The following describes each member of the element-name-map container.
+
+comid.label:
+
+: FIXME
+
+comid.vendor:
+
+: FIXME
+
+comid.class-id:
+
+: FIXME
+
+comid.model:
+
+: FIXME
+
+comid.layer:
+
+: FIXME
+
+comid.index:
+
+: FIXME
+
+{: #model-element-value-map}
+## The element-value-map Container
+
+FIXME: description
+
+~~~ CDDL
+element-value-map = non-empty<{
+  ? comid.version => module-version-map
+  ? comid.svn => svn-type
+  ? comid.digests => digests-type
+  ? comid.flags => flags-type
+  ? raw-value-group
+}>
+~~~
+
+The following describes each member of the element-value-map container.
+
+comid.version:
+
+: FIXME
+
+comid.svn:
+
+: FIXME
+
+comid.digests:
+
+: FIXME
+
+comid.flags:
+
+: FIXME
+
+raw-value-group:
+
+: FIXME
+
+<!-- module-version-map = {
+  comid.version => version-type
+  ? comid.version-scheme => $version-scheme
+}
+
+raw-value-group = (
+  comid.raw-value => raw-value-type
+  ? comid.raw-value-mask => raw-value-mask-type
+)
+
+svn-type = int
+flags-type = bytes .bits operational-flags
+
+operational-flags = &(
+  not-configured: 0
+  not-secure: 1
+  recovery: 2
+  debug: 3
+) -->
+
+{: #model-endorsed-claim-map}
+## The endorsed-claim-map Container
+
+FIXME: description (note: highlight a/symmetry with reference-claim-map)
+
+~~~ CDDL
+endorsed-claim-map = non-empty<{
+  ? comid.element-name => element-name-map
+  ? comid.element-value => element-value-map
+  * $$endorsed-claim-map-extension
+}>
+~~~
+
+The following describes each member of the endorsed-claim-map container.
+
+comid.element-name:
+
+: FIXME (note: also used in reference-claim-map)
+
+comid.element-value:
+
+: FIXME (note: also used in reference-claim-map)
+
+$$endorsed-claim-map-extension:
+
+: This CDDL socket is used to add new information elements to the endorsed-claim-map container. See FIXME.
+
+{: #model-reference-claim-map}
+## The reference-claim-map Container
+
+FIXME: description (note: highlight a/symmetry with endorsed-claim-map)
+
+~~~ CDDL
+reference-claim-map = {
+  ? comid.element-name => element-name-map
+  comid.element-value => element-value-map
+  * $$reference-claim-map-extension
+}
+~~~
+
+The following describes each member of the reference-claim-map container.
+
+comid.element-name:
+
+: FIXME (note: also used in endorsed-claim-map)
+
+comid.element-value:
+
+: FIXME (note: also used in endorsed-claim-map)
+
+$$reference-claim-map-extension:
+
+: This CDDL socket is used to add new information elements to the reference-claim-map container. See FIXME.
 
 # Full CDDL Definition
 
