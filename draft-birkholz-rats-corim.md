@@ -130,11 +130,10 @@ The CDDL specification for the root concise-mid-tag map is as follows. This rule
 ~~~ CDDL
 concise-mid-tag = {
   ? comid.language => language-type
-  comid.tag-metadata => tag-metadata-map
-  ? comid.module-metadata => module-metadata-map
-  ? comid.entity => one-or-more<module-entity-map>
+  comid.tag-identity => tag-identity-map
+  ? comid.entity => one-or-more<entity-map>
   ? comid.linked-tags => one-or-more<linked-tag-map>
-  ? comid.claims => claims-map
+  comid.triples => triples-map
   * $$concise-mid-tag-extension
 }
 ~~~
