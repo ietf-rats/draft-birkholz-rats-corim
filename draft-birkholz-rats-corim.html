@@ -37,7 +37,170 @@
 -->
 <link href="draft-birkholz-rats-corim.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
-<style type="text/css">@import url('https://martinthomson.github.io/i-d-template/fonts.css');
+<style type="text/css">@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 
 html {
   --background-color: #fff;
@@ -87,11 +250,17 @@ body {
   color: var(--title-color);
 }
 #title {
-  padding: 1em 0 0.2em;
   font-size: 32px;
   line-height: 40px;
   clear: both;
 }
+#title, #rfcnum {
+  margin: 1.5em 0 0.2em;
+}
+#rfcnum + #title {
+  margin: 0.2em 0;
+}
+
 h1, h2, h3 {
   font-size: 22px;
   line-height: 27px;
@@ -842,11 +1011,11 @@ address div.right {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">CoRIM</td>
-<td class="right">April 2021</td>
+<td class="right">June 2021</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Birkholz, et al.</td>
-<td class="center">Expires 19 October 2021</td>
+<td class="center">Expires 30 December 2021</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -859,12 +1028,12 @@ address div.right {
 <dd class="internet-draft">draft-birkholz-rats-corim-latest0</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2021-04-17" class="published">17 April 2021</time>
+<time datetime="2021-06-28" class="published">28 June 2021</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2021-10-19">19 October 2021</time></dd>
+<dd class="expires"><time datetime="2021-12-30">30 December 2021</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -929,7 +1098,7 @@ address div.right {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 19 October 2021.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 30 December 2021.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -957,73 +1126,73 @@ address div.right {
         <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
 <a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
         </h2>
-<nav class="toc"><ul class="compact ulEmpty toc">
-<li class="compact ulEmpty toc" id="section-toc.1-1.1">
+<nav class="toc"><ul class="ulEmpty compact toc">
+<li class="ulEmpty compact toc" id="section-toc.1-1.1">
             <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="xref">1</a>.  <a href="#name-introduction" class="xref">Introduction</a></p>
-<ul class="compact ulEmpty toc">
-<li class="compact ulEmpty toc" id="section-toc.1-1.1.2.1">
+<ul class="ulEmpty compact toc">
+<li class="ulEmpty compact toc" id="section-toc.1-1.1.2.1">
                 <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="xref">1.1</a>.  <a href="#name-requirements-notation" class="xref">Requirements Notation</a></p>
 </li>
             </ul>
 </li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.2">
+          <li class="ulEmpty compact toc" id="section-toc.1-1.2">
             <p id="section-toc.1-1.2.1"><a href="#section-2" class="xref">2</a>.  <a href="#name-concise-reference-integrity" class="xref">Concise Reference Integrity Manifests</a></p>
-<ul class="compact ulEmpty toc">
-<li class="compact ulEmpty toc" id="section-toc.1-1.2.2.1">
+<ul class="ulEmpty compact toc">
+<li class="ulEmpty compact toc" id="section-toc.1-1.2.2.1">
                 <p id="section-toc.1-1.2.2.1.1" class="keepWithNext"><a href="#section-2.1" class="xref">2.1</a>.  <a href="#name-extensibility" class="xref">Extensibility</a></p>
 </li>
             </ul>
 </li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.3">
+          <li class="ulEmpty compact toc" id="section-toc.1-1.3">
             <p id="section-toc.1-1.3.1"><a href="#section-3" class="xref">3</a>.  <a href="#name-concise-rim-data-definition" class="xref">Concise RIM Data Definition</a></p>
-<ul class="compact ulEmpty toc">
-<li class="compact ulEmpty toc" id="section-toc.1-1.3.2.1">
+<ul class="ulEmpty compact toc">
+<li class="ulEmpty compact toc" id="section-toc.1-1.3.2.1">
                 <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="xref">3.1</a>.  <a href="#name-the-concise-mid-tag-map" class="xref">The concise-mid-tag Map</a></p>
 </li>
             </ul>
 </li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.4">
+          <li class="ulEmpty compact toc" id="section-toc.1-1.4">
             <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-full-cddl-definition" class="xref">Full CDDL Definition</a></p>
 </li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.5">
+          <li class="ulEmpty compact toc" id="section-toc.1-1.5">
             <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-privacy-considerations" class="xref">Privacy Considerations</a></p>
 </li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.6">
+          <li class="ulEmpty compact toc" id="section-toc.1-1.6">
             <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-concise-swid-data-extension" class="xref">Concise SWID Data Extension</a></p>
-<ul class="compact ulEmpty toc">
-<li class="compact ulEmpty toc" id="section-toc.1-1.6.2.1">
+<ul class="ulEmpty compact toc">
+<li class="ulEmpty compact toc" id="section-toc.1-1.6.2.1">
                 <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="xref">6.1</a>.  <a href="#name-new-coswid-to-comid-relatio" class="xref">New CoSWID to CoMID Relations</a></p>
-<ul class="compact ulEmpty toc">
-<li class="compact ulEmpty toc" id="section-toc.1-1.6.2.1.2.1">
+<ul class="ulEmpty compact toc">
+<li class="ulEmpty compact toc" id="section-toc.1-1.6.2.1.2.1">
                     <p id="section-toc.1-1.6.2.1.2.1.1"><a href="#section-6.1.1" class="xref">6.1.1</a>.  <a href="#name-link-rel-values" class="xref">Link Rel Values</a></p>
 </li>
                 </ul>
 </li>
             </ul>
 </li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.7">
+          <li class="ulEmpty compact toc" id="section-toc.1-1.7">
             <p id="section-toc.1-1.7.1"><a href="#section-7" class="xref">7</a>.  <a href="#name-security-considerations" class="xref">Security Considerations</a></p>
 </li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.8">
+          <li class="ulEmpty compact toc" id="section-toc.1-1.8">
             <p id="section-toc.1-1.8.1"><a href="#section-8" class="xref">8</a>.  <a href="#name-iana-considerations" class="xref">IANA Considerations</a></p>
-<ul class="compact ulEmpty toc">
-<li class="compact ulEmpty toc" id="section-toc.1-1.8.2.1">
+<ul class="ulEmpty compact toc">
+<li class="ulEmpty compact toc" id="section-toc.1-1.8.2.1">
                 <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="xref">8.1</a>.  <a href="#name-coswid-to-comid-link-relati" class="xref">CoSWID to CoMID Link Relations</a></p>
 </li>
             </ul>
 </li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.9">
+          <li class="ulEmpty compact toc" id="section-toc.1-1.9">
             <p id="section-toc.1-1.9.1"><a href="#section-9" class="xref">9</a>.  <a href="#name-references" class="xref">References</a></p>
-<ul class="compact ulEmpty toc">
-<li class="compact ulEmpty toc" id="section-toc.1-1.9.2.1">
+<ul class="ulEmpty compact toc">
+<li class="ulEmpty compact toc" id="section-toc.1-1.9.2.1">
                 <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="xref">9.1</a>.  <a href="#name-normative-references" class="xref">Normative References</a></p>
 </li>
-              <li class="compact ulEmpty toc" id="section-toc.1-1.9.2.2">
+              <li class="ulEmpty compact toc" id="section-toc.1-1.9.2.2">
                 <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="xref">9.2</a>.  <a href="#name-informative-references" class="xref">Informative References</a></p>
 </li>
             </ul>
 </li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.10">
+          <li class="ulEmpty compact toc" id="section-toc.1-1.10">
             <p id="section-toc.1-1.10.1"><a href="#section-appendix.a" class="xref"></a><a href="#name-authors-addresses" class="xref">Authors' Addresses</a></p>
 </li>
         </ul>
@@ -1182,9 +1351,10 @@ concise-mid-tag = {
 <div id="section-4-5">
 <pre class="sourcecode lang-CDDL">
 &lt;CODE BEGINS&gt;
-concise-reference-integrity-manifest =
-  #6.47111(unsigned-corim-map) /
-  #6.47112(signed-corim)
+corim = #6.47110($concise-reference-integrity-manifest-type-choice)
+
+$concise-reference-integrity-manifest-type-choice /= #6.47111(unsigned-corim-map)
+$concise-reference-integrity-manifest-type-choice /= #6.47112(signed-corim)
 
 
 signed-corim = #6.18(COSE-Sign1-corim)
@@ -1247,20 +1417,18 @@ $concise-tag-type-choice /= #6.47117(concise-mid-tag)
 
 concise-mid-tag = {
   ? comid.language =&gt; language-type
-  comid.tag-metadata =&gt; tag-metadata-map
-  ? comid.module-metadata =&gt; module-metadata-map
-  ? comid.entity =&gt; one-or-more&lt;module-entity-map&gt;
+  comid.tag-identity =&gt; tag-identity-map
+  ? comid.entity =&gt; one-or-more&lt;entity-map&gt;
   ? comid.linked-tags =&gt; one-or-more&lt;linked-tag-map&gt;
-  ? comid.claims =&gt; claims-map
+  comid.triples =&gt; triples-map
   * $$concise-mid-tag-extension
 }
 
 language-type = text
 
-tag-metadata-map = {
+tag-identity-map = {
   comid.tag-id =&gt; $tag-id-type-choice
-  comid.tag-version =&gt; tag-version-type
-  * $$tag-metadata-map-extension
+  ? comid.tag-version =&gt; tag-version-type
 }
 
 $tag-id-type-choice /= tstr
@@ -1268,64 +1436,152 @@ $tag-id-type-choice /= uuid-type
 
 tag-version-type = uint .default 0
 
-module-metadata-map = {
-  ? comid.module-name =&gt; element-name-map
-  ? comid.module-version =&gt; module-version-map
-  * $$module-metadata-map-extension
-}
-
-module-entity-map = {
-  comid.entity-name =&gt; text
+entity-map = {
+  comid.entity-name =&gt; $entity-name-type-choice
   ? comid.reg-id =&gt; uri
-  comid.role =&gt; one-or-more&lt;$module-role-type-choice&gt;
-  * $$module-entity-map-extension
+  comid.role =&gt; one-or-more&lt;$comid-role-type-choice&gt;
+  * $$entity-map-extension
 }
 
-$module-role-type-choice /= comid.tag-creator
-$module-role-type-choice /= comid.creator
-$module-role-type-choice /= comid.maintainer
+$comid-role-type-choice /= comid.tag-creator
+$comid-role-type-choice /= comid.creator
+$comid-role-type-choice /= comid.maintainer
 
 linked-tag-map = {
   comid.linked-tag-id =&gt; $tag-id-type-choice
   comid.tag-rel =&gt; $tag-rel-type-choice
 }
 
-$tag-rel-type-choice /= comid.includes
-$tag-rel-type-choice /= comid.or-includes
 $tag-rel-type-choice /= comid.supplements
-$tag-rel-type-choice /= comid.updates
 $tag-rel-type-choice /= comid.replaces
-$tag-rel-type-choice /= comid.patches
 
-claims-map = non-empty&lt;{
-  ? comid.reference-claims =&gt; one-or-more&lt;reference-claim-map&gt;
-  ? comid.endorsements =&gt; one-or-more&lt;endorsed-value-map&gt;
-  ? comid.identity-claims =&gt; one-or-more&lt;identity-claim-map&gt;
-  ? comid.instance-claims =&gt; one-or-more&lt;instance-claim-map&gt;
-  * $$claims-map-extension
+triples-map = non-empty&lt;{
+  ? comid.reference-triples =&gt; one-or-more&lt;reference-triple-record&gt;
+  ? comid.endorsed-triples =&gt; one-or-more&lt;endorsed-triple-record&gt;
+  ? comid.attest-key-triples =&gt; one-or-more&lt;attest-key-triple-record&gt;
+  ? comid.identity-triples =&gt; one-or-more&lt;identity-triple-record&gt;
+  * $$triples-map-extension
 }&gt;
 
-identity-claim-map = {
-  ? comid.device-id =&gt; $device-id-type-choice
-  comid.key-material =&gt; COSE_KeySet
+reference-triple-record = [
+  environment-map ; target environment
+  one-or-more&lt;measurement-map&gt; ; reference measurements
+]
+
+endorsed-triple-record = [
+  environment-map ; (target or attesting) environment
+  one-or-more&lt;measurement-map&gt; ; endorsed measurements
+]
+
+attest-key-triple-record = [
+  environment-map ; attesting environment
+  one-or-more&lt;verification-key-map&gt; ; attestation verification key(s)
+]
+
+identity-triple-record = [
+  environment-map ; device identifier (instance or class)
+  one-or-more&lt;verification-key-map&gt; ; DevID, or semantically equivalent
+]
+
+pkix-base64-cert-type = tstr
+
+verification-key-map = {
+  ; Verification key (typically a public key)
+  comid.key =&gt; COSE_Key
+  ; Optional X.509 certificate chain corresponding to the public key
+  ; in comid.key, encoded as an array of one or more base64-encoded
+  ; DER PKIX certificates.  The certificate containing the public key
+  ; in comid.key MUST be the first certificate.  This MAY be followed
+  ; by additional certificates, with each subsequent certificate
+  ; being the one used to certify the previous one.
+  ? comid.keychain =&gt; [ + pkix-base64-cert-type ]
 }
 
-$device-id-type-choice /= tagged-ueid-type
-$device-id-type-choice /= tagged-uuid-type
+environment-map = non-empty&lt;{
+  ? comid.class =&gt; class-map
+  ? comid.instance =&gt; $instance-id-type-choice
+  ? comid.group =&gt; $group-id-type-choice
+}&gt;
 
+class-map = non-empty&lt;{
+  ; TODO(tho) add text "class-map SHOULD include class-id"
+  ? comid.class-id =&gt; $class-id-type-choice
+  ? comid.vendor =&gt; tstr
+  ? comid.model =&gt; tstr
+  ? comid.layer =&gt; uint
+  ? comid.index =&gt; uint
+}&gt;
 
-instance-claim-map = {
-  ? comid.instance-element-name =&gt; element-name-map
-  $$instance-value-group-choice
+$class-id-type-choice /= tagged-oid-type
+$class-id-type-choice /= tagged-impl-id-type
+$class-id-type-choice /= tagged-uuid-type
+
+$instance-id-type-choice /= tagged-ueid-type
+$instance-id-type-choice /= tagged-uuid-type
+
+$group-id-type-choice /= tagged-uuid-type
+
+oid-type = bytes
+tagged-oid-type = #6.111(oid-type)
+
+tagged-uuid-type = #6.37(uuid-type)
+
+ueid-type = bytes .size 33
+tagged-ueid-type = #6.48000(ueid-type)
+
+impl-id-type = bytes .size 32
+tagged-impl-id-type = #6.47115(impl-id-type)
+
+$measured-element-type-choice /= tagged-oid-type
+$measured-element-type-choice /= tagged-uuid-type
+
+measurement-map = {
+  ? comid.mkey =&gt; $measured-element-type-choice
+  comid.mval =&gt; measurement-values-map
 }
 
-$$instance-value-group-choice //= (
-  comid.mac-addr =&gt; mac-addr-type-choice //
-  comid.ip-addr =&gt; ip-addr-type-choice //
-  comid.serial-number =&gt; serial-number-type //
-  comid.ueid =&gt; ueid-type //
-  comid.uuid =&gt; uuid-type
+measurement-values-map = non-empty&lt;{
+  ? comid.ver =&gt; version-map
+  ? comid.svn =&gt; svn-type-choice
+  ? comid.digests =&gt; digests-type
+  ? comid.flags =&gt; flags-type
+  ? raw-value-group
+  ? comid.mac-addr =&gt; mac-addr-type-choice
+  ? comid.ip-addr =&gt;  ip-addr-type-choice
+  ? comid.serial-number =&gt; serial-number-type
+  ? comid.ueid =&gt; ueid-type
+  ? comid.uuid =&gt; uuid-type
+  * $$measurement-values-map-extension
+}&gt;
+
+version-map = {
+  comid.version =&gt; version-type
+  ? comid.version-scheme =&gt; $version-scheme
+}
+version-type = text .default '0.0.0'
+
+svn = int
+min-svn = int
+tagged-svn = #6.1000(svn)
+tagged-min-svn = #6.1001(min-svn)
+svn-type-choice = tagged-svn / tagged-min-svn
+
+flags-type = bytes .bits operational-flags
+
+operational-flags = &amp;(
+  not-configured: 0
+  not-secure: 1
+  recovery: 2
+  debug: 3
 )
+
+raw-value-group = (
+  comid.raw-value =&gt; raw-value-type
+  ? comid.raw-value-mask =&gt; raw-value-mask-type
+)
+
+raw-value-type = bytes
+raw-value-mask-type = bytes
 
 ip-addr-type-choice = ip4-addr-type / ip6-addr-type
 ip4-addr-type = bytes .size 4
@@ -1337,83 +1593,7 @@ eui64-addr-type = bytes .size 8
 
 serial-number-type = text
 
-
-element-name-map = non-empty&lt;{
-  ? comid.label =&gt; label-type
-  ? comid.vendor =&gt; vendor-type
-  ? comid.class-id =&gt; $class-id-type-choice
-  ? comid.model =&gt; model-type
-  ? comid.layer =&gt; layer-type
-  ? comid.index =&gt; index-type
-}&gt;
-
-label-type = text
-vendor-type = text
-model-type = text
-layer-type = int
-index-type = int
-
-$class-id-type-choice /= tagged-oid-type
-$class-id-type-choice /= tagged-uuid-type
-$class-id-type-choice /= tagged-impl-id-type
-
-oid-type = bytes
-tagged-oid-type = #6.111(oid-type)
-
-tagged-uuid-type = #6.37(uuid-type)
-
-impl-id-type = bytes .size 32
-tagged-impl-id-type = #6.47115(impl-id-type)
-
-ueid-type = bytes .size 33
-tagged-ueid-type = #6.48000(ueid-type)
-
-module-version-map = {
-  comid.version =&gt; version-type
-  comid.version-scheme =&gt; $version-scheme
-}
-
-version-type = text .default '0.0.0'
-
-element-value-map = non-empty&lt;{
-  ? comid.version =&gt; version-type
-  ? comid.svn =&gt; svn-type
-  ? comid.digests =&gt; digests-type
-  ? comid.flags =&gt; flags-type
-  ? raw-value-group
-}&gt;
-
-svn-type = int
-flags-type = bytes .bits operational-flags
-
-raw-value-group = (
-  comid.raw-value =&gt; raw-value-type
-  ? comid.raw-value-mask =&gt; raw-value-mask-type
-)
-
-raw-value-type = bytes
-raw-value-mask-type = bytes
-
-endorsed-value-map = {
-  comid.element-name =&gt; element-name-map
-  ? comid.element-value =&gt; element-value-map
-  * $$endorsed-value-map-extension
-}
-
-reference-claim-map = {
-  comid.element-name =&gt; element-name-map
-  comid.element-value =&gt; element-value-map
-  * $$reference-claim-map-extension
-}
-
-operational-flags = &amp;(
-  not-configured: 0
-  not-secure: 1
-  recovery: 2
-  debug: 3
-)
-
-digests-type = [ hash-entry / [2* hash-entry] ]
+digests-type = one-or-more&lt;hash-entry&gt;
 
 
 concise-swid-tag = {
@@ -1697,17 +1877,13 @@ runs-on-module = 13
 
 
 comid.language = 0
-comid.tag-metadata = 1
-comid.module-metadata = 2
-comid.entity = 3
-comid.linked-tags = 4
-comid.claims = 5
+comid.tag-identity = 1
+comid.entity = 2
+comid.linked-tags = 3
+comid.triples = 4
 
 comid.tag-id = 0
 comid.tag-version = 1
-
-comid.module-name = 0
-comid.module-version = 1
 
 comid.entity-name = 0
 comid.reg-id = 1
@@ -1716,57 +1892,49 @@ comid.role = 2
 comid.linked-tag-id = 0
 comid.tag-rel = 1
 
-comid.label = 0
-comid.vendor = 1
-comid.class-id = 2
-comid.model = 3
-comid.layer = 4
-comid.index = 5
+comid.reference-triples = 0
+comid.endorsed-triples = 1
+comid.identity-triples = 2
+comid.attest-key-triples = 3
 
-comid.version = 0
+comid.class = 0
+comid.instance = 1
+comid.group = 2
+
+comid.class-id = 0
+comid.vendor = 1
+comid.model = 2
+comid.layer = 3
+comid.index = 4
+
+comid.mkey = 0
+comid.mval = 1
+
+comid.ver = 0
 comid.svn = 1
 comid.digests = 2
 comid.flags = 3
 comid.raw-value = 4
 comid.raw-value-mask = 5
+comid.mac-addr = 6
+comid.ip-addr = 7
+comid.serial-number = 8
+comid.ueid = 9
+comid.uuid = 10
 
-comid.includes = 0
+comid.key = 0
+comid.keychain = 1
 
-comid.or-includes = 1
-
-comid.supplements = 2
-
-comid.updates = 3
-
-comid.replaces = 4
-
-comid.patches = 5
-
+comid.version = 0
 comid.version-scheme = 1
 
-comid.element-name = 0
-comid.element-value = 1
+comid.supplements = 0
 
-comid.reference-claims = 0
-comid.endorsements = 1
-comid.identity-claims = 2
-comid.instance-claims = 3
+comid.replaces = 1
 
-comid.device-id = 0
-comid.key-material = 1
-
-comid.instance-element-name = 0
-comid.mac-addr = 1
-comid.ip-addr = 2
-comid.serial-number = 3
-comid.ueid = 4
-comid.uuid = 5
-
-comid.tag-creator = 1
-
-comid.creator = 2
-
-comid.maintainer = 3
+comid.tag-creator = 0
+comid.creator = 1
+comid.maintainer = 2
 
 
 corim.id = 0
@@ -1787,16 +1955,16 @@ corim.not-after = 1
 corim.signer = 0
 corim.validity = 1
 
-corim.entity-name = 1
-corim.reg-id = 2
-corim.role = 3
+corim.entity-name = 0
+corim.reg-id = 1
+corim.role = 2
 
 corim.manifest-creator = 1
 
 corim.manifest-signer = 2
 
 
-non-empty&lt;M&gt; = (M) .and ({ + any =&gt; any })
+non-empty&lt;M&gt; = (M) .within ({ + any =&gt; any })
 
 
 
@@ -1808,8 +1976,6 @@ COSE_Key = {
   ? 5 =&gt; bstr               ; Base IV
   * cose-label =&gt; cose-values
 }
-
-COSE_KeySet = [+COSE_Key]
 
 
 
@@ -1968,7 +2134,7 @@ Software Tag Link Relationship Values Registry.<a href="#section-8.1-1" class="p
 <dl class="references">
 <dt id="I-D.ietf-rats-architecture">[I-D.ietf-rats-architecture]</dt>
         <dd>
-<span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Thaler, D.</span>, <span class="refAuthor">Richardson, M.</span>, <span class="refAuthor">Smith, N.</span>, and <span class="refAuthor">W. Pan</span>, <span class="refTitle">"Remote Attestation Procedures Architecture"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-rats-architecture-11</span>, <time datetime="2021-03-30" class="refDate">30 March 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-rats-architecture-11.txt">https://datatracker.ietf.org/doc/html/draft-ietf-rats-architecture-11.txt</a>&gt;</span>. </dd>
+<span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Thaler, D.</span>, <span class="refAuthor">Richardson, M.</span>, <span class="refAuthor">Smith, N.</span>, and <span class="refAuthor">W. Pan</span>, <span class="refTitle">"Remote Attestation Procedures Architecture"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-rats-architecture-12</span>, <time datetime="2021-04-23" class="refDate">23 April 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-rats-architecture-12.txt">https://datatracker.ietf.org/doc/html/draft-ietf-rats-architecture-12.txt</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-sacm-coswid">[I-D.ietf-sacm-coswid]</dt>
         <dd>
