@@ -142,17 +142,15 @@ The following describes each member of the concise-mid-tag root map.
 
 - language:
 
-- tag-metadata:
-
-- module-metadata:
+- tag-identity:
 
 - entity:
 
 - linked-tags:
 
-- claims:
+- triples:
 
-- $$comid-extension: This CDDL socket is used to add new information structures to the concise-mid-tag root map. See FIXME.
+- $$concise-mid-tag-extension: This CDDL socket is used to add new information structures to the concise-mid-tag root map. See FIXME.
 
 # Full CDDL Definition
 
@@ -177,36 +175,6 @@ Not included in the full CDDL definition are CDDL dependencies to CoSWID. The fo
 
 Privacy Considerations
 
-# Concise SWID Data Extension
-
-## New CoSWID to CoMID Relations
-
-The CoSWID link-entry map is extended to describe relationships between CoSWID
-and CoMID.  The new Link Rel values are defined in {{sec-link-rel-values}}.
-
-When using one of these new relations, the following optional elements MUST NOT
-be present in the Link Entry:
-
-* artifact
-* ownership
-* use
-
-### Link Rel Values {#sec-link-rel-values}
-
-This document adds the following code-points to the Link Rel values defined in
-Table 6 of {{!I-D.ietf-sacm-coswid}}.  These new indexes define relationships
-between a CoSWID and a CoMID with the semantics specified in
-{{tbl-link-rel-values}}.
-
- | Index | Relationship Type Name | Definition |
- --------|----------------------- |--------------------------------------------|
- | 12    | requires-module        | The link references a prerequisite module that needs to be loaded or present for installing this software |
- | 13    | runs-on-module         | The link references a module tag that this software runs on |
-{: #tbl-link-rel-values title="New CoSWID to CoMID Link Relations"}
-
-The rel values listed in {{tbl-link-rel-values}} MUST be used only for link
-relations involving a base CoSWID and a target CoMID.
-
 # Security Considerations
 
 Security Considerations
@@ -214,15 +182,3 @@ Security Considerations
 # IANA Considerations
 
 See Body {{mybody}}.
-
-
-### CoSWID to CoMID Link Relations
-
-IANA is requested to add the indexes in {{tbl-iana-link-rel-values}} to the
-Software Tag Link Relationship Values Registry.
-
- | Index | Relationship Type Name | Specification               |
- --------|----------------------- |-----------------------------|
- | 12    | requires-module        | See {{sec-link-rel-values}} |
- | 13    | runs-on-module         | See {{sec-link-rel-values}} |
-{: #tbl-iana-link-rel-values title="New CoSWID Link Relationship Values"}
