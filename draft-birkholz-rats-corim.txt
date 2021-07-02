@@ -289,8 +289,8 @@ Table of Contents
      ? corim.thumbprint => hash-entry
    }
 
-   $concise-tag-type-choice /= #6.47116(concise-swid-tag)
-   $concise-tag-type-choice /= #6.47117(concise-mid-tag)
+   $concise-tag-type-choice /= #6.47116(bytes .cbor concise-swid-tag)
+   $concise-tag-type-choice /= #6.47117(bytes .cbor concise-mid-tag)
 
 
    concise-mid-tag = {
