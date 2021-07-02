@@ -5,15 +5,13 @@
 RATS Working Group                                           H. Birkholz
 Internet-Draft                                            Fraunhofer SIT
 Intended status: Standards Track                              T. Fossati
-Expires: 30 December 2021                                   Y. Deshpande
+Expires: 3 January 2022                                     Y. Deshpande
                                                              Arm Limited
                                                                 N. Smith
                                                                    Intel
-                                                            P. Uiterwijk
-                                                                 Red Hat
                                                                   W. Pan
                                                      Huawei Technologies
-                                                            28 June 2021
+                                                             2 July 2021
 
 
                   Concise Reference Integrity Manifest
@@ -49,7 +47,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 December 2021.
+   This Internet-Draft will expire on 3 January 2022.
 
 Copyright Notice
 
@@ -946,15 +944,6 @@ Authors' Addresses
    United States of America
 
    Email: ned.smith@intel.com
-
-
-   Patrick Uiterwijk
-   Red Hat
-   100 E Davie Street
-   27601 Raleigh
-   Netherlands
-
-   Email: puiterwijk@redhat.com
 
 
    Wei Pan
