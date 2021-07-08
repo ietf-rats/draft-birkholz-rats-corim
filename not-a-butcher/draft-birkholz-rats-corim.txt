@@ -71,9 +71,9 @@ Table of Contents
      1.1.  Requirements Notation
    2.  Concise Reference Integrity Manifests
      2.1.  Typographical Conventions
-     2.2.  Prefixes, and Namespaces
+     2.2.  Prefixes and Namespaces
      2.3.  Extensibility
-     2.4.  Concise RIM extension points
+     2.4.  Concise RIM Extension Points
      2.5.  CDDL Generic Types
        2.5.1.  Non-Empty
        2.5.2.  One-Or-More
@@ -82,18 +82,20 @@ Table of Contents
        3.1.1.  The corim-meta-map Container
        3.1.2.  The corim-entity-map Container
        3.1.3.  The validity-map Container
-     3.2.  The concise-mid-tag Container
-     3.3.  The tag-identity-map Container
-     3.4.  The module-entity-map Container
-     3.5.  The linked-tag-map Container
-     3.6.  The claims-map Container
-     3.7.  The identity-claim-map Container
-     3.8.  The instance-claim-map Container
-     3.9.  The instance-value-group-choice Enumeration
-     3.10. The element-name-map Container
-     3.11. The element-value-map Container
-     3.12. The endorsed-claim-map Container
-     3.13. The reference-claim-map Container
+     3.2.  The unsigned-corim-map Container
+       3.2.1.  The corim-locator-map Container
+     3.3.  The concise-mid-tag Container
+     3.4.  The tag-identity-map Container
+     3.5.  The module-entity-map Container
+     3.6.  The linked-tag-map Container
+     3.7.  The claims-map Container
+     3.8.  The identity-claim-map Container
+     3.9.  The instance-claim-map Container
+     3.10. The instance-value-group-choice Enumeration
+     3.11. The element-name-map Container
+     3.12. The element-value-map Container
+     3.13. The endorsed-claim-map Container
+     3.14. The reference-claim-map Container
    4.  Full CDDL Definition
    5.  Privacy Considerations
    6.  Concise SWID Data Extension
@@ -225,7 +227,7 @@ Table of Contents
 
              Table 1: Type Traits & Typographical Convention
 
-2.2.  Prefixes, and Namespaces
+2.2.  Prefixes and Namespaces
 
    The semantics of the information elements (attributes) defined for
    CoRIM, CoMID tags, and CoSWID tags are sometimes very similar, but
@@ -266,7 +268,7 @@ Table of Contents
    Both types of extensibility also allow for the definition of new
    nested maps that again can include additional defined keys.
 
-2.4.  Concise RIM extension points
+2.4.  Concise RIM Extension Points
 
    The following CDDL sockets (extension points) are defined in the
    CoRIM specification, which allow the addition of new information
@@ -276,38 +278,44 @@ Table of Contents
     | Map Name            | CDDL Socket                     | Defined |
     |                     |                                 | in      |
     +=====================+=================================+=========+
-    | concise-mid-tag     | $$comid-extension               | Section |
+    | corim-entity-map    | $$corim-entity-map-extension    | Section |
+    |                     |                                 | 3.1.2   |
+    +---------------------+---------------------------------+---------+
+    | unsigned-corim-map  | $$unsigned-corim-map-extension  | Section |
     |                     |                                 | 3.2     |
     +---------------------+---------------------------------+---------+
-    | tag-identity-map    | $$tag-identity-map-extension    | Section |
+    | concise-mid-tag     | $$comid-extension               | Section |
     |                     |                                 | 3.3     |
     +---------------------+---------------------------------+---------+
-    | module-entity-map   | $$module-entity-map-extension   | Section |
+    | tag-identity-map    | $$tag-identity-map-extension    | Section |
     |                     |                                 | 3.4     |
     +---------------------+---------------------------------+---------+
-    | linked-tag-map      | $$linked-tag-map-extension      | Section |
+    | module-entity-map   | $$module-entity-map-extension   | Section |
     |                     |                                 | 3.5     |
     +---------------------+---------------------------------+---------+
-    | claims-map          | $$claims-map-extension          | Section |
+    | linked-tag-map      | $$linked-tag-map-extension      | Section |
     |                     |                                 | 3.6     |
     +---------------------+---------------------------------+---------+
-    | identity-claim-map  | $$identity-claim-map-extension  | Section |
+    | claims-map          | $$claims-map-extension          | Section |
     |                     |                                 | 3.7     |
     +---------------------+---------------------------------+---------+
-    | instance-claim-map  | $$instance-claim-map-extension  | Section |
+    | identity-claim-map  | $$identity-claim-map-extension  | Section |
     |                     |                                 | 3.8     |
     +---------------------+---------------------------------+---------+
-    | element-name-map    | $$element-name-map-extension    | Section |
-    |                     |                                 | 3.10    |
+    | instance-claim-map  | $$instance-claim-map-extension  | Section |
+    |                     |                                 | 3.9     |
     +---------------------+---------------------------------+---------+
-    | element-value-map   | $$element-value-map-extension   | Section |
+    | element-name-map    | $$element-name-map-extension    | Section |
     |                     |                                 | 3.11    |
     +---------------------+---------------------------------+---------+
-    | endorsed-claim-map  | $$endorsed-claim-map-extension  | Section |
+    | element-value-map   | $$element-value-map-extension   | Section |
     |                     |                                 | 3.12    |
     +---------------------+---------------------------------+---------+
-    | reference-claim-map | $$reference-claim-map-extension | Section |
+    | endorsed-claim-map  | $$endorsed-claim-map-extension  | Section |
     |                     |                                 | 3.13    |
+    +---------------------+---------------------------------+---------+
+    | reference-claim-map | $$reference-claim-map-extension | Section |
+    |                     |                                 | 3.14    |
     +---------------------+---------------------------------+---------+
 
                  Table 2: CoMID CDDL Group Extension Points
@@ -344,7 +352,7 @@ Table of Contents
 
 3.1.  The signed-corim Container
 
-   A CoRIM is signed usinf [RFC7231].  The additional CoRIM-specific
+   A CoRIM is signed using [RFC7231].  The additional CoRIM-specific
    COSE header member label corim-meta is defined as well as the
    corresponding type corim-meta-map as its value.
 
@@ -430,7 +438,54 @@ Table of Contents
    corim.not-after:  The timestamp indicating the CoRIM's end of its
       validity period.
 
-3.2.  The concise-mid-tag Container
+3.2.  The unsigned-corim-map Container
+
+   This map contains the payload of the COSE envelope that is used to
+   sign the CoRIM.
+
+   unsigned-corim-map = {
+     corim.id => $corim-id-type-choice
+     corim.tags => one-or-more<$concise-tag-type-choice>
+     ? corim.dependent-rims => one-or-more<corim-locator-map>
+     * $$unsigned-corim-map-extension
+   }
+
+   $corim-id-type-choice /= tstr
+   $corim-id-type-choice /= uuid-type
+
+   $concise-tag-type-choice /= #6.XXXX(bytes .cbor concise-swid-tag)
+   $concise-tag-type-choice /= #6.XXXX(bytes .cbor concise-mid-tag)
+
+   corim.id:  Typically a UUID or a text string that MUST uniquely
+      identify a CoRIM in a given scope.
+
+   corim.tags:  A collection of one or more CoMID tags and/or CoSWID
+      tags.
+
+   corim.dependent-rims:  One or more services available via the
+      Internet that can supply additional, possibly dependent manifests
+      (or other associated resources).
+
+   $$unsigned-corim-map-extension:  This CDDL socket is used to add new
+      information elements to the unsigned-corim-map container.  See
+      FIXME.
+
+3.2.1.  The corim-locator-map Container
+
+   This map is used to locate and verify the integrity of resources
+   provided by external services, e.g. the CoRIM provider.
+
+   corim-locator-map = {
+     corim.href => uri
+     ? corim.thumbprint => hash-entry
+   }
+
+   corim.href:  A pointer to a services that supplies dependent files or
+      records.
+
+   corim.thumbprint:  A digest of the reference resource.
+
+3.3.  The concise-mid-tag Container
 
    The CDDL specification for the root concise-mid-tag map is as
    follows.  This rule and its constraints MUST be followed when
@@ -464,7 +519,7 @@ Table of Contents
       information elements to the concise-mid-tag root container.  See
       FIXME.
 
-3.3.  The tag-identity-map Container
+3.4.  The tag-identity-map Container
 
    The CDDL specification for the root tag-identity-map includes all
    identifying attributes that enable a consumer of information to
@@ -489,7 +544,7 @@ Table of Contents
       information elements to the concise-mid-tag root container.  See
       FIXME.
 
-3.4.  The module-entity-map Container
+3.5.  The module-entity-map Container
 
    This Container provides qualifying attributes that provide more
    context information describing the module as well its origin and
@@ -516,7 +571,7 @@ Table of Contents
       information elements to the module-entity-map container.  See
       FIXME.
 
-3.5.  The linked-tag-map Container
+3.6.  The linked-tag-map Container
 
    FIXME: description
 
@@ -531,7 +586,7 @@ Table of Contents
 
    comid.tag-rel:  FIXME
 
-3.6.  The claims-map Container
+3.7.  The claims-map Container
 
    FIXME: description
 
@@ -560,7 +615,7 @@ Table of Contents
    comid.device-id => $device-id-type-choice comid.key-material =>
    COSE_KeySet * $$identity-claim-map-extension }
 
-3.7.  The identity-claim-map Container
+3.8.  The identity-claim-map Container
 
    FIXME: description
 
@@ -583,7 +638,7 @@ Table of Contents
    $$identity-claim-map-extension:  This CDDL socket is used to add new
       information elements to the claims-map container.  See FIXME.
 
-3.8.  The instance-claim-map Container
+3.9.  The instance-claim-map Container
 
    FIXME: description
 
@@ -601,7 +656,7 @@ Table of Contents
       information elements to the instance-claim-map container.  See
       FIXME.
 
-3.9.  The instance-value-group-choice Enumeration
+3.10.  The instance-value-group-choice Enumeration
 
    This group choice allows for exactly one type of named instance claim
    per instance-claim map.  If more than one instance-claim type has to
@@ -630,7 +685,7 @@ Table of Contents
 
    comid.uuid:  FIXME
 
-3.10.  The element-name-map Container
+3.11.  The element-name-map Container
 
    FIXME: description
 
@@ -658,7 +713,7 @@ Table of Contents
 
    comid.index:  FIXME
 
-3.11.  The element-value-map Container
+3.12.  The element-value-map Container
 
    FIXME: description
 
@@ -683,7 +738,7 @@ Table of Contents
 
    raw-value-group:  FIXME
 
-3.12.  The endorsed-claim-map Container
+3.13.  The endorsed-claim-map Container
 
    FIXME: description (note: highlight a/symmetry with reference-claim-
    map)
@@ -705,7 +760,7 @@ Table of Contents
       information elements to the endorsed-claim-map container.  See
       FIXME.
 
-3.13.  The reference-claim-map Container
+3.14.  The reference-claim-map Container
 
    FIXME: description (note: highlight a/symmetry with endorsed-claim-
    map)
