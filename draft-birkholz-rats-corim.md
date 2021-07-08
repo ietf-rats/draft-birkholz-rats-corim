@@ -57,7 +57,7 @@ author:
 
 normative:
   RFC2119:
-  RFC7231: cose
+  RFC7231: COSE
   RFC8610:
   RFC8174:
   I-D.ietf-sacm-coswid: coswid
@@ -99,7 +99,7 @@ This section specifies the Concise RIM (CoRIM) format, the Concise MID format (C
 
 While each specification defines its own start rule, only CoMID and CoSWID are stand-alone specifications. The CoRIM specification - as the bundling format - has a dependency on CoMID and CoSWID and is not a stand-alone specification.
 
-While stand-alone CoSWID tags may be signed {{-coswid}}, CoMID tags are not intended to be stand-alone and are always part of a CoRIM that must be signed. {{-coswid}} specifies the use of COSE {{-cose}} for signing. This specification defines how to generate singed CoRIM tags with COSE to enable proof of authenticity and temper-evidence.
+While stand-alone CoSWID tags may be signed {{-coswid}}, CoMID tags are not intended to be stand-alone and are always part of a CoRIM that must be signed. {{-coswid}} specifies the use of COSE {{-COSE}} for signing. This specification defines how to generate singed CoRIM tags with COSE to enable proof of authenticity and temper-evidence.
 
 This document uses the Concise Data Definition Language (CDDL {{RFC8610}}) to define the data structure of CoRIM and CoMID tags, as well as the extensions to CoSWID. The CDDL definitions provided define nested containers. Typically, the CDDL types used for nested containers are maps. Every key used in the maps is a named type that is associated with an corresponding uint via a block of rules appended at the end of the CDDL definition.
 
@@ -177,7 +177,7 @@ non-empty<M> = (M) .within ({ + any => any })
 The one-or-more generic type allows to omit an encapsulating array, if only one member would be present.
 
 ~~~~ CDDL
-one-or-more<T> = T / [ 2* T ]
+one-or-more<T> = T / [ 2* T ] ; 2*
 ~~~~
 
 # Concise RIM Data Definition
@@ -190,6 +190,104 @@ rule `corim` <!-- (as defined in FIXME) -->:
 ~~~ CDDL
 start = corim
 ~~~
+
+{: #model-signed-corim}
+## The signed-corim Container
+
+A CoRIM is signed usinf {{-COSE}}. The additional CoRIM-specific COSE header member label corim-meta is defined as well as the corresponding type corim-meta-map as its value.
+
+~~~ CDDL
+signed-corim = #6.18(COSE-Sign1-corim)
+
+protected-signed-corim-header-map = {
+  corim.alg-id => int
+  corim.content-type => "application/rim+cbor"
+  corim.issuer-key-id => bstr
+  corim.meta => corim-meta-map
+  * cose-label => cose-values 
+}
+
+unprotected-signed-corim-header-map = {
+  * cose-label => cose-values
+}
+
+COSE-Sign1-corim = [
+  protected: bstr .cbor protected-signed-corim-header-map
+  unprotected: unprotected-signed-corim-header-map
+  payload: bstr .cbor unsigned-corim-map
+  signature: bstr
+]
+~~~~
+
+### The corim-meta-map Container
+
+This map contains the two additionally defined attributes `corim-entity-map` and `validity-map` that are used to annotate a CoRIM with metadata.
+
+~~~~ CDDL
+corim-meta-map = {
+  corim.signer => one-or-more<corim-entity-map>
+  ? corim.validity => validity-map
+}
+~~~~
+
+corim.signer:
+
+: One or more entities that created and/or signed the issued CoRIM.
+
+corim.validity:
+
+: A time period defining the validity span of a CoRIM.
+
+### The corim-entity-map Container
+
+This map is used to identify the signer of a CoRIM via a dedicated entity name, a corresponding role and an optional identifying URI.
+
+~~~~ CDDL
+corim-entity-map = {
+  corim.entity-name => $entity-name-type-choice
+  ? corim.reg-id => uri
+  corim.role => $corim-role-type-choice
+  * $$corim-entity-map-extension
+}
+
+$corim-role-type-choice /= corim.manifest-creator
+$corim-role-type-choice /= corim.manifest-signer
+~~~~
+
+corim.entity-name:
+
+: The name of the organization that takes on the role expressed in `corim.role`
+
+corim.reg-id:
+
+: The registration identifier of the organization that has authority over the namespace for `corim.entity-name`.
+
+corim.role:
+
+: The role type that is associated with the entity, e.g. the creator of the CoRIM or the signer of the CoRIM.
+
+$$corim-entity-map-extension:
+
+: This CDDL socket is used to add new information elements to the corim-entity-map container. See FIXME.
+
+### The validity-map Container
+
+The members of this map indicate the life-span or period of validity of a CoRIM that is baked into the protected header at the time of signing.
+
+~~~~ CDDL
+validity-map = {
+  ? corim.not-before => time
+  corim.not-after => time
+}
+~~~~
+
+corim.not-before:
+
+: The timestamp indicating the CoRIM's begin of its validity period.
+
+corim.not-after:
+
+: The timestamp indicating the CoRIM's end of its validity period.
 
 {: #model-concise-mid-tag}
 ## The concise-mid-tag Container
