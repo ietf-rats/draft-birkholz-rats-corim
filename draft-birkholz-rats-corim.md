@@ -1,7 +1,7 @@
 ---
 title: Concise Reference Integrity Manifest
 abbrev: CoRIM
-docname: draft-birkholz-rats-corim-latest0
+docname: draft-birkholz-rats-corim-latest
 stand_alone: true
 ipr: trust200902
 area: Security
@@ -57,6 +57,7 @@ author:
 
 normative:
   RFC2119:
+  RFC7231: cose
   RFC8610:
   RFC8174:
   I-D.ietf-sacm-coswid: coswid
@@ -81,11 +82,11 @@ This documents specifies a binary encoding for Reference Values using the Concis
 * Concise Module Identifiers (CoMID), and
 * Concise Software Identifier (CoSWID).
 
-CoRIM and CoMID are defined in this document, CoSWID are defined in {{-coswid}}. CoRIM provide a wrapper structure, in which CoMID, CoSWID, as well as corresponding metadata can be bundled and signed as a whole. CoMID represent hardware components and provide a counterpart to CoSWID, which represent software components.
+CoRIM and CoMID tags are defined in this document, CoSWID tags are defined in {{-coswid}}. CoRIM provide a wrapper structure, in which CoMID tags, CoSWID tags, as well as corresponding metadata can be bundled and signed as a whole. CoMID tags represent hardware components and provide a counterpart to CoSWID tags, which represent software components.
 
-In accordance to {{RFC4949}}, software components that are stored in hardware modules are referred to as firmware. While firmware can be represented as a software component, it is also very hardware-specific and often resides directly on block devices instead of a file system. In this specification, firmware and their Reference Values are represented via CoMID. Reference Values for any other software components stored on a file system are represented via CoSWID.
+In accordance to {{RFC4949}}, software components that are stored in hardware modules are referred to as firmware. While firmware can be represented as a software component, it is also very hardware-specific and often resides directly on block devices instead of a file system. In this specification, firmware and their Reference Values are represented via CoMID tags. Reference Values for any other software components stored on a file system are represented via CoSWID tags.
 
-In addition to CoRIM - and respective CoMID - this specification defines a Concise Manifest Revocation that represents a list of reference to CoRIM that are actively marked as invalid before their expiration time.
+In addition to CoRIM - and respective CoMID tags - this specification defines a Concise Manifest Revocation that represents a list of reference to CoRIM that are actively marked as invalid before their expiration time.
 
 ## Requirements Notation
 
@@ -94,19 +95,39 @@ In addition to CoRIM - and respective CoMID - this specification defines a Conci
 {: #mybody}
 # Concise Reference Integrity Manifests
 
-This section specifies the Concise RIM (CoRIM) format, the Concise MID format (CoMID), and the extension to the CoSWID specification that augments CoSWIDs to express specific relationships to CoMIDs.
+This section specifies the Concise RIM (CoRIM) format, the Concise MID format (CoMID), and the extension to the CoSWID specification that augments CoSWID tags to express specific relationships to CoMID tags.
 
 While each specification defines its own start rule, only CoMID and CoSWID are stand-alone specifications. The CoRIM specification - as the bundling format - has a dependency on CoMID and CoSWID and is not a stand-alone specification.
 
-While stand-alone CoSWIDs can be signed, CoMID are not intended to be signed themselves. In order to provide a proof of authenticity and to be temper-evident, CoMIDs MUST be wrapped in a CoRIM that is then signed.
+While stand-alone CoSWID tags may be signed {{-coswid}}, CoMID tags are not intended to be stand-alone and are always part of a CoRIM that must be signed. {{-coswid}} specifies the use of COSE {{-cose}} for signing. This specification defines how to generate singed CoRIM tags with COSE to enable proof of authenticity and temper-evidence.
 
-This document uses the Concise Data Definition Language (CDDL {{RFC8610}}) to define the specification for CoRIM and CoMID, as well as the extensions to CoSWID. The CDDL definitions provided define nested containers. Typically, the CDDL types used for nested containers are maps. Every key used in the maps is a named type that is associated with an corresponding uint via a block of rules appended at the end of the CDDL definition.
+This document uses the Concise Data Definition Language (CDDL {{RFC8610}}) to define the data structure of CoRIM and CoMID tags, as well as the extensions to CoSWID. The CDDL definitions provided define nested containers. Typically, the CDDL types used for nested containers are maps. Every key used in the maps is a named type that is associated with an corresponding uint via a block of rules appended at the end of the CDDL definition.
 
-Every set of uint keys that is used in the context of the collision domain of map is intended to be collision-free (each key is intended to be unique in the scope of a map, not a multimap). To accomplish that, for each map there is a registry for the map members of that map <!-- FIXME: ref to IANA sections --> 
+Every set of uint keys that is used in the context of the "collision domain" of map is intended to be collision-free (each key is intended to be unique in the scope of a map, not a multimap). To accomplish that, for each map there is an IANA registry for the map members of maps. <!-- FIXME: ref to IANA sections --> 
+
+## Typographical Conventions
+
+Type names in the following CDDL definitions follow the naming convention illustrated in table {{tbl-typography}}.
+
+| type trait | example | typo convention |
+|---
+| extensible type choice | `int / text / ...` | `$`NAME`-type-choice` |
+| closed type choice | `int / text` | NAME`-type-choice` |
+| group choice | `( 1 => int // 2 => text )` | `$$`NAME`-group-choice` |
+| group | `( 1 => int, 2 => text )` | NAME`-group` |
+| type | `int` | NAME`-type`|
+| tagged type | `#6.123(int)` | `tagged-`NAME`-type`|
+| map | `{ 1 => int, 2 => text }` | NAME-`map` |
+| flags | `&( a: 1, b: 2 )` | NAME-`flags` |
+{: #tbl-typography title="Type Traits & Typographical Convention"}
+
+## Prefixes, and Namespaces
+
+The semantics of the information elements (attributes) defined for CoRIM, CoMID tags, and CoSWID tags are sometimes very similar, but often do not share the same scope or are actually quite different. In order to not overload the already existing semantics of the software-centric IANA registries of CoSWID tags with, for example, hardware-centric semantics of CoMID tags, new type names are introduced. For example: both CoSWID tags and CoMID tags define a tag-id. As CoSWID already specifies `tag-id`, the tag-id in CoMID tags is prefixed with `comid.` to disambiguate the context, resulting in `comid.tag-id`. This prefixing provides a well-defined scope for the use of the types defined in this document and guarantees interoperability (no type name collisions) with the CoSWID CDDL definition. Effectively, the prefixes used in this specification enable simple hierarchical namespaces. The prefixing introduced is also based on the anticipated namespace features for CDDL. <!-- FIXME: ref to upcoming CDDL Namespaces I-D -->
 
 ## Extensibility
 
-Both the CoRIM and the CoMID specification include extension points using CDDL sockets (see {{RFC8610}} Section 3.9). The use of CDDL sockets allow for well-formed extensions to be defined in supplementary CDDL definitions that support additional uses of CoRIM and CoMID.
+Both the CoRIM and the CoMID tag specification include extension points using CDDL sockets (see {{RFC8610}} Section 3.9). The use of CDDL sockets allows for well-formed extensions to be defined in supplementary CDDL definitions that support additional uses of CoRIM and CoMID tags.
 
 There are two types of extensibility supported via the extension points defined in this document. Both types allow for the addition of keys in the scope of a map.
 
@@ -118,15 +139,7 @@ Registered Keys:
 
 : Additional keys can be registered at IANA via separate specifications.
 
-Both types of extensibility also allow for the definition of new nested maps that again in includes additionally defined keys.
-
-## Type Names, Prefixes, and Namespaces
-
-The semantics of the information elements (attributes) defined by CoRIM, CoMID, and CoSWID are sometimes very similar, but do not share the same scope or are slightly different. In order to not overload the already existing semantics of the software-centric IANA registries of CoSWID with, for example, hardware-centric semantics of CoMID, new type names are introduced. For example: both CoSWID and CoMID define a tag-id. As CoSWID already specifies `tag-id`, CoMID prefixes that type name with `comid.` to disambiguate the context, resulting in `comid.tag-id`. This prefixing provides a well-defined scope for the use of the types defined in this document and guarantees interoperability (no type name collisions) with the CoSWID CDDL definition. Effectively, the prefixes used in this specification enable simple hierarchical namespaces. The prefixing introduced is also based on the anticipated namespace features for CDDL. <!-- FIXME: ref to upcoming CDDL Namespaces I-D -->
-
-## CDDL Generic Types
-
-FIXME: name and describe all generic type definitions, such as non-empty or one-or-more, and illustrate their purpose.
+Both types of extensibility also allow for the definition of new nested maps that again can include additional defined keys.
 
 ## Concise RIM extension points
 
@@ -147,12 +160,32 @@ The following CDDL sockets (extension points) are defined in the CoRIM specifica
 | reference-claim-map | $$reference-claim-map-extension | {{model-reference-claim-map}}
 {: #comid-extension-group-sockets title="CoMID CDDL Group Extension Points"}
 
+## CDDL Generic Types
+
+The CDDL definitions for CoRIM and CoMID tags use the two following generic types.
+
+### Non-Empty
+
+The non-empty generic type is used to express that a map with only optional members MUST at least include one of the optional members.
+
+~~~~ CDDL
+non-empty<M> = (M) .within ({ + any => any })
+~~~~
+
+### One-Or-More
+
+The one-or-more generic type allows to omit an encapsulating array, if only one member would be present.
+
+~~~~ CDDL
+one-or-more<T> = T / [ 2* T ]
+~~~~
+
 # Concise RIM Data Definition
 
-A CoRIM is a bundle of CoMIDs and CoSWIDs that can reference each other and that includes additional metadata about that bundle.
+A CoRIM is a bundle of CoMID tags and/or CoSWID tags that can reference each other and that includes additional metadata about that bundle.
 
 The root of the CDDL specification provided for CoRIM is the
-rule `corim` (as defined in FIXME):
+rule `corim` <!-- (as defined in FIXME) -->:
 
 ~~~ CDDL
 start = corim
