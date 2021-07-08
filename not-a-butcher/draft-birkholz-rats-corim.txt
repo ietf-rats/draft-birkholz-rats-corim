@@ -86,9 +86,9 @@ Table of Contents
        3.2.1.  The corim-locator-map Container
      3.3.  The concise-mid-tag Container
      3.4.  The tag-identity-map Container
-     3.5.  The module-entity-map Container
+     3.5.  The entity-map Container
      3.6.  The linked-tag-map Container
-     3.7.  The claims-map Container
+     3.7.  The triples-map Container
      3.8.  The identity-claim-map Container
      3.9.  The instance-claim-map Container
      3.10. The instance-value-group-choice Enumeration
@@ -274,49 +274,48 @@ Table of Contents
    CoRIM specification, which allow the addition of new information
    structures to their respective CDDL groups.
 
-    +=====================+=================================+=========+
-    | Map Name            | CDDL Socket                     | Defined |
-    |                     |                                 | in      |
-    +=====================+=================================+=========+
-    | corim-entity-map    | $$corim-entity-map-extension    | Section |
-    |                     |                                 | 3.1.2   |
-    +---------------------+---------------------------------+---------+
-    | unsigned-corim-map  | $$unsigned-corim-map-extension  | Section |
-    |                     |                                 | 3.2     |
-    +---------------------+---------------------------------+---------+
-    | concise-mid-tag     | $$comid-extension               | Section |
-    |                     |                                 | 3.3     |
-    +---------------------+---------------------------------+---------+
-    | tag-identity-map    | $$tag-identity-map-extension    | Section |
-    |                     |                                 | 3.4     |
-    +---------------------+---------------------------------+---------+
-    | module-entity-map   | $$module-entity-map-extension   | Section |
-    |                     |                                 | 3.5     |
-    +---------------------+---------------------------------+---------+
-    | linked-tag-map      | $$linked-tag-map-extension      | Section |
-    |                     |                                 | 3.6     |
-    +---------------------+---------------------------------+---------+
-    | claims-map          | $$claims-map-extension          | Section |
-    |                     |                                 | 3.7     |
-    +---------------------+---------------------------------+---------+
-    | identity-claim-map  | $$identity-claim-map-extension  | Section |
-    |                     |                                 | 3.8     |
-    +---------------------+---------------------------------+---------+
-    | instance-claim-map  | $$instance-claim-map-extension  | Section |
-    |                     |                                 | 3.9     |
-    +---------------------+---------------------------------+---------+
-    | element-name-map    | $$element-name-map-extension    | Section |
-    |                     |                                 | 3.11    |
-    +---------------------+---------------------------------+---------+
-    | element-value-map   | $$element-value-map-extension   | Section |
-    |                     |                                 | 3.12    |
-    +---------------------+---------------------------------+---------+
-    | endorsed-claim-map  | $$endorsed-claim-map-extension  | Section |
-    |                     |                                 | 3.13    |
-    +---------------------+---------------------------------+---------+
-    | reference-claim-map | $$reference-claim-map-extension | Section |
-    |                     |                                 | 3.14    |
-    +---------------------+---------------------------------+---------+
+    +==============+====================+===================+=========+
+    | Map Name     | CDDL Socket        | Defined in        |         |
+    +==============+====================+===================+=========+
+    | corim-       | $$corim-entity-    | Section 3.1.2     |         |
+    | entity-map   | map-extension      |                   |         |
+    +--------------+--------------------+-------------------+---------+
+    | unsigned-    | $$unsigned-corim-  | Section 3.2       |         |
+    | corim-map    | map-extension      |                   |         |
+    +--------------+--------------------+-------------------+---------+
+    | concise-mid- | $$comid-extension  | Section 3.3       |         |
+    | tag          |                    |                   |         |
+    +--------------+--------------------+-------------------+---------+
+    | tag-         | $$tag-identity-    | Section 3.4       |         |
+    | identity-map | map-extension      |                   |         |
+    +--------------+--------------------+-------------------+---------+
+    | entity-map   | $$entity-map-      | Section 3.5       |         |
+    |              | extension          |                   |         |
+    +--------------+--------------------+-------------------+---------+
+    | linked-tag-  | $$linked-tag-map-  | Section 3.6       |         |
+    | map          | extension          |                   |         |
+    +--------------+--------------------+-------------------+---------+
+    | triples-map  | $$triples-map-     | Section 3.7       |         |
+    |              | extension          |                   |         |
+    +--------------+--------------------+-------------------+---------+
+    | ;            | identity-claim-map | $$identity-claim- | Section |
+    |              |                    | map-extension     | 3.8     |
+    +--------------+--------------------+-------------------+---------+
+    | instance-    | $$instance-claim-  | Section 3.9       |         |
+    | claim-map    | map-extension      |                   |         |
+    +--------------+--------------------+-------------------+---------+
+    | element-     | $$element-name-    | Section 3.11      |         |
+    | name-map     | map-extension      |                   |         |
+    +--------------+--------------------+-------------------+---------+
+    | element-     | $$element-value-   | Section 3.12      |         |
+    | value-map    | map-extension      |                   |         |
+    +--------------+--------------------+-------------------+---------+
+    | endorsed-    | $$endorsed-claim-  | Section 3.13      |         |
+    | claim-map    | map-extension      |                   |         |
+    +--------------+--------------------+-------------------+---------+
+    | reference-   | $$reference-claim- | Section 3.14      |         |
+    | claim-map    | map-extension      |                   |         |
+    +--------------+--------------------+-------------------+---------+
 
                  Table 2: CoMID CDDL Group Extension Points
 
@@ -354,7 +353,9 @@ Table of Contents
 
    A CoRIM is signed using [RFC7231].  The additional CoRIM-specific
    COSE header member label corim-meta is defined as well as the
-   corresponding type corim-meta-map as its value.
+   corresponding type corim-meta-map as its value.  This rule and its
+   constraints MUST be followed when generating or validating a signed
+   CoMID tag.
 
    signed-corim = #6.18(COSE-Sign1-corim)
 
@@ -441,7 +442,8 @@ Table of Contents
 3.2.  The unsigned-corim-map Container
 
    This map contains the payload of the COSE envelope that is used to
-   sign the CoRIM.
+   sign the CoRIM.  This rule and its constraints MUST be followed when
+   generating or validating an unsigned Concise RIM.
 
    unsigned-corim-map = {
      corim.id => $corim-id-type-choice
@@ -489,31 +491,33 @@ Table of Contents
 
    The CDDL specification for the root concise-mid-tag map is as
    follows.  This rule and its constraints MUST be followed when
-   creating or validating a CoMID tag:
+   generating or validating a CoMID tag.
 
    concise-mid-tag = {
-     ? comid.language => language-type,
-     comid.tag-identity => tag-identity-map,
-     ? comid.module-name => element-name-map,
-     ? comid.entity => one-or-more<module-entity-map>,
-     ? comid.linked-tags => one-or-more<linked-tag-map>,
-     ? comid.claims => claims-map,
-     * $$concise-mid-tag-extension,
+     ? comid.language => language-type
+     comid.tag-identity => tag-identity-map
+     ? comid.entity => one-or-more<entity-map>
+     ? comid.linked-tags => one-or-more<linked-tag-map>
+     comid.triples => triples-map
+     * $$concise-mid-tag-extension
    }
 
    The following describes each member of the concise-mid-tag root map.
 
-   comid.language:  FIXME
+   comid.language:  A textual language tag that conforms with the IANA
+      Language Subtag Registry [IANA.language-subtag-registry].
 
-   comid.tag-identity:  FIXME
+   comid.tag-identity:  A composite identifier containing identifying
+      attributes that enable global unique identification of a CoMID tag
+      across versions.
 
-   comid.module-name:  FIXME
+   comid.entity:  A list of entities that contributed to the CoMID tag.
 
-   comid.entity:  FIXME
+   comid.linked-tags:  A lost of tags that are linked to this CoMID tag.
 
-   comid.linked-tags:  FIXME
-
-   comid.claims:  FIXME
+   comid.triples:  A set of relationships in the form of triples,
+      representing a graph-like and semantic reference structure between
+      tags.
 
    $$comid-mid-tag-extension:  This CDDL socket is used to add new
       information elements to the concise-mid-tag root container.  See
@@ -521,11 +525,11 @@ Table of Contents
 
 3.4.  The tag-identity-map Container
 
-   The CDDL specification for the root tag-identity-map includes all
+   The CDDL specification for the tag-identity-map includes all
    identifying attributes that enable a consumer of information to
    anticipate required capabilities to process the corresponding tag
    that map is included in.  This rule and its constraints MUST be
-   followed when creating or validating a CoMID tag:
+   followed when generating or validating a CoMID tag.
 
    tag-identity-map = {
      comid.tag-id => $tag-id-type-choice
@@ -533,39 +537,53 @@ Table of Contents
      * $$tag-identity-map-extension
    }
 
+   $tag-id-type-choice /= tstr
+   $tag-id-type-choice /= uuid-type
+
+   tag-version-type = uint .default 0
+
    The following describes each member of the tag-identity-map
    container.
 
-   comid.tag-id:  FIXME
+   comid.tag-id:  An identifier for a CoMID that MUST be globally
+      unique.
 
-   comid.tag-version:  FIXME
+   comid.tag-version:  An unsigned integer used as a version identifier.
 
    $$tag-metadata-map-extension:  This CDDL socket is used to add new
       information elements to the concise-mid-tag root container.  See
       FIXME.
 
-3.5.  The module-entity-map Container
+3.5.  The entity-map Container
 
    This Container provides qualifying attributes that provide more
    context information describing the module as well its origin and
    purpose.  This rule and its constraints MUST be followed when
-   creating or validating a CoMID tag:
+   generating or validating a CoMID tag.
 
-   module-entity-map = {
-     comid.entity-name => text
+   entity-map = {
+     comid.entity-name => $entity-name-type-choice
      ? comid.reg-id => uri
-     comid.role => one-or-more<$module-role-type-choice>
-     * $$module-entity-map-extension
+     comid.role => one-or-more<$comid-role-type-choice>
+     * $$entity-map-extension
    }
+
+   $comid-role-type-choice /= comid.tag-creator
+   $comid-role-type-choice /= comid.creator
+   $comid-role-type-choice /= comid.maintainer
 
    The following describes each member of the tag-identity-map
    container.
 
-   comid.entity-name:  FIXME
+   comid.entity-name:  The name of an organization that performs the
+      roles as indicated by comid.role.
 
-   comid.reg-id:  FIXME
+   comid.reg-id:  The registration identifier of the organization that
+      has authority over the namespace for "comid.entity-name".
 
-   comid.role:  FIXME
+   comid.role:  The list of roles a CoMID entity is associated with.
+      The entity that generates the concise-mid-tag SHOULD include a
+      $comid-role-type-choice value of comid.tag-creator.
 
    $$module-entity-map-extension:  This CDDL socket is used to add new
       information elements to the module-entity-map container.  See
@@ -573,70 +591,81 @@ Table of Contents
 
 3.6.  The linked-tag-map Container
 
-   FIXME: description
+   A list of tags that are linked to this CoMID tag.
 
    linked-tag-map = {
      comid.linked-tag-id => $tag-id-type-choice
      comid.tag-rel => $tag-rel-type-choice
    }
 
+   $tag-rel-type-choice /= comid.includes
+   $tag-rel-type-choice /= comid.or-includes
+   $tag-rel-type-choice /= comid.supplements
+   $tag-rel-type-choice /= comid.updates
+   $tag-rel-type-choice /= comid.replaces
+   $tag-rel-type-choice /= comid.patches
+
    The following describes each member of the linked-tag-map container.
 
-   comid.linked-tag-id:  FIXME
+   comid.linked-tag-id:  The tag-id of the linked tag.  A linked tag MAY
+      be a CoMID tag or a CoSWID tag.
 
-   comid.tag-rel:  FIXME
+   comid.tag-rel:  The relationship type with the linked tag.  The
+      relationship type MAY be "include", "or-includes", "supplements",
+      "updates", "replaces", or "patches", as well as other types well-
+      defined by additional specifications.
 
-3.7.  The claims-map Container
+3.7.  The triples-map Container
 
-   FIXME: description
+   A set of directed properties that associate sets of data to provide
+   reference values, endorsed values, verification key material or
+   identifying key material for a specific hardware module that is a
+   component of a composite device.  This rule and its constraints MUST
+   be followed when generating or validating a CoMID tag.
 
-   claims-map = non-empty<{
-     ? comid.reference-claims => one-or-more<reference-claim-map>
-     ? comid.endorsements => one-or-more<endorsed-claim-map>
-     ? comid.identity-claims => one-or-more<identity-claim-map>
-     ? comid.instance-claims => one-or-more<instance-claim-map>
-     * $$claims-map-extension
+   triples-map = non-empty<{
+     ? comid.reference-triples => one-or-more<reference-triple-record>
+     ? comid.endorsed-triples => one-or-more<endorsed-triple-record>
+     ? comid.attest-key-triples => one-or-more<attest-key-triple-record>
+     ? comid.identity-triples => one-or-more<identity-triple-record>
+     * $$triples-map-extension
    }>
 
    The following describes each member of the claims-map container.
 
-   comid.reference-claims:  FIXME
+   comid.reference-triples:  A directed property that associates
+      reference measurements with a module that is an attesting
+      environment.
 
-   comid.endorsements:  FIXME
+   comid.endorsed-triples:  A directed property that associates endorsed
+      measurements with a module that is a target environment.
 
-   comid.identity-claims:  FIXME
+   comid.attest-key-triples:  A directed property that associates key
+      material used to verify evidence generated from a module that is
+      an attesting environment.
 
-   comid.instance-claims:  FIXME
+   comid.identity-triples:  A directed property that associates key
+      material used to identify a module that is an identifying part of
+      a device.
 
-   $$claims-map-extension:  This CDDL socket is used to add new
-      information elements to the claims-map container.  See FIXME.
-
-   identity-claim-map = { ? comid.element-name => element-name-map ?
-   comid.device-id => $device-id-type-choice comid.key-material =>
-   COSE_KeySet * $$identity-claim-map-extension }
+   $$triples-map-extension:  This CDDL socket is used to add new
+      information elements to the triples-map container.  See FIXME.
 
 3.8.  The identity-claim-map Container
 
    FIXME: description
 
    identity-claim-map = {
-     ? comid.element-name => element-name-map
      ? comid.device-id => $device-id-type-choice
      comid.key-material => COSE_KeySet
-     * $$identity-claim-map-extension
    }
 
    The following describes each member of the identity-claim-map
    container.
 
-   comid.element-name:  FIXME
-
    comid.device-id:  FIXME
 
    comid.key-material:  FIXME
-
-   $$identity-claim-map-extension:  This CDDL socket is used to add new
-      information elements to the claims-map container.  See FIXME.
 
 3.9.  The instance-claim-map Container
 
@@ -1531,6 +1560,11 @@ Table of Contents
               in Progress, Internet-Draft, draft-ietf-sacm-coswid-17, 22
               February 2021, <https://datatracker.ietf.org/doc/html/
               draft-ietf-sacm-coswid-17.txt>.
+
+   [IANA.language-subtag-registry]
+              IANA, "Language Subtag Registry",
+              <http://www.iana.org/assignments/language-subtag-
+              registry>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
