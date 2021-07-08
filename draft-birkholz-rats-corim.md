@@ -121,7 +121,7 @@ Type names in the following CDDL definitions follow the naming convention illust
 | flags | `&( a: 1, b: 2 )` | NAME-`flags` |
 {: #tbl-typography title="Type Traits & Typographical Convention"}
 
-## Prefixes, and Namespaces
+## Prefixes and Namespaces
 
 The semantics of the information elements (attributes) defined for CoRIM, CoMID tags, and CoSWID tags are sometimes very similar, but often do not share the same scope or are actually quite different. In order to not overload the already existing semantics of the software-centric IANA registries of CoSWID tags with, for example, hardware-centric semantics of CoMID tags, new type names are introduced. For example: both CoSWID tags and CoMID tags define a tag-id. As CoSWID already specifies `tag-id`, the tag-id in CoMID tags is prefixed with `comid.` to disambiguate the context, resulting in `comid.tag-id`. This prefixing provides a well-defined scope for the use of the types defined in this document and guarantees interoperability (no type name collisions) with the CoSWID CDDL definition. Effectively, the prefixes used in this specification enable simple hierarchical namespaces. The prefixing introduced is also based on the anticipated namespace features for CDDL. <!-- FIXME: ref to upcoming CDDL Namespaces I-D -->
 
@@ -141,12 +141,14 @@ Registered Keys:
 
 Both types of extensibility also allow for the definition of new nested maps that again can include additional defined keys.
 
-## Concise RIM extension points
+## Concise RIM Extension Points
 
 The following CDDL sockets (extension points) are defined in the CoRIM specification, which allow the addition of new information structures to their respective CDDL groups.
 
 | Map Name | CDDL Socket | Defined in
 |---
+| corim-entity-map | $$corim-entity-map-extension | {{model-corim-entity-map}}
+| unsigned-corim-map | $$unsigned-corim-map-extension | {{model-unsigned-corim-map}}
 | concise-mid-tag | $$comid-extension | {{model-concise-mid-tag}}
 | tag-identity-map | $$tag-identity-map-extension | {{model-tag-identity-map}}
 | module-entity-map | $$module-entity-map-extension | {{model-module-entity-map}}
@@ -194,7 +196,7 @@ start = corim
 {: #model-signed-corim}
 ## The signed-corim Container
 
-A CoRIM is signed usinf {{-COSE}}. The additional CoRIM-specific COSE header member label corim-meta is defined as well as the corresponding type corim-meta-map as its value.
+A CoRIM is signed using {{-COSE}}. The additional CoRIM-specific COSE header member label corim-meta is defined as well as the corresponding type corim-meta-map as its value.
 
 ~~~ CDDL
 signed-corim = #6.18(COSE-Sign1-corim)
@@ -238,6 +240,7 @@ corim.validity:
 
 : A time period defining the validity span of a CoRIM.
 
+{: #model-corim-entity-map}
 ### The corim-entity-map Container
 
 This map is used to identify the signer of a CoRIM via a dedicated entity name, a corresponding role and an optional identifying URI.
@@ -288,6 +291,61 @@ corim.not-before:
 corim.not-after:
 
 : The timestamp indicating the CoRIM's end of its validity period.
+
+{: #model-unsigned-corim-map}
+## The unsigned-corim-map Container
+
+This map contains the payload of the COSE envelope that is used to sign the CoRIM. 
+
+~~~~ CDDL
+unsigned-corim-map = {
+  corim.id => $corim-id-type-choice
+  corim.tags => one-or-more<$concise-tag-type-choice>
+  ? corim.dependent-rims => one-or-more<corim-locator-map>
+  * $$unsigned-corim-map-extension
+}
+
+$corim-id-type-choice /= tstr
+$corim-id-type-choice /= uuid-type
+
+$concise-tag-type-choice /= #6.XXXX(bytes .cbor concise-swid-tag)
+$concise-tag-type-choice /= #6.XXXX(bytes .cbor concise-mid-tag)
+~~~~
+
+corim.id:
+
+: Typically a UUID or a text string that MUST uniquely identify a CoRIM in a given scope.
+
+corim.tags:
+
+: A collection of one or more CoMID tags and/or CoSWID tags.
+
+corim.dependent-rims:
+
+: One or more services available via the Internet that can supply additional, possibly dependent manifests (or other associated resources).
+
+$$unsigned-corim-map-extension:
+
+: This CDDL socket is used to add new information elements to the unsigned-corim-map container. See FIXME.
+
+### The corim-locator-map Container
+
+This map is used to locate and verify the integrity of resources provided by external services, e.g. the CoRIM provider.
+
+~~~~ CDDL
+corim-locator-map = {
+  corim.href => uri
+  ? corim.thumbprint => hash-entry
+}
+~~~~
+
+corim.href:
+
+: A pointer to a services that supplies dependent files or records.
+
+corim.thumbprint:
+
+: A digest of the reference resource.
 
 {: #model-concise-mid-tag}
 ## The concise-mid-tag Container
