@@ -5,7 +5,7 @@
 RATS Working Group                                           H. Birkholz
 Internet-Draft                                            Fraunhofer SIT
 Intended status: Standards Track                              T. Fossati
-Expires: 31 October 2021                                    Y. Deshpande
+Expires: 9 January 2022                                     Y. Deshpande
                                                              Arm Limited
                                                                 N. Smith
                                                                    Intel
@@ -13,11 +13,11 @@ Expires: 31 October 2021                                    Y. Deshpande
                                                                  Red Hat
                                                                   W. Pan
                                                      Huawei Technologies
-                                                           29 April 2021
+                                                             8 July 2021
 
 
                   Concise Reference Integrity Manifest
-                   draft-birkholz-rats-corim-latest0
+                    draft-birkholz-rats-corim-latest
 
 Abstract
 
@@ -49,7 +49,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 31 October 2021.
+   This Internet-Draft will expire on 9 January 2022.
 
 Copyright Notice
 
@@ -70,10 +70,13 @@ Table of Contents
    1.  Introduction
      1.1.  Requirements Notation
    2.  Concise Reference Integrity Manifests
-     2.1.  Extensibility
-     2.2.  Type Names, Prefixes, and Namespaces
-     2.3.  CDDL Generic Types
+     2.1.  Typographical Conventions
+     2.2.  Prefixes, and Namespaces
+     2.3.  Extensibility
      2.4.  Concise RIM extension points
+     2.5.  CDDL Generic Types
+       2.5.1.  Non-Empty
+       2.5.2.  One-Or-More
    3.  Concise RIM Data Definition
      3.1.  The concise-mid-tag Container
      3.2.  The tag-identity-map Container
@@ -124,22 +127,23 @@ Table of Contents
 
    *  Concise Software Identifier (CoSWID).
 
-   CoRIM and CoMID are defined in this document, CoSWID are defined in
-   [I-D.ietf-sacm-coswid].  CoRIM provide a wrapper structure, in which
-   CoMID, CoSWID, as well as corresponding metadata can be bundled and
-   signed as a whole.  CoMID represent hardware components and provide a
-   counterpart to CoSWID, which represent software components.
+   CoRIM and CoMID tags are defined in this document, CoSWID tags are
+   defined in [I-D.ietf-sacm-coswid].  CoRIM provide a wrapper
+   structure, in which CoMID tags, CoSWID tags, as well as corresponding
+   metadata can be bundled and signed as a whole.  CoMID tags represent
+   hardware components and provide a counterpart to CoSWID tags, which
+   represent software components.
 
    In accordance to [RFC4949], software components that are stored in
    hardware modules are referred to as firmware.  While firmware can be
    represented as a software component, it is also very hardware-
    specific and often resides directly on block devices instead of a
    file system.  In this specification, firmware and their Reference
-   Values are represented via CoMID.  Reference Values for any other
-   software components stored on a file system are represented via
-   CoSWID.
+   Values are represented via CoMID tags.  Reference Values for any
+   other software components stored on a file system are represented via
+   CoSWID tags.
 
-   In addition to CoRIM - and respective CoMID - this specification
+   In addition to CoRIM - and respective CoMID tags - this specification
    defines a Concise Manifest Revocation that represents a list of
    reference to CoRIM that are actively marked as invalid before their
    expiration time.
@@ -156,39 +160,92 @@ Table of Contents
 
    This section specifies the Concise RIM (CoRIM) format, the Concise
    MID format (CoMID), and the extension to the CoSWID specification
-   that augments CoSWIDs to express specific relationships to CoMIDs.
+   that augments CoSWID tags to express specific relationships to CoMID
+   tags.
 
    While each specification defines its own start rule, only CoMID and
    CoSWID are stand-alone specifications.  The CoRIM specification - as
    the bundling format - has a dependency on CoMID and CoSWID and is not
    a stand-alone specification.
 
-   While stand-alone CoSWIDs can be signed, CoMID are not intended to be
-   signed themselves.  In order to provide a proof of authenticity and
-   to be temper-evident, CoMIDs MUST be wrapped in a CoRIM that is then
-   signed.
+   While stand-alone CoSWID tags may be signed [I-D.ietf-sacm-coswid],
+   CoMID tags are not intended to be stand-alone and are always part of
+   a CoRIM that must be signed.  [I-D.ietf-sacm-coswid] specifies the
+   use of COSE [RFC7231] for signing.  This specification defines how to
+   generate singed CoRIM tags with COSE to enable proof of authenticity
+   and temper-evidence.
 
    This document uses the Concise Data Definition Language (CDDL
-   [RFC8610]) to define the specification for CoRIM and CoMID, as well
-   as the extensions to CoSWID.  The CDDL definitions provided define
-   nested containers.  Typically, the CDDL types used for nested
+   [RFC8610]) to define the data structure of CoRIM and CoMID tags, as
+   well as the extensions to CoSWID.  The CDDL definitions provided
+   define nested containers.  Typically, the CDDL types used for nested
    containers are maps.  Every key used in the maps is a named type that
    is associated with an corresponding uint via a block of rules
    appended at the end of the CDDL definition.
 
-   Every set of uint keys that is used in the context of the collision
-   domain of map is intended to be collision-free (each key is intended
+   Every set of uint keys that is used in the context of the "collision
+   domain" of map is intended to be collision-free (each key is intended
    to be unique in the scope of a map, not a multimap).  To accomplish
-   that, for each map there is a registry for the map members of that
-   map
+   that, for each map there is an IANA registry for the map members of
+   maps.
 
-2.1.  Extensibility
+2.1.  Typographical Conventions
 
-   Both the CoRIM and the CoMID specification include extension points
-   using CDDL sockets (see [RFC8610] Section 3.9).  The use of CDDL
-   sockets allow for well-formed extensions to be defined in
+   Type names in the following CDDL definitions follow the naming
+   convention illustrated in table Table 1.
+
+   +========================+===============+=========================+
+   | type trait             | example       | typo convention         |
+   +========================+===============+=========================+
+   | extensible type choice | int / text /  | "$"NAME"-type-choice"   |
+   |                        | ...           |                         |
+   +------------------------+---------------+-------------------------+
+   | closed type choice     | int / text    | NAME"-type-choice"      |
+   +------------------------+---------------+-------------------------+
+   | group choice           | ( 1 => int // | "$$"NAME"-group-choice" |
+   |                        | 2 => text )   |                         |
+   +------------------------+---------------+-------------------------+
+   | group                  | ( 1 => int, 2 | NAME"-group"            |
+   |                        | => text )     |                         |
+   +------------------------+---------------+-------------------------+
+   | type                   | int           | NAME"-type"             |
+   +------------------------+---------------+-------------------------+
+   | tagged type            | #6.123(int)   | "tagged-"NAME"-type"    |
+   +------------------------+---------------+-------------------------+
+   | map                    | { 1 => int, 2 | NAME-"map"              |
+   |                        | => text }     |                         |
+   +------------------------+---------------+-------------------------+
+   | flags                  | &( a: 1, b: 2 | NAME-"flags"            |
+   |                        | )             |                         |
+   +------------------------+---------------+-------------------------+
+
+             Table 1: Type Traits & Typographical Convention
+
+2.2.  Prefixes, and Namespaces
+
+   The semantics of the information elements (attributes) defined for
+   CoRIM, CoMID tags, and CoSWID tags are sometimes very similar, but
+   often do not share the same scope or are actually quite different.
+   In order to not overload the already existing semantics of the
+   software-centric IANA registries of CoSWID tags with, for example,
+   hardware-centric semantics of CoMID tags, new type names are
+   introduced.  For example: both CoSWID tags and CoMID tags define a
+   tag-id.  As CoSWID already specifies "tag-id", the tag-id in CoMID
+   tags is prefixed with "comid." to disambiguate the context, resulting
+   in "comid.tag-id".  This prefixing provides a well-defined scope for
+   the use of the types defined in this document and guarantees
+   interoperability (no type name collisions) with the CoSWID CDDL
+   definition.  Effectively, the prefixes used in this specification
+   enable simple hierarchical namespaces.  The prefixing introduced is
+   also based on the anticipated namespace features for CDDL.
+
+2.3.  Extensibility
+
+   Both the CoRIM and the CoMID tag specification include extension
+   points using CDDL sockets (see [RFC8610] Section 3.9).  The use of
+   CDDL sockets allows for well-formed extensions to be defined in
    supplementary CDDL definitions that support additional uses of CoRIM
-   and CoMID.
+   and CoMID tags.
 
    There are two types of extensibility supported via the extension
    points defined in this document.  Both types allow for the addition
@@ -203,30 +260,7 @@ Table of Contents
       separate specifications.
 
    Both types of extensibility also allow for the definition of new
-   nested maps that again in includes additionally defined keys.
-
-2.2.  Type Names, Prefixes, and Namespaces
-
-   The semantics of the information elements (attributes) defined by
-   CoRIM, CoMID, and CoSWID are sometimes very similar, but do not share
-   the same scope or are slightly different.  In order to not overload
-   the already existing semantics of the software-centric IANA
-   registries of CoSWID with, for example, hardware-centric semantics of
-   CoMID, new type names are introduced.  For example: both CoSWID and
-   CoMID define a tag-id.  As CoSWID already specifies "tag-id", CoMID
-   prefixes that type name with "comid." to disambiguate the context,
-   resulting in "comid.tag-id".  This prefixing provides a well-defined
-   scope for the use of the types defined in this document and
-   guarantees interoperability (no type name collisions) with the CoSWID
-   CDDL definition.  Effectively, the prefixes used in this
-   specification enable simple hierarchical namespaces.  The prefixing
-   introduced is also based on the anticipated namespace features for
-   CDDL.
-
-2.3.  CDDL Generic Types
-
-   FIXME: name and describe all generic type definitions, such as non-
-   empty or one-or-more, and illustrate their purpose.
+   nested maps that again can include additional defined keys.
 
 2.4.  Concise RIM extension points
 
@@ -272,15 +306,35 @@ Table of Contents
     |                     |                                 | 3.12    |
     +---------------------+---------------------------------+---------+
 
-                 Table 1: CoMID CDDL Group Extension Points
+                 Table 2: CoMID CDDL Group Extension Points
+
+2.5.  CDDL Generic Types
+
+   The CDDL definitions for CoRIM and CoMID tags use the two following
+   generic types.
+
+2.5.1.  Non-Empty
+
+   The non-empty generic type is used to express that a map with only
+   optional members MUST at least include one of the optional members.
+
+   non-empty<M> = (M) .within ({ + any => any })
+
+2.5.2.  One-Or-More
+
+   The one-or-more generic type allows to omit an encapsulating array,
+   if only one member would be present.
+
+   one-or-more<T> = T / [ 2* T ]
 
 3.  Concise RIM Data Definition
 
-   A CoRIM is a bundle of CoMIDs and CoSWIDs that can reference each
-   other and that includes additional metadata about that bundle.
+   A CoRIM is a bundle of CoMID tags and/or CoSWID tags that can
+   reference each other and that includes additional metadata about that
+   bundle.
 
    The root of the CDDL specification provided for CoRIM is the rule
-   "corim" (as defined in FIXME):
+   "corim" :
 
    start = corim
 
@@ -1271,7 +1325,7 @@ Table of Contents
    This document adds the following code-points to the Link Rel values
    defined in Table 6 of [I-D.ietf-sacm-coswid].  These new indexes
    define relationships between a CoSWID and a CoMID with the semantics
-   specified in Table 2.
+   specified in Table 3.
 
     +=======+=================+======================================+
     | Index | Relationship    | Definition                           |
@@ -1285,9 +1339,9 @@ Table of Contents
     |       |                 | that this software runs on           |
     +-------+-----------------+--------------------------------------+
 
-               Table 2: New CoSWID to CoMID Link Relations
+               Table 3: New CoSWID to CoMID Link Relations
 
-   The rel values listed in Table 2 MUST be used only for link relations
+   The rel values listed in Table 3 MUST be used only for link relations
    involving a base CoSWID and a target CoMID.
 
 7.  Security Considerations
@@ -1300,7 +1354,7 @@ Table of Contents
 
 8.1.  CoSWID to CoMID Link Relations
 
-   IANA is requested to add the indexes in Table 3 to the Software Tag
+   IANA is requested to add the indexes in Table 4 to the Software Tag
    Link Relationship Values Registry.
 
           +=======+========================+===================+
@@ -1311,7 +1365,7 @@ Table of Contents
           | 13    | runs-on-module         | See Section 6.1.1 |
           +-------+------------------------+-------------------+
 
-               Table 3: New CoSWID Link Relationship Values
+               Table 4: New CoSWID Link Relationship Values
 
 9.  References
 
@@ -1335,6 +1389,11 @@ Table of Contents
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <https://datatracker.ietf.org/doc/html/rfc2119>.
+
+   [RFC7231]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
+              Protocol (HTTP/1.1): Semantics and Content", RFC 7231,
+              DOI 10.17487/RFC7231, June 2014,
+              <https://datatracker.ietf.org/doc/html/rfc7231>.
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
