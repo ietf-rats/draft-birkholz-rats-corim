@@ -153,14 +153,8 @@ The following CDDL sockets (extension points) are defined in the CoRIM specifica
 | concise-mid-tag | $$comid-extension | {{model-concise-mid-tag}}
 | tag-identity-map | $$tag-identity-map-extension | {{model-tag-identity-map}}
 | entity-map | $$entity-map-extension | {{model-entity-map}}
-| linked-tag-map | $$linked-tag-map-extension | {{model-linked-tag-map}}
 | triples-map | $$triples-map-extension | {{model-triples-map}}
-;| identity-claim-map | $$identity-claim-map-extension | {{model-identity-claim-map}}
-| instance-claim-map | $$instance-claim-map-extension | {{model-instance-claim-map}}
-| element-name-map | $$element-name-map-extension | {{model-element-name-map}}
-| element-value-map | $$element-value-map-extension | {{model-element-value-map}}
-| endorsed-claim-map | $$endorsed-claim-map-extension | {{model-endorsed-claim-map}}
-| reference-claim-map | $$reference-claim-map-extension | {{model-reference-claim-map}}
+| measurement-values-map | $$measurement-values-map-extension | {{model-measurement-values-map}}
 {: #comid-extension-group-sockets title="CoMID CDDL Group Extension Points"}
 
 ## CDDL Generic Types
@@ -420,9 +414,9 @@ comid.tag-version:
 
 : An unsigned integer used as a version identifier.
 
-$$tag-metadata-map-extension:
+$$tag-identity-map-extension:
 
-: This CDDL socket is used to add new information elements to the concise-mid-tag root container. See FIXME.
+: This CDDL socket is used to add new information elements to the tag-identity-map container. See FIXME.
 
 {: #model-entity-map}
 ## The entity-map Container
@@ -456,9 +450,9 @@ comid.role:
 
 : The list of roles a CoMID entity is associated with. The entity that generates the concise-mid-tag SHOULD include a $comid-role-type-choice value of comid.tag-creator.
 
-$$module-entity-map-extension:
+$$entity-map-extension:
 
-: This CDDL socket is used to add new information elements to the module-entity-map container. See FIXME.
+: This CDDL socket is used to add new information elements to the entity-map container. See FIXME.
 
 {: #model-linked-tag-map}
 ## The linked-tag-map Container
@@ -492,7 +486,7 @@ comid.tag-rel:
 {: #model-triples-map}
 ## The triples-map Container
 
-A set of directed properties that associate sets of data to provide reference values, endorsed values, verification key material or identifying key material for a specific hardware module that is a component of a composite device. This rule and its constraints MUST be followed when generating or validating a CoMID tag.
+A set of directed properties that associate sets of data to provide reference values, endorsed values, verification key material or identifying key material for a specific hardware module that is a component of a composite device. The map provides the core element of CoMID tags that associate remote attestation relevant data with a distinct hardware component that runs an execution environment (a module that is either a Target Environment and/or an Attesting Environment). This rule and its constraints MUST be followed when generating or validating a CoMID tag.
 
 ~~~ CDDL
 triples-map = non-empty<{
@@ -504,15 +498,15 @@ triples-map = non-empty<{
 }>
 ~~~
 
-The following describes each member of the claims-map container.
+The following describes each member of the triple-map container.
 
 comid.reference-triples:
 
-: A directed property that associates reference measurements with a module that is an attesting environment.
+: A directed property that associates reference measurements with a module that is a Target Environment.
 
 comid.endorsed-triples:
 
-: A directed property that associates endorsed measurements with a module that is a target environment.
+: A directed property that associates endorsed measurements with a module that is a Target Environment or Attesting Environment.
 
 comid.attest-key-triples:
 
@@ -520,182 +514,93 @@ comid.attest-key-triples:
 
 comid.identity-triples:
 
-: A directed property that associates key material used to identify a module that is an identifying part of a device.
+: A directed property that associates key material used to identify a module instance or a module class that is an identifying part of a device(-set).
 
 $$triples-map-extension:
 
 : This CDDL socket is used to add new information elements to the triples-map container. See FIXME.
 
-{: #model-identity-claim-map}
-## The identity-claim-map Container
+{: #model-environment-map}
+## The environment-map Container
 
-FIXME: description
+This map represents the module(s) that a triple-map can point directed properties (relationships) from in order to associate them with external information for remote attestation, such as reference values, endorsement and endorsed values, verification key material for evidence, or identifying key material for module (re-)identification. This map can identify a single module instance via `comid.instance` or groups of modules via `comid.group`. Referencing classes of modules requires the use of the more complex `class-map` container. This rule and its constraints MUST be followed when generating or validating a CoMID tag.
 
-~~~ CDDL
-identity-claim-map = {
-  ? comid.device-id => $device-id-type-choice
-  comid.key-material => COSE_KeySet
-}
-~~~
-
-The following describes each member of the identity-claim-map container.
-
-comid.device-id:
-
-: FIXME
-
-comid.key-material:
-
-: FIXME
-
-{: #model-instance-claim-map}
-## The instance-claim-map Container
-
-FIXME: description
-
-~~~ CDDL
-instance-claim-map = {
-  ? comid.element-name => element-name-map
-  $$instance-value-group-choice
-}
-~~~
-
-The following describes each member of the instance-claim-map container.
-
-comid.element-name:
-
-: FIXME
-
-$$instance-value-group-choice:
-
-: This CDDL socket is used to add new information elements to the instance-claim-map container. See FIXME.
-
-## The instance-value-group-choice Enumeration
-
-This group choice allows for exactly one type of named instance claim per instance-claim map. If more than one instance-claim type has to be represented, an array of instance-claim-map entries for comid.instance-claims has to be created (enabled via the one-or-more\<instance-claim-map\> generic type).
-
-~~~ CDDL
-$$instance-value-group-choice //= (
-  comid.mac-addr => mac-addr-type-choice //
-  comid.ip-addr => ip-addr-type-choice //
-  comid.serial-number => serial-number-type //
-  comid.ueid => ueid-type //
-  comid.uuid => uuid-type
-)
-~~~
-
-The following describes each member of the instance-value-group-choice enumeration.
-
-comid.mac-addr:
-
-: FIXME
-
-comid.ip-addr:
-
-: FIXME
-
-comid.serial-number:
-
-: FIXME
-
-comid.ueid:
-
-: FIXME
-
-comid.uuid:
-
-: FIXME
-
-{: #model-element-name-map}
-## The element-name-map Container
-
-FIXME: description
-
-~~~ CDDL
-element-name-map = non-empty<{
-  ? comid.label => label-type
-  ? comid.vendor => vendor-type
-  ? comid.class-id => $class-id-type-choice
-  ? comid.model => model-type
-  ? comid.layer => layer-type
-  ? comid.index => index-type
+~~~~ CDDL
+environment-map = non-empty<{
+  ? comid.class => class-map
+  ? comid.instance => $instance-id-type-choice
+  ? comid.group => $group-id-type-choice
 }>
-~~~
 
-The following describes each member of the element-name-map container.
+$instance-id-type-choice /= tagged-ueid-type
+$instance-id-type-choice /= tagged-uuid-type
 
-comid.label:
+$group-id-type-choice /= tagged-uuid-type
+~~~~
 
-: FIXME
+The following describes each member of the environment-map container.
 
-comid.vendor:
+comid-class:
 
-: FIXME
+: A composite identifier for classes of environments/modules.
 
-comid.class-id:
+comid.instance:
 
-: FIXME
+: An identifier for distinct instances of environments/modules that is either a UEID or a UUID.
 
-comid.model:
+comid.group:
 
-: FIXME
+: An identifier for a group of environments/modules that is a UUID.
 
-comid.layer:
+## The class-map Container
 
-: FIXME
+This map enables a composite identifier intended to uniquely identify modules that are of a distinct class of devices. Effectively, all provided members in combination are a composite module class identifier.  This rule and its constraints MUST be followed when generating or validating a CoMID tag. This rule and its constraints MUST be followed when generating or validating a CoMID tag.
 
-comid.index:
+~~~~ CDDL
+class-map = non-empty<{
+  ; TODO(tho) add text "class-map SHOULD include class-id"
+  ? comid.class-id => $class-id-type-choice
+  ? comid.vendor => tstr
+  ? comid.model => tstr
+  ? comid.layer => uint
+  ? comid.index => uint
+}>
 
-: FIXME
+$class-id-type-choice /= tagged-oid-type
+$class-id-type-choice /= tagged-impl-id-type
+$class-id-type-choice /= tagged-uuid-type
+~~~~
 
-{: #model-element-value-map}
-## The element-value-map Container
+The following describes each member of the class-map container.
 
-FIXME: description
+{: #model-measurement-values-map}
+## The measurement-map and measurement-values-map Containers
 
-~~~ CDDL
-element-value-map = non-empty<{
-  ? comid.version => module-version-map
-  ? comid.svn => svn-type
+On of the targets (range) that a triple-map can point to in order to associate it with a module (domain) is the measurement-map. This map is used to provide reference measurements values that can be compared with Evidence Claim values or Endorsements and endorsed values from other sources than the corresponding CoRIM. `measurement-map` comes with a measurment key that identifies the type of measurement with via a OID reference or a UUID. `measurement-values-map` contains the actual measurements associated with the module(s). Byte strings with corresponding bitmasks that highlights which bits in the byte string are used as reference measurements or endorsement are located in `raw-value-group`. The members of `measurement-values-map` provide well-defined and well-scoped semantics for reference measurement or endorsements with respect to a given module instance, class, or group. This rule and its constraints MUST be followed when generating or validating a CoMID tag.
+
+~~~~ CDDL
+measurement-map = {
+  ? comid.mkey => $measured-element-type-choice
+  comid.mval => measurement-values-map
+}
+
+$measured-element-type-choice /= tagged-oid-type
+$measured-element-type-choice /= tagged-uuid-type
+
+measurement-values-map = non-empty<{
+  ? comid.ver => version-map
+  ? comid.svn => svn-type-choice
   ? comid.digests => digests-type
   ? comid.flags => flags-type
   ? raw-value-group
+  ? comid.mac-addr => mac-addr-type-choice
+  ? comid.ip-addr =>  ip-addr-type-choice
+  ? comid.serial-number => serial-number-type
+  ? comid.ueid => ueid-type
+  ? comid.uuid => uuid-type
+  * $$measurement-values-map-extension
 }>
-~~~
 
-The following describes each member of the element-value-map container.
-
-comid.version:
-
-: FIXME
-
-comid.svn:
-
-: FIXME
-
-comid.digests:
-
-: FIXME
-
-comid.flags:
-
-: FIXME
-
-raw-value-group:
-
-: FIXME
-
-<!-- module-version-map = {
-  comid.version => version-type
-  ? comid.version-scheme => $version-scheme
-}
-
-raw-value-group = (
-  comid.raw-value => raw-value-type
-  ? comid.raw-value-mask => raw-value-mask-type
-)
-
-svn-type = int
 flags-type = bytes .bits operational-flags
 
 operational-flags = &(
@@ -703,61 +608,189 @@ operational-flags = &(
   not-secure: 1
   recovery: 2
   debug: 3
-) -->
+)
 
-{: #model-endorsed-claim-map}
-## The endorsed-claim-map Container
+serial-number-type = text
 
-FIXME: description (note: highlight a/symmetry with reference-claim-map)
+digests-type = one-or-more<hash-entry>
+~~~~
 
-~~~ CDDL
-endorsed-claim-map = non-empty<{
-  ? comid.element-name => element-name-map
-  ? comid.element-value => element-value-map
-  * $$endorsed-claim-map-extension
-}>
-~~~
+The following describes each member of the measurement-map and the measurement-values-map container.
 
-The following describes each member of the endorsed-claim-map container.
+comid.mkey:
 
-comid.element-name:
+: An identifier for the set of measurements expressed in measurement-values-map that is either an OID or a UUID.
 
-: FIXME (note: also used in reference-claim-map)
+comid.ver:
 
-comid.element-value:
+: A version number measurement.
 
-: FIXME (note: also used in reference-claim-map)
+comid.svn:
 
-$$endorsed-claim-map-extension:
+: A security related version number measurement.
 
-: This CDDL socket is used to add new information elements to the endorsed-claim-map container. See FIXME.
+comid.digests:
 
-{: #model-reference-claim-map}
-## The reference-claim-map Container
+: A digest (typically a hash value) measurement.
 
-FIXME: description (note: highlight a/symmetry with endorsed-claim-map)
+comid.flags:
 
-~~~ CDDL
-reference-claim-map = {
-  ? comid.element-name => element-name-map
-  comid.element-value => element-value-map
-  * $$reference-claim-map-extension
+: Measurements that reflect operational modes that are made permanent at manufacturing time such that they are not expected to change during normal operation of the Attester.
+
+raw-value-group:
+
+: A measurement in the form of a byte string that can come with a corresponding bitmask defining the relevance of each bit in the byte string as a measurement.
+
+comid.mac-addr:
+
+: An EUI-48 or EUI-64 MAC address measurement.
+
+comid.ip-addr:
+
+: An Ipv4 or Ipv6 address measurement.
+ 
+comid.serial-number:
+
+: A measurement of a serialnumber in text.
+
+comid.ueid:
+
+: A measurement of a Unique Enough Identifier (UEID).
+
+comid.uuid:
+
+: A measurement of a Universally Unique Identifier (UUID).
+
+$$measurement-values-map-extension:
+
+: This CDDL socket is used to add new information elements to the measurement-values-map container. See FIXME.
+
+### The version-map Container
+
+This map expresses reference values about version information.
+
+~~~~ CDDL
+version-map = {
+  comid.version => version-type
+  ? comid.version-scheme => $version-scheme
 }
+
+version-type = text .default '0.0.0'
+~~~~
+
+The following describes each member of the version-map container.
+
+comid.version:
+
+: The version in the form of a text string.
+
+comid-version-scheme:
+
+: The version-scheme of the text string value as defined in {{-coswid}}
+
+### The svn-type-choice Enumeration
+
+This choice defines the CBOR taged Security Version Numbers (SVN) that can be used as reference values for Evidence and Endorsements.
+
+~~~~ CDDL
+svn = int
+min-svn = int
+tagged-svn = #6.1000(svn)
+tagged-min-svn = #6.1001(min-svn)
+svn-type-choice = tagged-svn / tagged-min-svn
+~~~~
+
+The following describes the types in the svn-type-choice enumeration.
+
+tagged-svn:
+
+: A specific SVN.
+
+tagged-min-svn:
+
+: A lower bound for allowed SVN.
+
+### The raw-value-group Container
+
+FIXME This group can express a single raw byte value and can come with an optional bitmask that defines which bits in the byte string is used as a reference value, by setting corresponding position in the bitmask to 1.
+
+~~~~ CDDL
+raw-value-group = (
+  comid.raw-value => raw-value-type
+  ? comid.raw-value-mask => raw-value-mask-type
+)
+
+raw-value-type = bytes
+raw-value-mask-type = bytes
+~~~~
+
+The following describes the types in the raw-value-group Container.
+
+comid.raw-value:
+
+: FIXME Bit positions in raw-value-type that correspond to bit positions in raw-value-mask-type.
+
+comid.raw-value-mask:
+
+: A raw-value-mask-type bit corresponding to a bit in raw-value-type MUST be 1 to evaluate the corresponding raw-value-type bit.
+
+### The ip-addr-type-choice Enumeration
+
+This type choice expresses IP addresses as reference values.
+
+~~~~ CDDL
+ip-addr-type-choice = ip4-addr-type / ip6-addr-type
+ip4-addr-type = bytes .size 4
+ip6-addr-type = bytes .size 16
+~~~~
+
+### The mac-addr-type-choice Enumeration
+
+This type choice expresses MAC addresses as reference values.
+
+~~~~ CDDL
+mac-addr-type-choice = eui48-addr-type / eui64-addr-type
+eui48-addr-type = bytes .size 6
+eui64-addr-type = bytes .size 8
+~~~~
+
+{: #model-verification-key-map}
+## The verification-key-map Container
+
+One of the targets (range) that a triple-map can point to in order to associate it with a module (domain). This map is used to provide the key material for evidence verification (effectively signature checking or a lightweight proof-of-possession of private signing key material) or for identity assertion/check (where a proof-of-possession implies a certain device identity). In support of informed trust decisions, an optional trust anchor in the form a PKIX certification path that is associated with the provided key material can be included. This rule and its constraints MUST be followed when generating or validating a CoMID tag.
+
+~~~ CDDL
+verification-key-map = {
+  comid.key => COSE_Key
+  ? comid.keychain => [ + pkix-base64-cert-type ]
+}
+
+COSE_Key = {
+  1 => tstr / int           ; kty
+  ? 2 => bstr               ; kid
+  ? 3 => tstr / int         ; alg
+  ? 4 => [+ (tstr / int) ]  ; key_ops
+  ? 5 => bstr               ; Base IV
+  * cose-label => cose-values
+}
+
+COSE_KeySet = [+COSE_Key]
+
+cose-label = int / tstr
+cose-values = any
+
+pkix-base64-cert-type = tstr
 ~~~
 
-The following describes each member of the reference-claim-map container.
+The following describes each member of the verification-key-map container.
 
-comid.element-name:
+comid.key:
 
-: FIXME (note: also used in endorsed-claim-map)
+: Key material in the form of a COSE Key {{-COSE}}.
 
-comid.element-value:
+comid.keychain:
 
-: FIXME (note: also used in endorsed-claim-map)
-
-$$reference-claim-map-extension:
-
-: This CDDL socket is used to add new information elements to the reference-claim-map container. See FIXME.
+: One or more base64 encoded PKIX certificates. The certificate containing the public key in comid.key MUST be the first certificate. Additional certificates MAY follow. Each subsequent certificate SHOULD certify the previous certificate.
 
 # Full CDDL Definition
 
@@ -782,36 +815,6 @@ Not included in the full CDDL definition are CDDL dependencies to CoSWID. The fo
 
 Privacy Considerations
 
-# Concise SWID Data Extension
-
-## New CoSWID to CoMID Relations
-
-The CoSWID link-entry map is extended to describe relationships between CoSWID
-and CoMID.  The new Link Rel values are defined in {{sec-link-rel-values}}.
-
-When using one of these new relations, the following optional elements MUST NOT
-be present in the Link Entry:
-
-* artifact
-* ownership
-* use
-
-### Link Rel Values {#sec-link-rel-values}
-
-This document adds the following code-points to the Link Rel values defined in
-Table 6 of {{!I-D.ietf-sacm-coswid}}.  These new indexes define relationships
-between a CoSWID and a CoMID with the semantics specified in
-{{tbl-link-rel-values}}.
-
- | Index | Relationship Type Name | Definition |
- --------|----------------------- |--------------------------------------------|
- | 12    | requires-module        | The link references a prerequisite module that needs to be loaded or present for installing this software |
- | 13    | runs-on-module         | The link references a module tag that this software runs on |
-{: #tbl-link-rel-values title="New CoSWID to CoMID Link Relations"}
-
-The rel values listed in {{tbl-link-rel-values}} MUST be used only for link
-relations involving a base CoSWID and a target CoMID.
-
 # Security Considerations
 
 Security Considerations
@@ -819,15 +822,3 @@ Security Considerations
 # IANA Considerations
 
 See Body {{mybody}}.
-
-
-### CoSWID to CoMID Link Relations
-
-IANA is requested to add the indexes in {{tbl-iana-link-rel-values}} to the
-Software Tag Link Relationship Values Registry.
-
- | Index | Relationship Type Name | Specification               |
- --------|----------------------- |-----------------------------|
- | 12    | requires-module        | See {{sec-link-rel-values}} |
- | 13    | runs-on-module         | See {{sec-link-rel-values}} |
-{: #tbl-iana-link-rel-values title="New CoSWID Link Relationship Values"}
