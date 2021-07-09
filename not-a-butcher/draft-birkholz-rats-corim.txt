@@ -701,10 +701,10 @@ Table of Contents
    is used to provide reference measurements values that can be compared
    with Evidence Claim values or Endorsements and endorsed values from
    other sources than the corresponding CoRIM. "measurement-map" comes
-   with a measurment key that identifies the type of measurement with
+   with a measurement key that identifies the type of measurement with
    via a OID reference or a UUID. "measurement-values-map" contains the
    actual measurements associated with the module(s).  Byte strings with
-   corresponding bitmasks that highlights which bits in the byte string
+   corresponding bit masks that highlights which bits in the byte string
    are used as reference measurements or endorsement are located in
    "raw-value-group".  The members of "measurement-values-map" provide
    well-defined and well-scoped semantics for reference measurement or
@@ -764,14 +764,14 @@ Table of Contents
       expected to change during normal operation of the Attester.
 
    raw-value-group:  A measurement in the form of a byte string that can
-      come with a corresponding bitmask defining the relevance of each
+      come with a corresponding bit mask defining the relevance of each
       bit in the byte string as a measurement.
 
    comid.mac-addr:  An EUI-48 or EUI-64 MAC address measurement.
 
    comid.ip-addr:  An Ipv4 or Ipv6 address measurement.
 
-   comid.serial-number:  A measurement of a serialnumber in text.
+   comid.serial-number:  A measurement of a serial number in text.
 
    comid.ueid:  A measurement of a Unique Enough Identifier (UEID).
 
@@ -801,7 +801,7 @@ Table of Contents
 
 3.10.2.  The svn-type-choice Enumeration
 
-   This choice defines the CBOR taged Security Version Numbers (SVN)
+   This choice defines the CBOR tagged Security Version Numbers (SVN)
    that can be used as reference values for Evidence and Endorsements.
 
    svn = int
@@ -819,9 +819,9 @@ Table of Contents
 3.10.3.  The raw-value-group Container
 
    FIXME This group can express a single raw byte value and can come
-   with an optional bitmask that defines which bits in the byte string
+   with an optional bit mask that defines which bits in the byte string
    is used as a reference value, by setting corresponding position in
-   the bitmask to 1.
+   the bit mask to 1.
 
    raw-value-group = (
      comid.raw-value => raw-value-type
