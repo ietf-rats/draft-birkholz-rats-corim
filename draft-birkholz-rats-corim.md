@@ -576,7 +576,7 @@ The following describes each member of the class-map container.
 {: #model-measurement-values-map}
 ## The measurement-map and measurement-values-map Containers
 
-On of the targets (range) that a triple-map can point to in order to associate it with a module (domain) is the measurement-map. This map is used to provide reference measurements values that can be compared with Evidence Claim values or Endorsements and endorsed values from other sources than the corresponding CoRIM. `measurement-map` comes with a measurment key that identifies the type of measurement with via a OID reference or a UUID. `measurement-values-map` contains the actual measurements associated with the module(s). Byte strings with corresponding bitmasks that highlights which bits in the byte string are used as reference measurements or endorsement are located in `raw-value-group`. The members of `measurement-values-map` provide well-defined and well-scoped semantics for reference measurement or endorsements with respect to a given module instance, class, or group. This rule and its constraints MUST be followed when generating or validating a CoMID tag.
+On of the targets (range) that a triple-map can point to in order to associate it with a module (domain) is the measurement-map. This map is used to provide reference measurements values that can be compared with Evidence Claim values or Endorsements and endorsed values from other sources than the corresponding CoRIM. `measurement-map` comes with a measurement key that identifies the type of measurement with via a OID reference or a UUID. `measurement-values-map` contains the actual measurements associated with the module(s). Byte strings with corresponding bit masks that highlights which bits in the byte string are used as reference measurements or endorsement are located in `raw-value-group`. The members of `measurement-values-map` provide well-defined and well-scoped semantics for reference measurement or endorsements with respect to a given module instance, class, or group. This rule and its constraints MUST be followed when generating or validating a CoMID tag.
 
 ~~~~ CDDL
 measurement-map = {
@@ -639,7 +639,7 @@ comid.flags:
 
 raw-value-group:
 
-: A measurement in the form of a byte string that can come with a corresponding bitmask defining the relevance of each bit in the byte string as a measurement.
+: A measurement in the form of a byte string that can come with a corresponding bit mask defining the relevance of each bit in the byte string as a measurement.
 
 comid.mac-addr:
 
@@ -651,7 +651,7 @@ comid.ip-addr:
  
 comid.serial-number:
 
-: A measurement of a serialnumber in text.
+: A measurement of a serial number in text.
 
 comid.ueid:
 
@@ -690,7 +690,7 @@ comid-version-scheme:
 
 ### The svn-type-choice Enumeration
 
-This choice defines the CBOR taged Security Version Numbers (SVN) that can be used as reference values for Evidence and Endorsements.
+This choice defines the CBOR tagged Security Version Numbers (SVN) that can be used as reference values for Evidence and Endorsements.
 
 ~~~~ CDDL
 svn = int
@@ -712,7 +712,7 @@ tagged-min-svn:
 
 ### The raw-value-group Container
 
-FIXME This group can express a single raw byte value and can come with an optional bitmask that defines which bits in the byte string is used as a reference value, by setting corresponding position in the bitmask to 1.
+FIXME This group can express a single raw byte value and can come with an optional bit mask that defines which bits in the byte string is used as a reference value, by setting corresponding position in the bit mask to 1.
 
 ~~~~ CDDL
 raw-value-group = (
