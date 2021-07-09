@@ -694,13 +694,13 @@ Table of Contents
 
 3.10.  The measurement-map and measurement-values-map Containers
 
-   On of the targets (range) that a triple-map can point to in order to
+   One of the targets (range) that a triple-map can point to in order to
    associate it with a module (domain) is the measurement-map.  This map
    is used to provide reference measurements values that can be compared
    with Evidence Claim values or Endorsements and endorsed values from
    other sources than the corresponding CoRIM. "measurement-map" comes
-   with a measurement key that identifies the type of measurement with
-   via a OID reference or a UUID. "measurement-values-map" contains the
+   with a measurement key that identifies the measured element with via
+   a OID reference or a UUID. "measurement-values-map" contains the
    actual measurements associated with the module(s).  Byte strings with
    corresponding bit masks that highlights which bits in the byte string
    are used as reference measurements or endorsement are located in
@@ -918,10 +918,9 @@ Table of Contents
    *  the CoSWID document: concise-swid-tag
 
    <CODE BEGINS>
-   corim = #6.47110($concise-reference-integrity-manifest-type-choice)
-
-   $concise-reference-integrity-manifest-type-choice /= #6.47111(unsigned-corim-map)
-   $concise-reference-integrity-manifest-type-choice /= #6.47112(signed-corim)
+   concise-reference-integrity-manifest =
+     #6.47111(unsigned-corim-map) /
+     #6.47112(signed-corim)
 
 
    signed-corim = #6.18(COSE-Sign1-corim)
@@ -978,24 +977,26 @@ Table of Contents
      ? corim.thumbprint => hash-entry
    }
 
-   $concise-tag-type-choice /= #6.47116(bytes .cbor concise-swid-tag)
-   $concise-tag-type-choice /= #6.47117(bytes .cbor concise-mid-tag)
+   $concise-tag-type-choice /= #6.47116(concise-swid-tag)
+   $concise-tag-type-choice /= #6.47117(concise-mid-tag)
 
 
    concise-mid-tag = {
      ? comid.language => language-type
-     comid.tag-identity => tag-identity-map
-     ? comid.entity => one-or-more<entity-map>
+     comid.tag-metadata => tag-metadata-map
+     ? comid.module-metadata => module-metadata-map
+     ? comid.entity => one-or-more<module-entity-map>
      ? comid.linked-tags => one-or-more<linked-tag-map>
-     comid.triples => triples-map
+     ? comid.claims => claims-map
      * $$concise-mid-tag-extension
    }
 
    language-type = text
 
-   tag-identity-map = {
+   tag-metadata-map = {
      comid.tag-id => $tag-id-type-choice
-     ? comid.tag-version => tag-version-type
+     comid.tag-version => tag-version-type
+     * $$tag-metadata-map-extension
    }
 
    $tag-id-type-choice /= tstr
@@ -1003,152 +1004,64 @@ Table of Contents
 
    tag-version-type = uint .default 0
 
-   entity-map = {
-     comid.entity-name => $entity-name-type-choice
-     ? comid.reg-id => uri
-     comid.role => one-or-more<$comid-role-type-choice>
-     * $$entity-map-extension
+   module-metadata-map = {
+     ? comid.module-name => element-name-map
+     ? comid.module-version => module-version-map
+     * $$module-metadata-map-extension
    }
 
-   $comid-role-type-choice /= comid.tag-creator
-   $comid-role-type-choice /= comid.creator
-   $comid-role-type-choice /= comid.maintainer
+   module-entity-map = {
+     comid.entity-name => text
+     ? comid.reg-id => uri
+     comid.role => one-or-more<$module-role-type-choice>
+     * $$module-entity-map-extension
+   }
+
+   $module-role-type-choice /= comid.tag-creator
+   $module-role-type-choice /= comid.creator
+   $module-role-type-choice /= comid.maintainer
 
    linked-tag-map = {
      comid.linked-tag-id => $tag-id-type-choice
      comid.tag-rel => $tag-rel-type-choice
    }
 
+   $tag-rel-type-choice /= comid.includes
+   $tag-rel-type-choice /= comid.or-includes
    $tag-rel-type-choice /= comid.supplements
+   $tag-rel-type-choice /= comid.updates
    $tag-rel-type-choice /= comid.replaces
+   $tag-rel-type-choice /= comid.patches
 
-   triples-map = non-empty<{
-     ? comid.reference-triples => one-or-more<reference-triple-record>
-     ? comid.endorsed-triples => one-or-more<endorsed-triple-record>
-     ? comid.attest-key-triples => one-or-more<attest-key-triple-record>
-     ? comid.identity-triples => one-or-more<identity-triple-record>
-     * $$triples-map-extension
+   claims-map = non-empty<{
+     ? comid.reference-claims => one-or-more<reference-claim-map>
+     ? comid.endorsements => one-or-more<endorsed-value-map>
+     ? comid.identity-claims => one-or-more<identity-claim-map>
+     ? comid.instance-claims => one-or-more<instance-claim-map>
+     * $$claims-map-extension
    }>
 
-   reference-triple-record = [
-     environment-map ; target environment
-     one-or-more<measurement-map> ; reference measurements
-   ]
-
-   endorsed-triple-record = [
-     environment-map ; (target or attesting) environment
-     one-or-more<measurement-map> ; endorsed measurements
-   ]
-
-   attest-key-triple-record = [
-     environment-map ; attesting environment
-     one-or-more<verification-key-map> ; attestation verification key(s)
-   ]
-
-   identity-triple-record = [
-     environment-map ; device identifier (instance or class)
-     one-or-more<verification-key-map> ; DevID, or semantically equivalent
-   ]
-
-   pkix-base64-cert-type = tstr
-
-   verification-key-map = {
-     ; Verification key (typically a public key)
-     comid.key => COSE_Key
-     ; Optional X.509 certificate chain corresponding to the public key
-     ; in comid.key, encoded as an array of one or more base64-encoded
-     ; DER PKIX certificates.  The certificate containing the public key
-     ; in comid.key MUST be the first certificate.  This MAY be followed
-     ; by additional certificates, with each subsequent certificate
-     ; being the one used to certify the previous one.
-     ? comid.keychain => [ + pkix-base64-cert-type ]
+   identity-claim-map = {
+     ? comid.device-id => $device-id-type-choice
+     comid.key-material => COSE_KeySet
    }
 
-   environment-map = non-empty<{
-     ? comid.class => class-map
-     ? comid.instance => $instance-id-type-choice
-     ? comid.group => $group-id-type-choice
-   }>
+   $device-id-type-choice /= tagged-ueid-type
+   $device-id-type-choice /= tagged-uuid-type
 
-   class-map = non-empty<{
-     ; TODO(tho) add text "class-map SHOULD include class-id"
-     ? comid.class-id => $class-id-type-choice
-     ? comid.vendor => tstr
-     ? comid.model => tstr
-     ? comid.layer => uint
-     ? comid.index => uint
-   }>
 
-   $class-id-type-choice /= tagged-oid-type
-   $class-id-type-choice /= tagged-impl-id-type
-   $class-id-type-choice /= tagged-uuid-type
-
-   $instance-id-type-choice /= tagged-ueid-type
-   $instance-id-type-choice /= tagged-uuid-type
-
-   $group-id-type-choice /= tagged-uuid-type
-
-   oid-type = bytes
-   tagged-oid-type = #6.111(oid-type)
-
-   tagged-uuid-type = #6.37(uuid-type)
-
-   ueid-type = bytes .size 33
-   tagged-ueid-type = #6.48000(ueid-type)
-
-   impl-id-type = bytes .size 32
-   tagged-impl-id-type = #6.47115(impl-id-type)
-
-   $measured-element-type-choice /= tagged-oid-type
-   $measured-element-type-choice /= tagged-uuid-type
-
-   measurement-map = {
-     ? comid.mkey => $measured-element-type-choice
-     comid.mval => measurement-values-map
+   instance-claim-map = {
+     ? comid.instance-element-name => element-name-map
+     $$instance-value-group-choice
    }
 
-   measurement-values-map = non-empty<{
-     ? comid.ver => version-map
-     ? comid.svn => svn-type-choice
-     ? comid.digests => digests-type
-     ? comid.flags => flags-type
-     ? raw-value-group
-     ? comid.mac-addr => mac-addr-type-choice
-     ? comid.ip-addr =>  ip-addr-type-choice
-     ? comid.serial-number => serial-number-type
-     ? comid.ueid => ueid-type
-     ? comid.uuid => uuid-type
-     * $$measurement-values-map-extension
-   }>
-
-   version-map = {
-     comid.version => version-type
-     ? comid.version-scheme => $version-scheme
-   }
-   version-type = text .default '0.0.0'
-
-   svn = int
-   min-svn = int
-   tagged-svn = #6.1000(svn)
-   tagged-min-svn = #6.1001(min-svn)
-   svn-type-choice = tagged-svn / tagged-min-svn
-
-   flags-type = bytes .bits operational-flags
-
-   operational-flags = &(
-     not-configured: 0
-     not-secure: 1
-     recovery: 2
-     debug: 3
+   $$instance-value-group-choice //= (
+     comid.mac-addr => mac-addr-type-choice //
+     comid.ip-addr => ip-addr-type-choice //
+     comid.serial-number => serial-number-type //
+     comid.ueid => ueid-type //
+     comid.uuid => uuid-type
    )
-
-   raw-value-group = (
-     comid.raw-value => raw-value-type
-     ? comid.raw-value-mask => raw-value-mask-type
-   )
-
-   raw-value-type = bytes
-   raw-value-mask-type = bytes
 
    ip-addr-type-choice = ip4-addr-type / ip6-addr-type
    ip4-addr-type = bytes .size 4
@@ -1160,7 +1073,83 @@ Table of Contents
 
    serial-number-type = text
 
-   digests-type = one-or-more<hash-entry>
+
+   element-name-map = non-empty<{
+     ? comid.label => label-type
+     ? comid.vendor => vendor-type
+     ? comid.class-id => $class-id-type-choice
+     ? comid.model => model-type
+     ? comid.layer => layer-type
+     ? comid.index => index-type
+   }>
+
+   label-type = text
+   vendor-type = text
+   model-type = text
+   layer-type = int
+   index-type = int
+
+   $class-id-type-choice /= tagged-oid-type
+   $class-id-type-choice /= tagged-uuid-type
+   $class-id-type-choice /= tagged-impl-id-type
+
+   oid-type = bytes
+   tagged-oid-type = #6.111(oid-type)
+
+   tagged-uuid-type = #6.37(uuid-type)
+
+   impl-id-type = bytes .size 32
+   tagged-impl-id-type = #6.47115(impl-id-type)
+
+   ueid-type = bytes .size 33
+   tagged-ueid-type = #6.48000(ueid-type)
+
+   module-version-map = {
+     comid.version => version-type
+     comid.version-scheme => $version-scheme
+   }
+
+   version-type = text .default '0.0.0'
+
+   element-value-map = non-empty<{
+     ? comid.version => version-type
+     ? comid.svn => svn-type
+     ? comid.digests => digests-type
+     ? comid.flags => flags-type
+     ? raw-value-group
+   }>
+
+   svn-type = int
+   flags-type = bytes .bits operational-flags
+
+   raw-value-group = (
+     comid.raw-value => raw-value-type
+     ? comid.raw-value-mask => raw-value-mask-type
+   )
+
+   raw-value-type = bytes
+   raw-value-mask-type = bytes
+
+   endorsed-value-map = {
+     comid.element-name => element-name-map
+     ? comid.element-value => element-value-map
+     * $$endorsed-value-map-extension
+   }
+
+   reference-claim-map = {
+     comid.element-name => element-name-map
+     comid.element-value => element-value-map
+     * $$reference-claim-map-extension
+   }
+
+   operational-flags = &(
+     not-configured: 0
+     not-secure: 1
+     recovery: 2
+     debug: 3
+   )
+
+   digests-type = [ hash-entry / [2* hash-entry] ]
 
 
    concise-swid-tag = {
@@ -1435,14 +1424,26 @@ Table of Contents
    required=2
    recommended=3
 
+   $rel /= requires-module
+   $rel /= runs-on-module
+
+   requires-module = 12
+
+   runs-on-module = 13
+
+
    comid.language = 0
-   comid.tag-identity = 1
-   comid.entity = 2
-   comid.linked-tags = 3
-   comid.triples = 4
+   comid.tag-metadata = 1
+   comid.module-metadata = 2
+   comid.entity = 3
+   comid.linked-tags = 4
+   comid.claims = 5
 
    comid.tag-id = 0
    comid.tag-version = 1
+
+   comid.module-name = 0
+   comid.module-version = 1
 
    comid.entity-name = 0
    comid.reg-id = 1
@@ -1451,49 +1452,57 @@ Table of Contents
    comid.linked-tag-id = 0
    comid.tag-rel = 1
 
-   comid.reference-triples = 0
-   comid.endorsed-triples = 1
-   comid.identity-triples = 2
-   comid.attest-key-triples = 3
-
-   comid.class = 0
-   comid.instance = 1
-   comid.group = 2
-
-   comid.class-id = 0
+   comid.label = 0
    comid.vendor = 1
-   comid.model = 2
-   comid.layer = 3
-   comid.index = 4
+   comid.class-id = 2
+   comid.model = 3
+   comid.layer = 4
+   comid.index = 5
 
-   comid.mkey = 0
-   comid.mval = 1
-
-   comid.ver = 0
+   comid.version = 0
    comid.svn = 1
    comid.digests = 2
    comid.flags = 3
    comid.raw-value = 4
    comid.raw-value-mask = 5
-   comid.mac-addr = 6
-   comid.ip-addr = 7
-   comid.serial-number = 8
-   comid.ueid = 9
-   comid.uuid = 10
 
-   comid.key = 0
-   comid.keychain = 1
+   comid.includes = 0
 
-   comid.version = 0
+   comid.or-includes = 1
+
+   comid.supplements = 2
+
+   comid.updates = 3
+
+   comid.replaces = 4
+
+   comid.patches = 5
+
    comid.version-scheme = 1
 
-   comid.supplements = 0
+   comid.element-name = 0
+   comid.element-value = 1
 
-   comid.replaces = 1
+   comid.reference-claims = 0
+   comid.endorsements = 1
+   comid.identity-claims = 2
+   comid.instance-claims = 3
 
-   comid.tag-creator = 0
-   comid.creator = 1
-   comid.maintainer = 2
+   comid.device-id = 0
+   comid.key-material = 1
+
+   comid.instance-element-name = 0
+   comid.mac-addr = 1
+   comid.ip-addr = 2
+   comid.serial-number = 3
+   comid.ueid = 4
+   comid.uuid = 5
+
+   comid.tag-creator = 1
+
+   comid.creator = 2
+
+   comid.maintainer = 3
 
 
    corim.id = 0
@@ -1514,16 +1523,16 @@ Table of Contents
    corim.signer = 0
    corim.validity = 1
 
-   corim.entity-name = 0
-   corim.reg-id = 1
-   corim.role = 2
+   corim.entity-name = 1
+   corim.reg-id = 2
+   corim.role = 3
 
    corim.manifest-creator = 1
 
    corim.manifest-signer = 2
 
 
-   non-empty<M> = (M) .within ({ + any => any })
+   non-empty<M> = (M) .and ({ + any => any })
 
 
 
@@ -1535,6 +1544,8 @@ Table of Contents
      ? 5 => bstr               ; Base IV
      * cose-label => cose-values
    }
+
+   COSE_KeySet = [+COSE_Key]
 
 
 
