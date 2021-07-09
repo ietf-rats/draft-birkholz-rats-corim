@@ -42,14 +42,6 @@ author:
   code: ""
   city: ""
   country: USA
-- ins: P. Uiterwijk
-  name: Patrick Uiterwijk
-  org: Red Hat
-  email: puiterwijk@redhat.com
-  street: 100 E Davie Street
-  code: '27601'
-  city: Raleigh
-  country: Netherlands
 - ins: W. Pan
   name: Wei Pan
   org: Huawei Technologies
