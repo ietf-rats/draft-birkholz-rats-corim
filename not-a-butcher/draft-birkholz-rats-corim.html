@@ -9,7 +9,6 @@
 <meta content="Thomas Fossati" name="author">
 <meta content="Yogesh Deshpande" name="author">
 <meta content="Ned Smith" name="author">
-<meta content="Patrick Uiterwijk" name="author">
 <meta content="Wei Pan" name="author">
 <meta content="
        Abstract 
@@ -1051,10 +1050,6 @@ address div.right {
 <div class="author">
       <div class="author-name">N. Smith</div>
 <div class="org">Intel</div>
-</div>
-<div class="author">
-      <div class="author-name">P. Uiterwijk</div>
-<div class="org">Red Hat</div>
 </div>
 <div class="author">
       <div class="author-name">W. Pan</div>
@@ -2405,9 +2400,10 @@ comid.keychain:  </dt>
 <div id="section-4-5">
 <pre class="sourcecode lang-CDDL">
 &lt;CODE BEGINS&gt;
-concise-reference-integrity-manifest =
-  #6.47111(unsigned-corim-map) /
-  #6.47112(signed-corim)
+corim = #6.47110($concise-reference-integrity-manifest-type-choice)
+
+$concise-reference-integrity-manifest-type-choice /= #6.47111(unsigned-corim-map)
+$concise-reference-integrity-manifest-type-choice /= #6.47112(signed-corim)
 
 
 signed-corim = #6.18(COSE-Sign1-corim)
@@ -2464,26 +2460,24 @@ corim-locator-map = {
   ? corim.thumbprint =&gt; hash-entry
 }
 
-$concise-tag-type-choice /= #6.47116(concise-swid-tag)
-$concise-tag-type-choice /= #6.47117(concise-mid-tag)
+$concise-tag-type-choice /= #6.47116(bytes .cbor concise-swid-tag)
+$concise-tag-type-choice /= #6.47117(bytes .cbor concise-mid-tag)
 
 
 concise-mid-tag = {
   ? comid.language =&gt; language-type
-  comid.tag-metadata =&gt; tag-metadata-map
-  ? comid.module-metadata =&gt; module-metadata-map
-  ? comid.entity =&gt; one-or-more&lt;module-entity-map&gt;
+  comid.tag-identity =&gt; tag-identity-map
+  ? comid.entity =&gt; one-or-more&lt;entity-map&gt;
   ? comid.linked-tags =&gt; one-or-more&lt;linked-tag-map&gt;
-  ? comid.claims =&gt; claims-map
+  comid.triples =&gt; triples-map
   * $$concise-mid-tag-extension
 }
 
 language-type = text
 
-tag-metadata-map = {
+tag-identity-map = {
   comid.tag-id =&gt; $tag-id-type-choice
-  comid.tag-version =&gt; tag-version-type
-  * $$tag-metadata-map-extension
+  ? comid.tag-version =&gt; tag-version-type
 }
 
 $tag-id-type-choice /= tstr
@@ -2491,64 +2485,152 @@ $tag-id-type-choice /= uuid-type
 
 tag-version-type = uint .default 0
 
-module-metadata-map = {
-  ? comid.module-name =&gt; element-name-map
-  ? comid.module-version =&gt; module-version-map
-  * $$module-metadata-map-extension
-}
-
-module-entity-map = {
-  comid.entity-name =&gt; text
+entity-map = {
+  comid.entity-name =&gt; $entity-name-type-choice
   ? comid.reg-id =&gt; uri
-  comid.role =&gt; one-or-more&lt;$module-role-type-choice&gt;
-  * $$module-entity-map-extension
+  comid.role =&gt; one-or-more&lt;$comid-role-type-choice&gt;
+  * $$entity-map-extension
 }
 
-$module-role-type-choice /= comid.tag-creator
-$module-role-type-choice /= comid.creator
-$module-role-type-choice /= comid.maintainer
+$comid-role-type-choice /= comid.tag-creator
+$comid-role-type-choice /= comid.creator
+$comid-role-type-choice /= comid.maintainer
 
 linked-tag-map = {
   comid.linked-tag-id =&gt; $tag-id-type-choice
   comid.tag-rel =&gt; $tag-rel-type-choice
 }
 
-$tag-rel-type-choice /= comid.includes
-$tag-rel-type-choice /= comid.or-includes
 $tag-rel-type-choice /= comid.supplements
-$tag-rel-type-choice /= comid.updates
 $tag-rel-type-choice /= comid.replaces
-$tag-rel-type-choice /= comid.patches
 
-claims-map = non-empty&lt;{
-  ? comid.reference-claims =&gt; one-or-more&lt;reference-claim-map&gt;
-  ? comid.endorsements =&gt; one-or-more&lt;endorsed-value-map&gt;
-  ? comid.identity-claims =&gt; one-or-more&lt;identity-claim-map&gt;
-  ? comid.instance-claims =&gt; one-or-more&lt;instance-claim-map&gt;
-  * $$claims-map-extension
+triples-map = non-empty&lt;{
+  ? comid.reference-triples =&gt; one-or-more&lt;reference-triple-record&gt;
+  ? comid.endorsed-triples =&gt; one-or-more&lt;endorsed-triple-record&gt;
+  ? comid.attest-key-triples =&gt; one-or-more&lt;attest-key-triple-record&gt;
+  ? comid.identity-triples =&gt; one-or-more&lt;identity-triple-record&gt;
+  * $$triples-map-extension
 }&gt;
 
-identity-claim-map = {
-  ? comid.device-id =&gt; $device-id-type-choice
-  comid.key-material =&gt; COSE_KeySet
+reference-triple-record = [
+  environment-map ; target environment
+  one-or-more&lt;measurement-map&gt; ; reference measurements
+]
+
+endorsed-triple-record = [
+  environment-map ; (target or attesting) environment
+  one-or-more&lt;measurement-map&gt; ; endorsed measurements
+]
+
+attest-key-triple-record = [
+  environment-map ; attesting environment
+  one-or-more&lt;verification-key-map&gt; ; attestation verification key(s)
+]
+
+identity-triple-record = [
+  environment-map ; device identifier (instance or class)
+  one-or-more&lt;verification-key-map&gt; ; DevID, or semantically equivalent
+]
+
+pkix-base64-cert-type = tstr
+
+verification-key-map = {
+  ; Verification key (typically a public key)
+  comid.key =&gt; COSE_Key
+  ; Optional X.509 certificate chain corresponding to the public key
+  ; in comid.key, encoded as an array of one or more base64-encoded
+  ; DER PKIX certificates.  The certificate containing the public key
+  ; in comid.key MUST be the first certificate.  This MAY be followed
+  ; by additional certificates, with each subsequent certificate
+  ; being the one used to certify the previous one.
+  ? comid.keychain =&gt; [ + pkix-base64-cert-type ]
 }
 
-$device-id-type-choice /= tagged-ueid-type
-$device-id-type-choice /= tagged-uuid-type
+environment-map = non-empty&lt;{
+  ? comid.class =&gt; class-map
+  ? comid.instance =&gt; $instance-id-type-choice
+  ? comid.group =&gt; $group-id-type-choice
+}&gt;
 
+class-map = non-empty&lt;{
+  ; TODO(tho) add text "class-map SHOULD include class-id"
+  ? comid.class-id =&gt; $class-id-type-choice
+  ? comid.vendor =&gt; tstr
+  ? comid.model =&gt; tstr
+  ? comid.layer =&gt; uint
+  ? comid.index =&gt; uint
+}&gt;
 
-instance-claim-map = {
-  ? comid.instance-element-name =&gt; element-name-map
-  $$instance-value-group-choice
+$class-id-type-choice /= tagged-oid-type
+$class-id-type-choice /= tagged-impl-id-type
+$class-id-type-choice /= tagged-uuid-type
+
+$instance-id-type-choice /= tagged-ueid-type
+$instance-id-type-choice /= tagged-uuid-type
+
+$group-id-type-choice /= tagged-uuid-type
+
+oid-type = bytes
+tagged-oid-type = #6.111(oid-type)
+
+tagged-uuid-type = #6.37(uuid-type)
+
+ueid-type = bytes .size 33
+tagged-ueid-type = #6.48000(ueid-type)
+
+impl-id-type = bytes .size 32
+tagged-impl-id-type = #6.47115(impl-id-type)
+
+$measured-element-type-choice /= tagged-oid-type
+$measured-element-type-choice /= tagged-uuid-type
+
+measurement-map = {
+  ? comid.mkey =&gt; $measured-element-type-choice
+  comid.mval =&gt; measurement-values-map
 }
 
-$$instance-value-group-choice //= (
-  comid.mac-addr =&gt; mac-addr-type-choice //
-  comid.ip-addr =&gt; ip-addr-type-choice //
-  comid.serial-number =&gt; serial-number-type //
-  comid.ueid =&gt; ueid-type //
-  comid.uuid =&gt; uuid-type
+measurement-values-map = non-empty&lt;{
+  ? comid.ver =&gt; version-map
+  ? comid.svn =&gt; svn-type-choice
+  ? comid.digests =&gt; digests-type
+  ? comid.flags =&gt; flags-type
+  ? raw-value-group
+  ? comid.mac-addr =&gt; mac-addr-type-choice
+  ? comid.ip-addr =&gt;  ip-addr-type-choice
+  ? comid.serial-number =&gt; serial-number-type
+  ? comid.ueid =&gt; ueid-type
+  ? comid.uuid =&gt; uuid-type
+  * $$measurement-values-map-extension
+}&gt;
+
+version-map = {
+  comid.version =&gt; version-type
+  ? comid.version-scheme =&gt; $version-scheme
+}
+version-type = text .default '0.0.0'
+
+svn = int
+min-svn = int
+tagged-svn = #6.1000(svn)
+tagged-min-svn = #6.1001(min-svn)
+svn-type-choice = tagged-svn / tagged-min-svn
+
+flags-type = bytes .bits operational-flags
+
+operational-flags = &amp;(
+  not-configured: 0
+  not-secure: 1
+  recovery: 2
+  debug: 3
 )
+
+raw-value-group = (
+  comid.raw-value =&gt; raw-value-type
+  ? comid.raw-value-mask =&gt; raw-value-mask-type
+)
+
+raw-value-type = bytes
+raw-value-mask-type = bytes
 
 ip-addr-type-choice = ip4-addr-type / ip6-addr-type
 ip4-addr-type = bytes .size 4
@@ -2560,83 +2642,7 @@ eui64-addr-type = bytes .size 8
 
 serial-number-type = text
 
-
-element-name-map = non-empty&lt;{
-  ? comid.label =&gt; label-type
-  ? comid.vendor =&gt; vendor-type
-  ? comid.class-id =&gt; $class-id-type-choice
-  ? comid.model =&gt; model-type
-  ? comid.layer =&gt; layer-type
-  ? comid.index =&gt; index-type
-}&gt;
-
-label-type = text
-vendor-type = text
-model-type = text
-layer-type = int
-index-type = int
-
-$class-id-type-choice /= tagged-oid-type
-$class-id-type-choice /= tagged-uuid-type
-$class-id-type-choice /= tagged-impl-id-type
-
-oid-type = bytes
-tagged-oid-type = #6.111(oid-type)
-
-tagged-uuid-type = #6.37(uuid-type)
-
-impl-id-type = bytes .size 32
-tagged-impl-id-type = #6.47115(impl-id-type)
-
-ueid-type = bytes .size 33
-tagged-ueid-type = #6.48000(ueid-type)
-
-module-version-map = {
-  comid.version =&gt; version-type
-  comid.version-scheme =&gt; $version-scheme
-}
-
-version-type = text .default '0.0.0'
-
-element-value-map = non-empty&lt;{
-  ? comid.version =&gt; version-type
-  ? comid.svn =&gt; svn-type
-  ? comid.digests =&gt; digests-type
-  ? comid.flags =&gt; flags-type
-  ? raw-value-group
-}&gt;
-
-svn-type = int
-flags-type = bytes .bits operational-flags
-
-raw-value-group = (
-  comid.raw-value =&gt; raw-value-type
-  ? comid.raw-value-mask =&gt; raw-value-mask-type
-)
-
-raw-value-type = bytes
-raw-value-mask-type = bytes
-
-endorsed-value-map = {
-  comid.element-name =&gt; element-name-map
-  ? comid.element-value =&gt; element-value-map
-  * $$endorsed-value-map-extension
-}
-
-reference-claim-map = {
-  comid.element-name =&gt; element-name-map
-  comid.element-value =&gt; element-value-map
-  * $$reference-claim-map-extension
-}
-
-operational-flags = &amp;(
-  not-configured: 0
-  not-secure: 1
-  recovery: 2
-  debug: 3
-)
-
-digests-type = [ hash-entry / [2* hash-entry] ]
+digests-type = one-or-more&lt;hash-entry&gt;
 
 
 concise-swid-tag = {
@@ -2911,26 +2917,14 @@ optional=1
 required=2
 recommended=3
 
-$rel /= requires-module
-$rel /= runs-on-module
-
-requires-module = 12
-
-runs-on-module = 13
-
-
 comid.language = 0
-comid.tag-metadata = 1
-comid.module-metadata = 2
-comid.entity = 3
-comid.linked-tags = 4
-comid.claims = 5
+comid.tag-identity = 1
+comid.entity = 2
+comid.linked-tags = 3
+comid.triples = 4
 
 comid.tag-id = 0
 comid.tag-version = 1
-
-comid.module-name = 0
-comid.module-version = 1
 
 comid.entity-name = 0
 comid.reg-id = 1
@@ -2939,57 +2933,49 @@ comid.role = 2
 comid.linked-tag-id = 0
 comid.tag-rel = 1
 
-comid.label = 0
-comid.vendor = 1
-comid.class-id = 2
-comid.model = 3
-comid.layer = 4
-comid.index = 5
+comid.reference-triples = 0
+comid.endorsed-triples = 1
+comid.identity-triples = 2
+comid.attest-key-triples = 3
 
-comid.version = 0
+comid.class = 0
+comid.instance = 1
+comid.group = 2
+
+comid.class-id = 0
+comid.vendor = 1
+comid.model = 2
+comid.layer = 3
+comid.index = 4
+
+comid.mkey = 0
+comid.mval = 1
+
+comid.ver = 0
 comid.svn = 1
 comid.digests = 2
 comid.flags = 3
 comid.raw-value = 4
 comid.raw-value-mask = 5
+comid.mac-addr = 6
+comid.ip-addr = 7
+comid.serial-number = 8
+comid.ueid = 9
+comid.uuid = 10
 
-comid.includes = 0
+comid.key = 0
+comid.keychain = 1
 
-comid.or-includes = 1
-
-comid.supplements = 2
-
-comid.updates = 3
-
-comid.replaces = 4
-
-comid.patches = 5
-
+comid.version = 0
 comid.version-scheme = 1
 
-comid.element-name = 0
-comid.element-value = 1
+comid.supplements = 0
 
-comid.reference-claims = 0
-comid.endorsements = 1
-comid.identity-claims = 2
-comid.instance-claims = 3
+comid.replaces = 1
 
-comid.device-id = 0
-comid.key-material = 1
-
-comid.instance-element-name = 0
-comid.mac-addr = 1
-comid.ip-addr = 2
-comid.serial-number = 3
-comid.ueid = 4
-comid.uuid = 5
-
-comid.tag-creator = 1
-
-comid.creator = 2
-
-comid.maintainer = 3
+comid.tag-creator = 0
+comid.creator = 1
+comid.maintainer = 2
 
 
 corim.id = 0
@@ -3010,16 +2996,16 @@ corim.not-after = 1
 corim.signer = 0
 corim.validity = 1
 
-corim.entity-name = 1
-corim.reg-id = 2
-corim.role = 3
+corim.entity-name = 0
+corim.reg-id = 1
+corim.role = 2
 
 corim.manifest-creator = 1
 
 corim.manifest-signer = 2
 
 
-non-empty&lt;M&gt; = (M) .and ({ + any =&gt; any })
+non-empty&lt;M&gt; = (M) .within ({ + any =&gt; any })
 
 
 
@@ -3031,8 +3017,6 @@ COSE_Key = {
   ? 5 =&gt; bstr               ; Base IV
   * cose-label =&gt; cose-values
 }
-
-COSE_KeySet = [+COSE_Key]
 
 
 
@@ -3170,19 +3154,6 @@ uuid-type = bytes .size 16
 <div class="email">
 <span>Email:</span>
 <a href="mailto:ned.smith@intel.com" class="email">ned.smith@intel.com</a>
-</div>
-</address>
-<address class="vcard">
-        <div dir="auto" class="left"><span class="fn nameRole">Patrick Uiterwijk</span></div>
-<div dir="auto" class="left"><span class="org">Red Hat</span></div>
-<div dir="auto" class="left"><span class="street-address">100 E Davie Street</span></div>
-<div dir="auto" class="left">
-<span class="postal-code">27601</span> <span class="locality">Raleigh</span>
-</div>
-<div dir="auto" class="left"><span class="country-name">Netherlands</span></div>
-<div class="email">
-<span>Email:</span>
-<a href="mailto:puiterwijk@redhat.com" class="email">puiterwijk@redhat.com</a>
 </div>
 </address>
 <address class="vcard">
