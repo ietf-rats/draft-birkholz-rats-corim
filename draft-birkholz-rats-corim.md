@@ -748,24 +748,11 @@ One of the targets (range) that a triple-map can point to in order to associate 
 
 ~~~ CDDL
 verification-key-map = {
-  comid.key => COSE_Key
+  comid.key => pkix-base64-key-type
   ? comid.keychain => [ + pkix-base64-cert-type ]
 }
 
-COSE_Key = {
-  1 => tstr / int           ; kty
-  ? 2 => bstr               ; kid
-  ? 3 => tstr / int         ; alg
-  ? 4 => [+ (tstr / int) ]  ; key_ops
-  ? 5 => bstr               ; Base IV
-  * cose-label => cose-values
-}
-
-COSE_KeySet = [+COSE_Key]
-
-cose-label = int / tstr
-cose-values = any
-
+pkix-base64-key-type = tstr
 pkix-base64-cert-type = tstr
 ~~~
 
@@ -773,7 +760,7 @@ The following describes each member of the verification-key-map container.
 
 comid.key:
 
-: Key material in the form of a COSE Key {{-COSE}}.
+: Verification key material in DER format base64 encoded.  Typically, but not necessarily, a public key.
 
 comid.keychain:
 
