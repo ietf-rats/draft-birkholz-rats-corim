@@ -5,13 +5,13 @@
 RATS Working Group                                           H. Birkholz
 Internet-Draft                                            Fraunhofer SIT
 Intended status: Standards Track                              T. Fossati
-Expires: 3 January 2022                                     Y. Deshpande
+Expires: 13 January 2022                                    Y. Deshpande
                                                              Arm Limited
                                                                 N. Smith
                                                                    Intel
                                                                   W. Pan
                                                      Huawei Technologies
-                                                             2 July 2021
+                                                            12 July 2021
 
 
                   Concise Reference Integrity Manifest
@@ -47,7 +47,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 3 January 2022.
+   This Internet-Draft will expire on 13 January 2022.
 
 Copyright Notice
 
@@ -229,10 +229,10 @@ Table of Contents
    *  the CoSWID document: concise-swid-tag
 
    <CODE BEGINS>
-   corim = #6.47110($concise-reference-integrity-manifest-type-choice)
+   corim = #6.500($concise-reference-integrity-manifest-type-choice)
 
-   $concise-reference-integrity-manifest-type-choice /= #6.47111(unsigned-corim-map)
-   $concise-reference-integrity-manifest-type-choice /= #6.47112(signed-corim)
+   $concise-reference-integrity-manifest-type-choice /= #6.501(unsigned-corim-map)
+   $concise-reference-integrity-manifest-type-choice /= #6.502(signed-corim)
 
 
    signed-corim = #6.18(COSE-Sign1-corim)
@@ -289,8 +289,8 @@ Table of Contents
      ? corim.thumbprint => hash-entry
    }
 
-   $concise-tag-type-choice /= #6.47116(bytes .cbor concise-swid-tag)
-   $concise-tag-type-choice /= #6.47117(bytes .cbor concise-mid-tag)
+   $concise-tag-type-choice /= #6.505(bytes .cbor concise-swid-tag)
+   $concise-tag-type-choice /= #6.506(bytes .cbor concise-mid-tag)
 
 
    concise-mid-tag = {
@@ -405,10 +405,10 @@ Table of Contents
    tagged-uuid-type = #6.37(uuid-type)
 
    ueid-type = bytes .size 33
-   tagged-ueid-type = #6.48000(ueid-type)
+   tagged-ueid-type = #6.550(ueid-type)
 
    impl-id-type = bytes .size 32
-   tagged-impl-id-type = #6.47115(impl-id-type)
+   tagged-impl-id-type = #6.551(impl-id-type)
 
    $measured-element-type-choice /= tagged-oid-type
    $measured-element-type-choice /= tagged-uuid-type
@@ -440,8 +440,8 @@ Table of Contents
 
    svn = int
    min-svn = int
-   tagged-svn = #6.1000(svn)
-   tagged-min-svn = #6.1001(min-svn)
+   tagged-svn = #6.552(svn)
+   tagged-min-svn = #6.553(min-svn)
    svn-type-choice = tagged-svn / tagged-min-svn
 
    flags-type = bytes .bits operational-flags
