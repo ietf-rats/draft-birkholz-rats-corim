@@ -760,7 +760,7 @@ The following describes each member of the verification-key-map container.
 
 comid.key:
 
-: Verification key material in DER format base64-encoded.  Typically, but not necessarily, a public key.
+: Verification key material in DER format base64 encoded.  Typically, but not necessarily, a public key.
 
 comid.keychain:
 
