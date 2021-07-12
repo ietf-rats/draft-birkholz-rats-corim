@@ -1044,11 +1044,13 @@ Table of Contents
      one-or-more<verification-key-map> ; DevID, or semantically equivalent
    ]
 
+   pkix-base64-key-type = tstr
    pkix-base64-cert-type = tstr
 
    verification-key-map = {
-     ; Verification key (typically a public key)
-     comid.key => COSE_Key
+     ; Verification key in DER format base64-encoded.
+     ; Typically, but not necessarily a public key.
+     comid.key => pkix-base64-key-type
      ; Optional X.509 certificate chain corresponding to the public key
      ; in comid.key, encoded as an array of one or more base64-encoded
      ; DER PKIX certificates.  The certificate containing the public key
@@ -1518,17 +1520,6 @@ Table of Contents
 
 
    non-empty<M> = (M) .within ({ + any => any })
-
-
-
-   COSE_Key = {
-     1 => tstr / int           ; kty
-     ? 2 => bstr               ; kid
-     ? 3 => tstr / int         ; alg
-     ? 4 => [+ (tstr / int) ]  ; key_ops
-     ? 5 => bstr               ; Base IV
-     * cose-label => cose-values
-   }
 
 
 
