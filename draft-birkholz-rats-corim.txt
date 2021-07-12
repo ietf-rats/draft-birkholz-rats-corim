@@ -434,8 +434,8 @@ Table of Contents
    $corim-id-type-choice /= tstr
    $corim-id-type-choice /= uuid-type
 
-   $concise-tag-type-choice /= #6.XXXX(bytes .cbor concise-swid-tag)
-   $concise-tag-type-choice /= #6.XXXX(bytes .cbor concise-mid-tag)
+   $concise-tag-type-choice /= #6.TBD-SWID(bytes .cbor concise-swid-tag)
+   $concise-tag-type-choice /= #6.TBD-CoMID(bytes .cbor concise-mid-tag)
 
    corim.id:  Typically a UUID or a text string that MUST uniquely
       identify a CoRIM in a given scope.
@@ -576,12 +576,8 @@ Table of Contents
      comid.tag-rel => $tag-rel-type-choice
    }
 
-   $tag-rel-type-choice /= comid.includes
-   $tag-rel-type-choice /= comid.or-includes
    $tag-rel-type-choice /= comid.supplements
-   $tag-rel-type-choice /= comid.updates
    $tag-rel-type-choice /= comid.replaces
-   $tag-rel-type-choice /= comid.patches
 
    The following describes each member of the linked-tag-map container.
 
@@ -589,9 +585,8 @@ Table of Contents
       be a CoMID tag or a CoSWID tag.
 
    comid.tag-rel:  The relationship type with the linked tag.  The
-      relationship type MAY be "include", "or-includes", "supplements",
-      "updates", "replaces", or "patches", as well as other types well-
-      defined by additional specifications.
+      relationship type MAY be "supplements" or "replaces", as well as
+      other types well-defined by additional specifications.
 
 3.7.  The triples-map Container
 
@@ -678,7 +673,6 @@ Table of Contents
    MUST be followed when generating or validating a CoMID tag.
 
    class-map = non-empty<{
-     ; TODO(tho) add text "class-map SHOULD include class-id"
      ? comid.class-id => $class-id-type-choice
      ? comid.vendor => tstr
      ? comid.model => tstr
@@ -804,8 +798,8 @@ Table of Contents
 
    svn = int
    min-svn = int
-   tagged-svn = #6.1000(svn)
-   tagged-min-svn = #6.1001(min-svn)
+   tagged-svn = #6.TBD-SVN(svn)
+   tagged-min-svn = #6.TBD-minSVN(min-svn)
    svn-type-choice = tagged-svn / tagged-min-svn
 
    The following describes the types in the svn-type-choice enumeration.
