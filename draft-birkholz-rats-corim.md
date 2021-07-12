@@ -296,8 +296,8 @@ unsigned-corim-map = {
 $corim-id-type-choice /= tstr
 $corim-id-type-choice /= uuid-type
 
-$concise-tag-type-choice /= #6.XXXX(bytes .cbor concise-swid-tag)
-$concise-tag-type-choice /= #6.XXXX(bytes .cbor concise-mid-tag)
+$concise-tag-type-choice /= #6.TBD-SWID(bytes .cbor concise-swid-tag)
+$concise-tag-type-choice /= #6.TBD-CoMID(bytes .cbor concise-mid-tag)
 ~~~~
 
 corim.id:
@@ -457,12 +457,8 @@ linked-tag-map = {
   comid.tag-rel => $tag-rel-type-choice
 }
 
-$tag-rel-type-choice /= comid.includes
-$tag-rel-type-choice /= comid.or-includes
 $tag-rel-type-choice /= comid.supplements
-$tag-rel-type-choice /= comid.updates
 $tag-rel-type-choice /= comid.replaces
-$tag-rel-type-choice /= comid.patches
 ~~~
 
 The following describes each member of the linked-tag-map container.
@@ -473,7 +469,7 @@ comid.linked-tag-id:
 
 comid.tag-rel:
 
-: The relationship type with the linked tag. The relationship type MAY be `include`, `or-includes`, `supplements`, `updates`, `replaces`, or `patches`, as well as other types well-defined by additional specifications. 
+: The relationship type with the linked tag. The relationship type MAY be `supplements` or `replaces`, as well as other types well-defined by additional specifications.
 
 {: #model-triples-map}
 ## The triples-map Container
@@ -550,7 +546,6 @@ This map enables a composite identifier intended to uniquely identify modules th
 
 ~~~~ CDDL
 class-map = non-empty<{
-  ; TODO(tho) add text "class-map SHOULD include class-id"
   ? comid.class-id => $class-id-type-choice
   ? comid.vendor => tstr
   ? comid.model => tstr
@@ -687,8 +682,8 @@ This choice defines the CBOR tagged Security Version Numbers (SVN) that can be u
 ~~~~ CDDL
 svn = int
 min-svn = int
-tagged-svn = #6.1000(svn)
-tagged-min-svn = #6.1001(min-svn)
+tagged-svn = #6.TBD-SVN(svn)
+tagged-min-svn = #6.TBD-minSVN(min-svn)
 svn-type-choice = tagged-svn / tagged-min-svn
 ~~~~
 
