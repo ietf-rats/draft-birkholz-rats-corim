@@ -862,30 +862,18 @@ Table of Contents
    generating or validating a CoMID tag.
 
    verification-key-map = {
-     comid.key => COSE_Key
+     comid.key => pkix-base64-key-type
      ? comid.keychain => [ + pkix-base64-cert-type ]
    }
 
-   COSE_Key = {
-     1 => tstr / int           ; kty
-     ? 2 => bstr               ; kid
-     ? 3 => tstr / int         ; alg
-     ? 4 => [+ (tstr / int) ]  ; key_ops
-     ? 5 => bstr               ; Base IV
-     * cose-label => cose-values
-   }
-
-   COSE_KeySet = [+COSE_Key]
-
-   cose-label = int / tstr
-   cose-values = any
-
+   pkix-base64-key-type = tstr
    pkix-base64-cert-type = tstr
 
    The following describes each member of the verification-key-map
    container.
 
-   comid.key:  Key material in the form of a COSE Key [RFC7231].
+   comid.key:  Verification key material in DER format base64 encoded.
+      Typically, but not necessarily, a public key.
 
    comid.keychain:  One or more base64 encoded PKIX certificates.  The
       certificate containing the public key in comid.key MUST be the
