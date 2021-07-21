@@ -1384,3 +1384,14 @@ Restrictions on usage: None
 Author: Henk Birkholz \<henk.birkholz@sit.fraunhofer.de>
 
 Change controller: IESG
+
+## CoAP Content-Format Registration
+
+IANA is requested to assign a CoAP Content-Format ID for the CoRIM
+media type in the "CoAP Content-Formats" sub-registry, from the "IETF
+Review or IESG Approval" space (256..999), within the "CoRE
+Parameters" registry {{RFC7252}} {{!IANA.core-parameters}}:
+
+| Media type            | Encoding | ID    | Reference |
+| application/rim+cbor  | -        | TBD1  | RFC-AAAA  |
+{: #tbl-coap-content-formats cols="l l" title="CoAP Content-Format IDs"}
