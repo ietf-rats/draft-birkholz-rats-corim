@@ -1395,3 +1395,25 @@ Parameters" registry {{RFC7252}} {{!IANA.core-parameters}}:
 | Media type            | Encoding | ID    | Reference |
 | application/rim+cbor  | -        | TBD1  | RFC-AAAA  |
 {: #tbl-coap-content-formats cols="l l" title="CoAP Content-Format IDs"}
+
+## CoRIM CBOR Tag Registration
+
+IANA is requested to allocate tags in the "CBOR Tags" registry {{!IANA.cbor-tags}}, preferably with the specific value requested:
+
+|        Tag | Data Item | Semantics |
+|        500 | tagged array or tagged map | Concise Reference Integrity Manifest (CoRIM) \[RFC-AAAA\] |
+|        501 | map | unsigned CoRIM \[RFC-AAAA\] |
+|        502 | array | signed CoRIM \[RFC-AAAA\] |
+|        505 | byte-wrapped Concise SWID tag \[RFC-AAAA\] |
+|        506 | byte-wrapped Concise MID tag \[RFC-AAAA\] |
+{: #tbl-corim-cbor-tag title="CoRIM CBOR Tags"}
+
+## CoMID CBOR Tag Registration
+
+IANA is requested to allocate tags in the "CBOR Tags" registry {{!IANA.cbor-tags}}, preferably with the specific value requested:
+
+|        Tag | Data Item | Semantics |
+|        550 | bstr | UEID with max size of 33 bytes \[RFC-AAAA\] |
+|        552 | int | Security Version Number \[RFC-AAAA\] |
+|        553 | int | lower bound of allowed Security Version Number \[RFC-AAAA\] |
+{: #tbl-comid-cbor-tag title="CoMID CBOR Tags"}
