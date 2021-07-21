@@ -791,6 +791,7 @@ Not included in the full CDDL definition are CDDL dependencies to CoSWID. The fo
 
 Privacy Considerations
 
+{: #sec-sec}
 # Security Considerations
 
 Security Considerations
@@ -1332,3 +1333,54 @@ Assignments consist of an integer value, the item name, and a reference to the d
 | 2 | comid.maintainer | RFC-AAAA
 | 3-4294967295 | Unassigned
 {: #tbl-iana-comid-role-types-items title="CoMID Role Types Initial Registrations"}
+
+## rim+cbor Media Type Registration
+
+IANA is requested to add the following to the IANA "Media Types" registry {{!IANA.media-types}}.
+
+Type name: application
+
+Subtype name: rim+cbor
+
+Required parameters: none
+
+Optional parameters: none
+
+Encoding considerations: Must be encoded as using {{RFC8949}}. See
+RFC-AAAA for details.
+
+Security considerations: See {{sec-sec}} of RFC-AAAA.
+
+Interoperability considerations: Applications MAY ignore any key
+value pairs that they do not understand. This allows
+backwards compatible extensions to this specification.
+
+Published specification: RFC-AAAA
+
+Applications that use this media type: The type is used by remote attestation procedures, supply chain integrity management systems, vulnerability assessment systems, and in applications that rely on trustworthy endorsements and reference values describing the intended operational state of a system.
+
+Fragment identifier considerations: Fragment identification for
+application/rim+cbor is supported by using fragment identifiers as
+specified by {{Section 9.5 of RFC8949}}.
+
+Additional information:
+
+Magic number(s): first five bytes in hex: 43 4f 52 49 4d
+
+File extension(s): corim
+
+Macintosh file type code(s): none
+
+Macintosh Universal Type Identifier code: org.ietf.corim
+conforms to public.data
+
+Person & email address to contact for further information:
+Henk Birkholz \<henk.birkholz@sit.fraunhofer.de>
+
+Intended usage: COMMON
+
+Restrictions on usage: None
+
+Author: Henk Birkholz \<henk.birkholz@sit.fraunhofer.de>
+
+Change controller: IESG
