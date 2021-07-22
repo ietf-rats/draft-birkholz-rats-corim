@@ -50,9 +50,11 @@ author:
 normative:
   RFC2119:
   RFC7231: COSE
+  RFC7252:
   RFC8126:
   RFC8174:
   RFC8610:
+  RFC8949:
   I-D.ietf-sacm-coswid: coswid
   I-D.ietf-rats-architecture: rats-arch
   IANA.language-subtag-registry: language-subtag 
@@ -62,7 +64,7 @@ informative:
 
 --- abstract
 
-Abstract
+Remote Attestation Procedures (RATS) enable Relying Parties to put trust in the trustworthiness of a remote Attester and therefore to decide if to engage in secure interactions with it - or not. Evidence about trustworthiness can be rather complex, voluminous or Attester-specific. As it is deemed unrealistic that every Relying Party is capable of the appraisal of Evidence, that burden is taken on by a Verifier. In order to conduct Evidence appraisal procedures, a Verifier requires not only fresh Evidence from an Attester, but also trusted Endorsements and Reference Values from Endorsers, such as manufacturers, distributors, or owners. This document specifies Concise Reference Integrity Manifests (CoRIM) that represent Endorsements and Reference Values in CBOR format. Composite devices or systems are represented by a collection of Concise Module Identifiers (CoMID) and Concise Software Identifiers (CoSWID) bundled in a CoRIM document.
 
 --- middle
 
@@ -1404,8 +1406,8 @@ IANA is requested to allocate tags in the "CBOR Tags" registry {{!IANA.cbor-tags
 |        500 | tagged array or tagged map | Concise Reference Integrity Manifest (CoRIM) \[RFC-AAAA\] |
 |        501 | map | unsigned CoRIM \[RFC-AAAA\] |
 |        502 | array | signed CoRIM \[RFC-AAAA\] |
-|        505 | byte-wrapped Concise SWID tag \[RFC-AAAA\] |
-|        506 | byte-wrapped Concise MID tag \[RFC-AAAA\] |
+|        505 | bstr | byte string with CBOR-encoded Concise SWID tag \[RFC-AAAA\] |
+|        506 | bstr | byte string with CBOR-encoded Concise MID tag \[RFC-AAAA\] |
 {: #tbl-corim-cbor-tag title="CoRIM CBOR Tags"}
 
 ## CoMID CBOR Tag Registration
@@ -1414,6 +1416,6 @@ IANA is requested to allocate tags in the "CBOR Tags" registry {{!IANA.cbor-tags
 
 |        Tag | Data Item | Semantics |
 |        550 | bstr | UEID with max size of 33 bytes \[RFC-AAAA\] |
-|        552 | int | Security Version Number \[RFC-AAAA\] |
-|        553 | int | lower bound of allowed Security Version Number \[RFC-AAAA\] |
+|        551 | int | Security Version Number \[RFC-AAAA\] |
+|        552 | int | lower bound of allowed Security Version Number \[RFC-AAAA\] |
 {: #tbl-comid-cbor-tag title="CoMID CBOR Tags"}
