@@ -50,8 +50,11 @@ author:
 normative:
   RFC2119:
   RFC7231: COSE
-  RFC8610:
+  RFC7252:
+  RFC8126:
   RFC8174:
+  RFC8610:
+  RFC8949:
   I-D.ietf-sacm-coswid: coswid
   I-D.ietf-rats-architecture: rats-arch
   IANA.language-subtag-registry: language-subtag 
@@ -61,7 +64,7 @@ informative:
 
 --- abstract
 
-Abstract
+Remote Attestation Procedures (RATS) enable Relying Parties to put trust in the trustworthiness of a remote Attester and therefore to decide if to engage in secure interactions with it - or not. Evidence about trustworthiness can be rather complex, voluminous or Attester-specific. As it is deemed unrealistic that every Relying Party is capable of the appraisal of Evidence, that burden is taken on by a Verifier. In order to conduct Evidence appraisal procedures, a Verifier requires not only fresh Evidence from an Attester, but also trusted Endorsements and Reference Values from Endorsers, such as manufacturers, distributors, or owners. This document specifies Concise Reference Integrity Manifests (CoRIM) that represent Endorsements and Reference Values in CBOR format. Composite devices or systems are represented by a collection of Concise Module Identifiers (CoMID) and Concise Software Identifiers (CoSWID) bundled in a CoRIM document.
 
 --- middle
 
@@ -209,6 +212,7 @@ COSE-Sign1-corim = [
 ]
 ~~~~
 
+{: #model-corim-meta-map}
 ### The corim-meta-map Container
 
 This map contains the two additionally defined attributes `corim-entity-map` and `validity-map` that are used to annotate a CoRIM with metadata.
@@ -789,10 +793,365 @@ Not included in the full CDDL definition are CDDL dependencies to CoSWID. The fo
 
 Privacy Considerations
 
+{: #sec-sec}
 # Security Considerations
 
 Security Considerations
 
+{: #iana}
 # IANA Considerations
 
-See Body {{mybody}}.
+This document has a number of IANA considerations, as described in the following subsections.
+In summary, 6 new registries are established with this request, with initial entries provided for each registry.
+New values for 5 other registries are also requested.
+
+{: #iana-cose-header-parameters-registry}
+## COSE Header Parameters Registry
+
+The 'corim metadata' parameter has been added to the "COSE Header Parameters" registry:
+
+* Name: 'corim metadata'
+
+* Label: 11
+
+* Value: corim-meta-map
+
+* Description: Provides a map of additional metadata for a CoRIM payload composed of (1) one or more entities that created or signed the corresponding CoRIM and (2) its period of validity
+
+* Reference: 'corim-meta-map' in {model-corim-meta-map} of this document
+
+{: #iana-corim-map-items}
+## CoRIM Map Items Registry
+
+This document defines a new registry titled "CoRIM Map".
+The registry uses integer values as index values for items in 'unsigned-corim-map' CBOR maps.
+
+Future registrations for this registry are to be made based on {{RFC8126}} as follows:
+
+| Range             | Registration Procedures
+|---
+| 0-127    | Standards Action
+| 128-255  | Specification Required
+{: #tbl-iana-corim-map-items-reg-procedures title="CoRIM Map Items Registration Procedures"}
+
+All negative values are reserved for Private Use.
+
+Initial registrations for the "CoRIM Map" registry are provided below.
+Assignments consist of an integer index value, the item name, and a reference to the defining specification.
+
+| Index | Item Name | Specification
+|---
+| 0 | corim.id | RFC-AAAA
+| 1 | corim.tags | RFC-AAAA
+| 2 | corim.dependent-rims | RFC-AAAA
+| 3-255 | Unassigned
+{: #tbl-iana-corim-map-items title="CoRIM Map Items Initial Registrations"}
+
+{: #iana-corim-entity-map-items}
+## CoRIM Entity-Map Items Registry
+
+This document defines a new registry titled "CoRIM Entity Map".
+The registry uses integer values as index values for items in 'corim-enentity-map' CBOR maps.
+
+Future registrations for this registry are to be made based on {{RFC8126}} as follows:
+
+| Range             | Registration Procedures
+|---
+| 0-127    | Standards Action
+| 128-255  | Specification Required
+{: #tbl-iana-corim-entity-map-items-reg-procedures title="CoRIM Entity Map Items Registration Procedures"}
+
+All negative values are reserved for Private Use.
+
+Initial registrations for the "CoRIM Entity Map" registry are provided below.
+Assignments consist of an integer index value, the item name, and a reference to the defining specification.
+
+| Index | Item Name | Specification
+|---
+| 0 | corim.entity-name | RFC-AAAA
+| 1 | corim.reg-id | RFC-AAAA
+| 2 | corim.role | RFC-AAAA
+| 3-255 | Unassigned
+{: #tbl-iana-corim-entity-map-items title="CoRIM Enity Map Items Initial Registrations"}
+
+{: #iana-corim-entity-types-map-items}
+## CoRIM Entity-Types Registry
+
+This document defines a new registry titled "CoRIM Entity Types".
+The registry maintains well-defined integer values as choices for '$entity-name-type-choice' CBOR uints.
+
+Future registrations for this registry are to be made based on {{RFC8126}} as follows:
+
+| Range             | Registration Procedures
+|---
+| 0-127    | Standards Action
+| 128-255  | Specification Required
+{: #tbl-iana-corim-entity-types-reg-procedures title="CoRIM Entity Types Registration Procedures"}
+
+All negative values are reserved for Private Use.
+
+Initial registrations for the "CoRIM Entity Types" registry are provided below.
+Assignments consist of an integer value, the item name, and a reference to the defining specification.
+
+| Index | Item Name | Specification
+|---
+| 0 | corim.manifest-creator | RFC-AAAA
+| 1 | corim.manifest-signer | RFC-AAAA
+| 2-255 | Unassigned
+{: #tbl-iana-corim-entity-types-items title="CoRIM Entity Types Initial Registrations"}
+
+{: #iana-comid-map-items}
+## CoMID Map Items Registry
+
+This document defines a new registry titled "CoMID Map".
+The registry uses integer values as index values for items in 'concise-mid-tag' CBOR maps.
+
+Future registrations for this registry are to be made based on {{RFC8126}} as follows:
+
+| Range             | Registration Procedures
+|---
+| 0-127    | Standards Action
+| 128-255  | Specification Required
+{: #tbl-iana-comid-map-items-reg-procedures title="CoMID Map Items Registration Procedures"}
+
+All negative values are reserved for Private Use.
+
+Initial registrations for the "CoMID Map" registry are provided below.
+Assignments consist of an integer index value, the item name, and a reference to the defining specification.
+
+| Index | Item Name | Specification
+|---
+| 0 | comid.language | RFC-AAAA
+| 1 | comid.tag-identity | RFC-AAAA
+| 2 | comid.entity | RFC-AAAA
+| 3 | comid.linked-tags | RFC-AAAA
+| 4 | comid.triples | RFC-AAAA
+| 5-255 | Unassigned
+{: #tbl-iana-comid-map-items title="CoMID Map Items Initial Registrations"}
+
+{: #iana-comid-entity-map-items}
+## CoMID Entity-Map Items Registry
+
+This document defines a new registry titled "CoMID Entity Map".
+The registry uses integer values as index values for items in 'comid-entity-map' CBOR maps.
+
+Future registrations for this registry are to be made based on {{RFC8126}} as follows:
+
+| Range             | Registration Procedures
+|---
+| 0-127    | Standards Action
+| 128-255  | Specification Required
+{: #tbl-iana-comid-entity-map-items-reg-procedures title="CoMID Entity Map Items Registration Procedures"}
+
+All negative values are reserved for Private Use.
+
+Initial registrations for the "CoMID Entity Map" registry are provided below.
+Assignments consist of an integer index value, the item name, and a reference to the defining specification.
+
+| Index | Item Name | Specification
+|---
+| 0 | comid.entity-name | RFC-AAAA
+| 1 | comid.reg-id | RFC-AAAA
+| 2 | comid.role | RFC-AAAA
+| 3-255 | Unassigned
+{: #tbl-iana-comid-entity-map-items title="CoMID Entity Map Items Initial Registrations"}
+
+{: #iana-comid-triples-map-items}
+## CoMID Triples-Map Items Registry
+
+This document defines a new registry titled "CoMID Triples Map".
+The registry uses integer values as index values for items in 'comid-triples-map' CBOR maps.
+
+Future registrations for this registry are to be made based on {{RFC8126}} as follows:
+
+| Range             | Registration Procedures
+|---
+| 0-127    | Standards Action
+| 128-255  | Specification Required
+{: #tbl-iana-comid-triples-map-items-reg-procedures title="CoMID triples Map Items Registration Procedures"}
+
+All negative values are reserved for Private Use.
+
+Initial registrations for the "CoMID Triples Map" registry are provided below.
+Assignments consist of an integer index value, the item name, and a reference to the defining specification.
+
+| Index | Item Name | Specification
+|---
+| 0 | comid.reference-triples | RFC-AAAA
+| 1 | comid.endorsed-triples | RFC-AAAA
+| 2 | comid.identity-triples | RFC-AAAA
+| 3 | comid.attest-key-triples | RFC-AAAA
+| 4-255 | Unassigned
+{: #tbl-iana-comid-triples-map-items title="CoMID Triples Map Items Initial Registrations"}
+
+{: #iana-comid-measurement-values-map-items}
+## CoMID Measurement-Values-Map Items Registry
+
+This document defines a new registry titled "CoMID Measurement-Values Map".
+The registry uses integer values as index values for items in 'comid-measurement-values-map' CBOR maps.
+
+Future registrations for this registry are to be made based on {{RFC8126}} as follows:
+
+| Range             | Registration Procedures
+|---
+| 0-127    | Standards Action
+| 128-255  | Specification Required
+{: #tbl-iana-comid-measurement-values-map-items-reg-procedures title="CoMID Measurement-Values Map Items Registration Procedures"}
+
+All negative values are reserved for Private Use.
+
+Initial registrations for the "CoMID Measurement-Values Map" registry are provided below.
+Assignments consist of an integer index value, the item name, and a reference to the defining specification.
+
+| Index | Item Name | Specification
+|---
+| 0 | comid.ver | RFC-AAAA
+| 1 | comid.svn | RFC-AAAA
+| 2 | comid.digests | RFC-AAAA
+| 3 | comid.flags | RFC-AAAA
+| 4 | comid.raw-value | RFC-AAAA
+| 5 | comid.raw-value-mask | RFC-AAAA
+| 6 | comid.mac-addr | RFC-AAAA
+| 7 | comid.ip-addr | RFC-AAAA
+| 8 | comid.serial-number | RFC-AAAA
+| 9 | comid.ueid | RFC-AAAA
+| 10 | comid.uuid | RFC-AAAA
+| 11-255 | Unassigned
+{: #tbl-iana-comid-measurement-values-map-items title="CoMID Measurement-Values Map Items Initial Registrations"}
+
+{: #iana-comid-tag-relationship-types}
+## CoMID Tag-Relationship-Types Registry
+
+This document defines a new registry titled "CoMID Tag-Relationship Types".
+The registry maintains well-defined integer values as choices for '$tag-rel-type-choice' CBOR uints.
+
+Future registrations for this registry are to be made based on {{RFC8126}} as follows:
+
+| Range             | Registration Procedures
+|---
+| 0-127    | Standards Action
+| 128-255  | Specification Required
+{: #tbl-iana-comid-tag-relationship-types-reg-procedures title="CoMID Tag-Relationship Types Registration Procedures"}
+
+All negative values are reserved for Private Use.
+
+Initial registrations for the "CoMID Tag-Relationship Types" registry are provided below.
+Assignments consist of an integer value, the item name, and a reference to the defining specification.
+
+| Index | Item Name | Specification
+|---
+| 0 | comid.supplements | RFC-AAAA
+| 1 | comid.replaces | RFC-AAAA
+| 2-255 | Unassigned
+{: #tbl-iana-comid-tag-relationship-types-items title="CoMID Tag-Relationship Types Initial Registrations"}
+
+{: #iana-comid-role-types}
+## CoMID Role-Types Registry
+
+This document defines a new registry titled "CoMID Role Types".
+The registry maintains well-defined integer values as choices for '$comid-role-type-choice' CBOR uints.
+
+Future registrations for this registry are to be made based on {{RFC8126}} as follows:
+
+| Range             | Registration Procedures
+|---
+| 0-127    | Standards Action
+| 128-255  | Specification Required
+{: #tbl-iana-comid-role-types-reg-procedures title="CoMID Role Types Registration Procedures"}
+
+All negative values are reserved for Private Use.
+
+Initial registrations for the "CoMID Role Types" registry are provided below.
+Assignments consist of an integer value, the item name, and a reference to the defining specification.
+
+| Index | Item Name | Specification
+|---
+| 0 | comid.tag-creator | RFC-AAAA
+| 1 | comid.creator | RFC-AAAA
+| 2 | comid.maintainer | RFC-AAAA
+| 3-255 | Unassigned
+{: #tbl-iana-comid-role-types-items title="CoMID Role Types Initial Registrations"}
+
+## rim+cbor Media Type Registration
+
+IANA is requested to add the following to the IANA "Media Types" registry {{!IANA.media-types}}.
+
+Type name: application
+
+Subtype name: rim+cbor
+
+Required parameters: none
+
+Optional parameters: none
+
+Encoding considerations: Must be encoded as using {{RFC8949}}. See
+RFC-AAAA for details.
+
+Security considerations: See {{sec-sec}} of RFC-AAAA.
+
+Interoperability considerations: Applications MAY ignore any key
+value pairs that they do not understand. This allows
+backwards compatible extensions to this specification.
+
+Published specification: RFC-AAAA
+
+Applications that use this media type: The type is used by remote attestation procedures, supply chain integrity management systems, vulnerability assessment systems, and in applications that rely on trustworthy endorsements and reference values describing the intended operational state of a system.
+
+Fragment identifier considerations: Fragment identification for
+application/rim+cbor is supported by using fragment identifiers as
+specified by {{Section 9.5 of RFC8949}}.
+
+Additional information:
+
+Magic number(s): first five bytes in hex: 43 4f 52 49 4d
+
+File extension(s): corim
+
+Macintosh file type code(s): none
+
+Macintosh Universal Type Identifier code: org.ietf.corim
+conforms to public.data
+
+Person & email address to contact for further information:
+Henk Birkholz \<henk.birkholz@sit.fraunhofer.de>
+
+Intended usage: COMMON
+
+Restrictions on usage: None
+
+Author: Henk Birkholz \<henk.birkholz@sit.fraunhofer.de>
+
+Change controller: IESG
+
+## CoAP Content-Format Registration
+
+IANA is requested to assign a CoAP Content-Format ID for the CoRIM
+media type in the "CoAP Content-Formats" sub-registry, from the "IETF
+Review or IESG Approval" space (256..999), within the "CoRE
+Parameters" registry {{RFC7252}} {{!IANA.core-parameters}}:
+
+| Media type            | Encoding | ID    | Reference |
+| application/rim+cbor  | -        | TBD1  | RFC-AAAA  |
+{: #tbl-coap-content-formats cols="l l" title="CoAP Content-Format IDs"}
+
+## CoRIM CBOR Tag Registration
+
+IANA is requested to allocate tags in the "CBOR Tags" registry {{!IANA.cbor-tags}}, preferably with the specific value requested:
+
+|        Tag | Data Item | Semantics |
+|        500 | tagged array or tagged map | Concise Reference Integrity Manifest (CoRIM) \[RFC-AAAA\] |
+|        501 | map | unsigned CoRIM \[RFC-AAAA\] |
+|        502 | array | signed CoRIM \[RFC-AAAA\] |
+|        505 | bstr | byte string with CBOR-encoded Concise SWID tag \[RFC-AAAA\] |
+|        506 | bstr | byte string with CBOR-encoded Concise MID tag \[RFC-AAAA\] |
+{: #tbl-corim-cbor-tag title="CoRIM CBOR Tags"}
+
+## CoMID CBOR Tag Registration
+
+IANA is requested to allocate tags in the "CBOR Tags" registry {{!IANA.cbor-tags}}, preferably with the specific value requested:
+
+|        Tag | Data Item | Semantics |
+|        550 | bstr | UEID with max size of 33 bytes \[RFC-AAAA\] |
+|        551 | int | Security Version Number \[RFC-AAAA\] |
+|        552 | int | lower bound of allowed Security Version Number \[RFC-AAAA\] |
+{: #tbl-comid-cbor-tag title="CoMID CBOR Tags"}
