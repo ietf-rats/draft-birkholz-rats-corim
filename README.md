@@ -18,7 +18,7 @@ $ git submodule update --init --recursive
 
 The CDDL files will materialise inside the `cddl/` folder.
 
-Any change to the CDDL MUST be done in the master copy.
+Any change to the CDDL MUST be done in the master copy and pulled back in here.
 
 ## Building the Draft
 
