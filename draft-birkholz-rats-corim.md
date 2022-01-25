@@ -57,7 +57,7 @@ normative:
   RFC8949:
   I-D.ietf-sacm-coswid: coswid
   I-D.ietf-rats-architecture: rats-arch
-  IANA.language-subtag-registry: language-subtag 
+  IANA.language-subtag-registry: language-subtag
 
 informative:
   RFC4949:
@@ -99,7 +99,7 @@ While stand-alone CoSWID tags may be signed {{-coswid}}, CoMID tags are not inte
 
 This document uses the Concise Data Definition Language (CDDL {{RFC8610}}) to define the data structure of CoRIM and CoMID tags, as well as the extensions to CoSWID. The CDDL definitions provided define nested containers. Typically, the CDDL types used for nested containers are maps. Every key used in the maps is a named type that is associated with an corresponding uint via a block of rules appended at the end of the CDDL definition.
 
-Every set of uint keys that is used in the context of the "collision domain" of map is intended to be collision-free (each key is intended to be unique in the scope of a map, not a multimap). To accomplish that, for each map there is an IANA registry for the map members of maps. <!-- FIXME: ref to IANA sections --> 
+Every set of uint keys that is used in the context of the "collision domain" of map is intended to be collision-free (each key is intended to be unique in the scope of a map, not a multimap). To accomplish that, for each map there is an IANA registry for the map members of maps. <!-- FIXME: ref to IANA sections -->
 
 ## Typographical Conventions
 
@@ -197,7 +197,7 @@ protected-signed-corim-header-map = {
   corim.content-type => "application/rim+cbor"
   corim.issuer-key-id => bstr
   corim.meta => corim-meta-map
-  * cose-label => cose-values 
+  * cose-label => cose-values
 }
 
 unprotected-signed-corim-header-map = {
@@ -639,7 +639,7 @@ comid.mac-addr:
 comid.ip-addr:
 
 : An Ipv4 or Ipv6 address measurement.
- 
+
 comid.serial-number:
 
 : A measurement of a serial number in text.
