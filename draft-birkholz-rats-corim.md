@@ -144,7 +144,7 @@ The following CDDL sockets (extension points) are defined in the CoRIM specifica
 | Map Name | CDDL Socket | Defined in
 |---
 | corim-entity-map | $$corim-entity-map-extension | {{model-corim-entity-map}}
-| unsigned-corim-map | $$unsigned-corim-map-extension | {{model-unsigned-corim-map}}
+| unsigned-corim-map | $$unsigned-corim-map-extension | {{model-corim-map}}
 | concise-mid-tag | $$comid-extension | {{model-concise-mid-tag}}
 | tag-identity-map | $$tag-identity-map-extension | {{model-tag-identity-map}}
 | entity-map | $$entity-map-extension | {{model-entity-map}}
