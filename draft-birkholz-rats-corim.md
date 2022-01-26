@@ -186,28 +186,28 @@ start = corim
 {: #model-signed-corim}
 ## The signed-corim Container
 
-A CoRIM is signed using {{-COSE}}. The additional CoRIM-specific COSE header member label corim-meta is defined as well as the corresponding type corim-meta-map as its value. This rule and its constraints MUST be followed when generating or validating a signed CoMID tag.
+A CoRIM is signed using {{-COSE}}. The additional CoRIM-specific COSE header member label corim-meta is defined as well as the corresponding type corim-meta-map as its value. This rule and its constraints MUST be followed when generating or validating a signed CoRIM tag.
 
 
 ~~~ CDDL
 signed-corim = #6.18(COSE-Sign1-corim)
 
-protected-signed-corim-header-map = {
+protected-corim-header-map = {
   corim.alg-id => int
-  corim.content-type => "application/rim+cbor"
+  corim.content-type => "application/corim-unsigned+cbor"
   corim.issuer-key-id => bstr
-  corim.meta => corim-meta-map
+  corim.meta => bstr .cbor corim-meta-map
   * cose-label => cose-values
 }
 
-unprotected-signed-corim-header-map = {
+unprotected-corim-header-map = {
   * cose-label => cose-values
 }
 
 COSE-Sign1-corim = [
-  protected: bstr .cbor protected-signed-corim-header-map
-  unprotected: unprotected-signed-corim-header-map
-  payload: bstr .cbor unsigned-corim-map
+  protected: bstr .cbor protected-corim-header-map
+  unprotected: unprotected-corim-header-map
+  payload: bstr .cbor tagged-corim-map
   signature: bstr
 ]
 ~~~~
@@ -215,12 +215,12 @@ COSE-Sign1-corim = [
 {: #model-corim-meta-map}
 ### The corim-meta-map Container
 
-This map contains the two additionally defined attributes `corim-entity-map` and `validity-map` that are used to annotate a CoRIM with metadata.
+This map contains the two additionally defined attributes `corim-signer-map` and `validity-map` that are used to annotate a CoRIM with metadata.
 
 ~~~~ CDDL
 corim-meta-map = {
-  corim.signer => one-or-more<corim-entity-map>
-  ? corim.validity => validity-map
+  corim.signer => corim-signer-map
+  ? corim.signature-validity => validity-map
 }
 ~~~~
 
@@ -228,42 +228,36 @@ corim.signer:
 
 : One or more entities that created and/or signed the issued CoRIM.
 
-corim.validity:
+corim.signature-validity:
 
-: A time period defining the validity span of a CoRIM.
+: A time period defining the validity span of the signature over the CoRIM.
 
-{: #model-corim-entity-map}
-### The corim-entity-map Container
+{: #model-corim-signer-map}
+### The corim-signer-map Container
 
-This map is used to identify the signer of a CoRIM via a dedicated entity name, a corresponding role and an optional identifying URI.
+This map is used to identify the signer of a CoRIM via a name and an optional URI.
 
 ~~~~ CDDL
-corim-entity-map = {
-  corim.entity-name => $entity-name-type-choice
-  ? corim.reg-id => uri
-  corim.role => $corim-role-type-choice
-  * $$corim-entity-map-extension
+corim-signer-map = {
+  corim.signer-name => $entity-name-type-choice
+  ? corim.signer-uri => uri
+  * $$corim-signer-map-extension
 }
 
-$corim-role-type-choice /= corim.manifest-creator
-$corim-role-type-choice /= corim.manifest-signer
+$entity-name-type-choice /= text
 ~~~~
 
-corim.entity-name:
+corim.signer-name:
 
-: The name of the organization that takes on the role expressed in `corim.role`
+: The name of the organization that signs this CoRIM
 
-corim.reg-id:
+corim.signer-uri:
 
-: The registration identifier of the organization that has authority over the namespace for `corim.entity-name`.
+: An URI uniquely linked to the organization that signs this CoRIM
 
-corim.role:
+$$corim-signer-map-extension:
 
-: The role type that is associated with the entity, e.g. the creator of the CoRIM or the signer of the CoRIM.
-
-$$corim-entity-map-extension:
-
-: This CDDL socket is used to add new information elements to the corim-entity-map container. See FIXME.
+: This CDDL socket is used to add new information elements to the corim-signer-map container. See FIXME.
 
 ### The validity-map Container
 
@@ -284,24 +278,29 @@ corim.not-after:
 
 : The timestamp indicating the CoRIM's end of its validity period.
 
-{: #model-unsigned-corim-map}
-## The unsigned-corim-map Container
+{: #model-corim-map}
+## The corim-map Container
 
 This map contains the payload of the COSE envelope that is used to sign the CoRIM. This rule and its constraints MUST be followed when generating or validating an unsigned Concise RIM.
 
 ~~~~ CDDL
-unsigned-corim-map = {
+corim-map = {
   corim.id => $corim-id-type-choice
-  corim.tags => one-or-more<$concise-tag-type-choice>
-  ? corim.dependent-rims => one-or-more<corim-locator-map>
-  * $$unsigned-corim-map-extension
+  corim.tags => [ + $concise-tag-type-choice ]
+  ? corim.dependent-rims => [ + corim-locator-map ]
+  ? corim.profile => [ + profile-type-choice ]
+  ? corim.rim-validity => validity-map
+  ? corim.entities => [ + corim-entity-map ]
+  * $$corim-map-extension
 }
 
 $corim-id-type-choice /= tstr
 $corim-id-type-choice /= uuid-type
 
-$concise-tag-type-choice /= #6.TBD-SWID(bytes .cbor concise-swid-tag)
-$concise-tag-type-choice /= #6.TBD-CoMID(bytes .cbor concise-mid-tag)
+profile-type-choice = uri / tagged-oid-type
+
+$concise-tag-type-choice /= #6.505(bytes .cbor concise-swid-tag)
+$concise-tag-type-choice /= #6.506(bytes .cbor concise-mid-tag)
 ~~~~
 
 corim.id:
@@ -316,9 +315,56 @@ corim.dependent-rims:
 
 : One or more services available via the Internet that can supply additional, possibly dependent manifests (or other associated resources).
 
-$$unsigned-corim-map-extension:
+corim.profile:
 
-: This CDDL socket is used to add new information elements to the unsigned-corim-map container. See FIXME.
+: One or more profiles that define the domain of interpretation of the CoMID and/or CoSWID tags.
+
+corim.rim-validity:
+
+: The validity of the CoRIM expressed as a validity-map.
+
+corim.entities:
+
+: One or more entities involved in the creation of this CoRIM.
+
+
+$$corim-map-extension:
+
+: This CDDL socket is used to add new information elements to the corim-map container. See FIXME.
+
+{: #model-corim-entity-map}
+### The corim-entity-map Container
+
+This Container contains qualifying attributes that provide more context information about the RIM as well its origin and purpose. This rule and its constraints MUST be followed when generating or validating a CoRIM tag
+
+~~~~ CDDL
+corim-entity-map = {
+  corim.entity-name => $entity-name-type-choice
+  ? corim.reg-id => uri
+  corim.role => $corim-role-type-choice
+  * $$corim-entity-map-extension
+}
+
+$corim-role-type-choice /= corim.manifest-creator
+~~~~
+
+corim.entity-name:
+
+: The name of an organization that performs the roles as indicated by comid.role.
+
+corim.reg-id:
+
+: The registration identifier of the organization that has authority over the namespace for comid.entity-name.
+
+corim.role:
+
+: The list of roles the entity is associated with. The entity that generates the CoRIM SHOULD include a $comid-role-type-choice value of corim.manifest-creator.
+
+$$corim-entity-map-extension:
+
+: This CDDL socket is used to add new information elements to the corim-entity-map container. See FIXME.
+
+
 
 ### The corim-locator-map Container
 
@@ -348,8 +394,8 @@ The CDDL specification for the root concise-mid-tag map is as follows. This rule
 concise-mid-tag = {
   ? comid.language => language-type
   comid.tag-identity => tag-identity-map
-  ? comid.entity => one-or-more<entity-map>
-  ? comid.linked-tags => one-or-more<linked-tag-map>
+  ? comid.entities => [ + entity-map ]
+  ? comid.linked-tags => [ + linked-tag-map ]
   comid.triples => triples-map
   * $$concise-mid-tag-extension
 }
@@ -390,14 +436,12 @@ The CDDL specification for the tag-identity-map includes all identifying attribu
 tag-identity-map = {
   comid.tag-id => $tag-id-type-choice
   comid.tag-version => tag-version-type
-  * $$tag-identity-map-extension
 }
 
 $tag-id-type-choice /= tstr
 $tag-id-type-choice /= uuid-type
 
 tag-version-type = uint .default 0
-
 ~~~
 
 The following describes each member of the tag-identity-map container.
@@ -558,11 +602,32 @@ class-map = non-empty<{
 }>
 
 $class-id-type-choice /= tagged-oid-type
-$class-id-type-choice /= tagged-impl-id-type
 $class-id-type-choice /= tagged-uuid-type
+$class-id-type-choice /= tagged-int-type
 ~~~~
 
 The following describes each member of the class-map container.
+
+comid.class-id:
+
+: TODO
+
+comid.vendor
+
+: TODO
+
+comid.model
+
+: TODO
+
+comid.layer
+
+: TODO
+
+comid.index
+
+: TODO
+
 
 {: #model-measurement-values-map}
 ## The measurement-map and measurement-values-map Containers
@@ -577,6 +642,7 @@ measurement-map = {
 
 $measured-element-type-choice /= tagged-oid-type
 $measured-element-type-choice /= tagged-uuid-type
+$measured-element-type-choice /= uint
 
 measurement-values-map = non-empty<{
   ? comid.ver => version-map
@@ -589,21 +655,22 @@ measurement-values-map = non-empty<{
   ? comid.serial-number => serial-number-type
   ? comid.ueid => ueid-type
   ? comid.uuid => uuid-type
+  ? comid.name => tstr
   * $$measurement-values-map-extension
 }>
 
 flags-type = bytes .bits operational-flags
 
-operational-flags = &(
-  not-configured: 0
-  not-secure: 1
-  recovery: 2
-  debug: 3
-)
+$operational-flags /= &( not-configured: 0 )
+$operational-flags /= &( not-secure: 1 )
+$operational-flags /= &( recovery: 2 )
+$operational-flags /= &( debug: 3 )
+$operational-flags /= &( not-replay-protected: 4 )
+$operational-flags /= &( not-integrity-protected: 5 )
 
 serial-number-type = text
 
-digests-type = one-or-more<hash-entry>
+digests-type = [ + hash-entry ]
 ~~~~
 
 The following describes each member of the measurement-map and the measurement-values-map container.
@@ -652,6 +719,10 @@ comid.uuid:
 
 : A measurement of a Universally Unique Identifier (UUID).
 
+comid.name:
+
+: TODO
+
 $$measurement-values-map-extension:
 
 : This CDDL socket is used to add new information elements to the measurement-values-map container. See FIXME.
@@ -684,10 +755,11 @@ comid-version-scheme:
 This choice defines the CBOR tagged Security Version Numbers (SVN) that can be used as reference values for Evidence and Endorsements.
 
 ~~~~ CDDL
-svn = int
-min-svn = int
-tagged-svn = #6.TBD-SVN(svn)
-tagged-min-svn = #6.TBD-minSVN(min-svn)
+svn-type = uint
+svn = svn-type
+min-svn = svn-type
+tagged-svn = #6.552(svn)
+tagged-min-svn = #6.553(min-svn)
 svn-type-choice = tagged-svn / tagged-min-svn
 ~~~~
 
@@ -707,11 +779,12 @@ FIXME This group can express a single raw byte value and can come with an option
 
 ~~~~ CDDL
 raw-value-group = (
-  comid.raw-value => raw-value-type
+  comid.raw-value => $raw-value-type-choice
   ? comid.raw-value-mask => raw-value-mask-type
 )
 
-raw-value-type = bytes
+$raw-value-type-choice /= #6.560(bytes)
+
 raw-value-mask-type = bytes
 ~~~~
 
