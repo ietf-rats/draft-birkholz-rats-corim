@@ -49,7 +49,7 @@ author:
 
 normative:
   RFC2119:
-  RFC7231: COSE
+  RFC8152: COSE
   RFC7252:
   RFC8126:
   RFC8174:
