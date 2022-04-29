@@ -1,0 +1,1025 @@
+
+
+
+
+RATS Working Group                                           H. Birkholz
+Internet-Draft                                            Fraunhofer SIT
+Intended status: Standards Track                              T. Fossati
+Expires: 31 October 2021                                    Y. Deshpande
+                                                             Arm Limited
+                                                                N. Smith
+                                                                   Intel
+                                                                  W. Pan
+                                                     Huawei Technologies
+                                                           29 April 2021
+
+
+                  Concise Reference Integrity Manifest
+                   draft-birkholz-rats-corim-latest0
+
+Abstract
+
+   Abstract
+
+Discussion Venues
+
+   This note is to be removed before publishing as an RFC.
+
+   Discussion of this document takes place on the RATS Working Group
+   mailing list (rats@ietf.org), which is archived at
+   https://mailarchive.ietf.org/arch/browse/rats/.
+
+   Source for this draft and an issue tracker can be found at
+   https://github.com/ietf-rats/draft-birkholz-rats-corim.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 31 October 2021.
+
+Copyright Notice
+
+   Copyright (c) 2021 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Simplified BSD License text
+   as described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Simplified BSD License.
+
+Table of Contents
+
+   1.  Introduction
+     1.1.  Requirements Notation
+   2.  Concise Reference Integrity Manifests
+     2.1.  Extensibility
+   3.  Concise RIM Data Definition
+     3.1.  The concise-mid-tag Map
+   4.  Full CDDL Definition
+   5.  Privacy Considerations
+   6.  Concise SWID Data Extension
+     6.1.  New CoSWID to CoMID Relations
+       6.1.1.  Link Rel Values
+   7.  Security Considerations
+   8.  IANA Considerations
+     8.1.  CoSWID to CoMID Link Relations
+   9.  References
+     9.1.  Normative References
+     9.2.  Informative References
+   Authors' Addresses
+
+1.  Introduction
+
+   The Remote Attestation Procedures (RATS) architecture
+   [I-D.ietf-rats-architecture] describes appraisal procedures for
+   attestation Evidence and Attestation Results.  Appraisal procedures
+   for Evidence are conducted by Verifiers and are intended to assess
+   the trustworthiness of a remote peer.  Appraisal procedures for
+   Attestation Results are conducted by Relying Parties and are intended
+   to operationalize the assessment about a remote peer and to act
+   appropriately based on the assessment.  In order to enable their
+   intent, appraisal procedures consume Appraisal Policies, Reference
+   Values, and Endorsements.
+
+   This documents specifies a binary encoding for Reference Values using
+   the Concise Binary Object Representation (CBOR).  The encoding is
+   based on three parts that are defined using the Concise Data
+   Definition Language (CDDL):
+
+   *  Concise Reference Integrity Manifests (CoRIM),
+
+   *  Concise Module Identifiers (CoMID), and
+
+   *  Concise Software Identifier (CoSWID).
+
+   CoRIM and CoMID are defined in this document, CoSWID are defined in
+   [I-D.ietf-sacm-coswid].  CoRIM provide a wrapper structure, in which
+   CoMID, CoSWID, as well as corresponding metadata can be bundled and
+   signed as a whole.  CoMID represent hardware components and provide a
+   counterpart to CoSWID, which represent software components.
+
+   In accordance to [RFC4949], software components that are stored in
+   hardware modules are referred to as firmware.  While firmware can be
+   represented as a software component, it is also very hardware-
+   specific and often resides directly on block devices instead of a
+   file system.  In this specification, firmware and their Reference
+   Values are represented via CoMID.  Reference Values for any other
+   software components stored on a file system are represented via
+   CoSWID.
+
+   In addition to CoRIM - and respective CoMID - this specification
+   defines a Concise Manifest Revocation that represents a list of
+   reference to CoRIM that are actively marked as invalid before their
+   expiration time.
+
+1.1.  Requirements Notation
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+2.  Concise Reference Integrity Manifests
+
+   This section specifies the Concise RIM (CoRIM) format, the Concise
+   MID format (CoMID), and the extension to the CoSWID specification
+   that augments CoSWIDs to express specific relationships to CoMIDs.
+
+   While each specification defines its own start rule, only CoMID and
+   CoSWID are stand-alone specifications.  The CoRIM specification - as
+   the bundling format - has a dependency on CoMID and CoSWID and is not
+   a stand-alone specification.
+
+   While stand-alone CoSWIDs can be signed, CoMID are not intended to be
+   signed themselves.  In order to provide a proof of authenticity and
+   to be temper-evident, CoMIDs MUST be wrapped in a CoRIM that is then
+   signed.
+
+2.1.  Extensibility
+
+   Both the CoRIM and the CoMID specification include extension points
+   using CDDL sockets (see [RFC8610] Section 3.9).  The use of CDDL
+   sockets allow for well-formed extensions to be defined in
+   supplementary CDDL descriptions that support additional uses of CoRIM
+   and CoMID.
+
+   The following CDDL sockets (extension points) are defined in the
+   CoRIM specification, which allow the addition of new information
+   structures to their respective CDDL groups.
+
+           +=================+===================+=============+
+           | Map Name        | CDDL Socket       | Defined in  |
+           +=================+===================+=============+
+           | concise-mid-tag | $$comid-extension | Section 3.1 |
+           +-----------------+-------------------+-------------+
+
+                 Table 1: CoMID CDDL Group Extension Points
+
+3.  Concise RIM Data Definition
+
+   A CoRIM is a bundle of CoMIDs and CoSWIDs that can reference each
+   other and that includes additional metadata about that bundle.
+
+   The root of the CDDL specification provided for CoRIM is the rule
+   "corim" (as defined in FIXME):
+
+   start = corim
+
+3.1.  The concise-mid-tag Map
+
+   The CDDL specification for the root concise-mid-tag map is as
+   follows.  This rule and its constraints MUST be followed when
+   creating or validating a CoMID tag:
+
+   concise-mid-tag = {
+     ? comid.language => language-type
+     comid.tag-metadata => tag-metadata-map
+     ? comid.module-metadata => module-metadata-map
+     ? comid.entity => one-or-more<module-entity-map>
+     ? comid.linked-tags => one-or-more<linked-tag-map>
+     ? comid.claims => claims-map
+     * $$concise-mid-tag-extension
+   }
+
+   The following describes each member of the concise-mid-tag root map.
+
+   *  language:
+
+   *  tag-metadata:
+
+   *  module-metadata:
+
+   *  entity:
+
+   *  linked-tags:
+
+   *  claims:
+
+   *  $$comid-extension: This CDDL socket is used to add new information
+      structures to the concise-mid-tag root map.  See FIXME.
+
+4.  Full CDDL Definition
+
+   This section aggregates the CDDL definitions specified in this
+   document in a full CDDL definitions including:
+
+   *  the COSE envelope for CoRIM: signed-corim
+
+   *  the CoRIM document: unsigned-corim
+
+   *  the CoMID document: concise-mid-tag
+
+   Not included in the full CDDL definition are CDDL dependencies to
+   CoSWID.  The following CDDL definitions can be found in
+   [I-D.ietf-sacm-coswid]:
+
+   *  the COSE envelope for CoRIM: signed-coswid
+
+   *  the CoSWID document: concise-swid-tag
+
+   <CODE BEGINS>
+   concise-reference-integrity-manifest =
+     #6.47111(unsigned-corim-map) /
+     #6.47112(signed-corim)
+
+
+   signed-corim = #6.18(COSE-Sign1-corim)
+
+   protected-signed-corim-header-map = {
+     corim.alg-id => int
+     corim.content-type => "application/rim+cbor"
+     corim.issuer-key-id => bstr
+     corim.meta => corim-meta-map
+     * cose-label => cose-values
+   }
+
+   corim-meta-map = {
+     corim.signer => one-or-more<corim-entity-map>
+     ? corim.validity => validity-map
+   }
+
+   corim-entity-map = {
+     corim.entity-name => $entity-name-type-choice
+     ? corim.reg-id => uri
+     corim.role => $corim-role-type-choice
+     * $$corim-entity-map-extension
+   }
+
+   $corim-role-type-choice /= corim.manifest-creator
+   $corim-role-type-choice /= corim.manifest-signer
+
+   validity-map = {
+     ? corim.not-before => time
+     corim.not-after => time
+   }
+
+   unprotected-signed-corim-header-map = {
+     * cose-label => cose-values
+   }
+
+   COSE-Sign1-corim = [
+     protected: bstr .cbor protected-signed-corim-header-map
+     unprotected: unprotected-signed-corim-header-map
+     payload: bstr .cbor unsigned-corim-map
+     signature: bstr
+   ]
+
+
+   unsigned-corim-map = {
+     corim.id => $corim-id-type-choice
+     corim.tags => one-or-more<$concise-tag-type-choice>
+     ? corim.dependent-rims => one-or-more<corim-locator-map>
+     * $$unsigned-corim-map-extension
+   }
+
+   corim-locator-map = {
+     corim.href => uri
+     ? corim.thumbprint => hash-entry
+   }
+
+   $concise-tag-type-choice /= #6.47116(concise-swid-tag)
+   $concise-tag-type-choice /= #6.47117(concise-mid-tag)
+
+
+   concise-mid-tag = {
+     ? comid.language => language-type
+     comid.tag-metadata => tag-metadata-map
+     ? comid.module-metadata => module-metadata-map
+     ? comid.entity => one-or-more<module-entity-map>
+     ? comid.linked-tags => one-or-more<linked-tag-map>
+     ? comid.claims => claims-map
+     * $$concise-mid-tag-extension
+   }
+
+   language-type = text
+
+   tag-metadata-map = {
+     comid.tag-id => $tag-id-type-choice
+     comid.tag-version => tag-version-type
+     * $$tag-metadata-map-extension
+   }
+
+   $tag-id-type-choice /= tstr
+   $tag-id-type-choice /= uuid-type
+
+   tag-version-type = uint .default 0
+
+   module-metadata-map = {
+     ? comid.module-name => element-name-map
+     ? comid.module-version => module-version-map
+     * $$module-metadata-map-extension
+   }
+
+   module-entity-map = {
+     comid.entity-name => text
+     ? comid.reg-id => uri
+     comid.role => one-or-more<$module-role-type-choice>
+     * $$module-entity-map-extension
+   }
+
+   $module-role-type-choice /= comid.tag-creator
+   $module-role-type-choice /= comid.creator
+   $module-role-type-choice /= comid.maintainer
+
+   linked-tag-map = {
+     comid.linked-tag-id => $tag-id-type-choice
+     comid.tag-rel => $tag-rel-type-choice
+   }
+
+   $tag-rel-type-choice /= comid.includes
+   $tag-rel-type-choice /= comid.or-includes
+   $tag-rel-type-choice /= comid.supplements
+   $tag-rel-type-choice /= comid.updates
+   $tag-rel-type-choice /= comid.replaces
+   $tag-rel-type-choice /= comid.patches
+
+   claims-map = non-empty<{
+     ? comid.reference-claims => one-or-more<reference-claim-map>
+     ? comid.endorsements => one-or-more<endorsed-value-map>
+     ? comid.identity-claims => one-or-more<identity-claim-map>
+     ? comid.instance-claims => one-or-more<instance-claim-map>
+     * $$claims-map-extension
+   }>
+
+   identity-claim-map = {
+     ? comid.device-id => $device-id-type-choice
+     comid.key-material => COSE_KeySet
+   }
+
+   $device-id-type-choice /= tagged-ueid-type
+   $device-id-type-choice /= tagged-uuid-type
+
+
+   instance-claim-map = {
+     ? comid.instance-element-name => element-name-map
+     $$instance-value-group-choice
+   }
+
+   $$instance-value-group-choice //= (
+     comid.mac-addr => mac-addr-type-choice //
+     comid.ip-addr => ip-addr-type-choice //
+     comid.serial-number => serial-number-type //
+     comid.ueid => ueid-type //
+     comid.uuid => uuid-type
+   )
+
+   ip-addr-type-choice = ip4-addr-type / ip6-addr-type
+   ip4-addr-type = bytes .size 4
+   ip6-addr-type = bytes .size 16
+
+   mac-addr-type-choice = eui48-addr-type / eui64-addr-type
+   eui48-addr-type = bytes .size 6
+   eui64-addr-type = bytes .size 8
+
+   serial-number-type = text
+
+
+   element-name-map = non-empty<{
+     ? comid.label => label-type
+     ? comid.vendor => vendor-type
+     ? comid.class-id => $class-id-type-choice
+     ? comid.model => model-type
+     ? comid.layer => layer-type
+     ? comid.index => index-type
+   }>
+
+   label-type = text
+   vendor-type = text
+   model-type = text
+   layer-type = int
+   index-type = int
+
+   $class-id-type-choice /= tagged-oid-type
+   $class-id-type-choice /= tagged-uuid-type
+   $class-id-type-choice /= tagged-impl-id-type
+
+   oid-type = bytes
+   tagged-oid-type = #6.111(oid-type)
+
+   tagged-uuid-type = #6.37(uuid-type)
+
+   impl-id-type = bytes .size 32
+   tagged-impl-id-type = #6.47115(impl-id-type)
+
+   ueid-type = bytes .size 33
+   tagged-ueid-type = #6.48000(ueid-type)
+
+   module-version-map = {
+     comid.version => version-type
+     comid.version-scheme => $version-scheme
+   }
+
+   version-type = text .default '0.0.0'
+
+   element-value-map = non-empty<{
+     ? comid.version => version-type
+     ? comid.svn => svn-type
+     ? comid.digests => digests-type
+     ? comid.flags => flags-type
+     ? raw-value-group
+   }>
+
+   svn-type = int
+   flags-type = bytes .bits operational-flags
+
+   raw-value-group = (
+     comid.raw-value => raw-value-type
+     ? comid.raw-value-mask => raw-value-mask-type
+   )
+
+   raw-value-type = bytes
+   raw-value-mask-type = bytes
+
+   endorsed-value-map = {
+     comid.element-name => element-name-map
+     ? comid.element-value => element-value-map
+     * $$endorsed-value-map-extension
+   }
+
+   reference-claim-map = {
+     comid.element-name => element-name-map
+     comid.element-value => element-value-map
+     * $$reference-claim-map-extension
+   }
+
+   operational-flags = &(
+     not-configured: 0
+     not-secure: 1
+     recovery: 2
+     debug: 3
+   )
+
+   digests-type = [ hash-entry / [2* hash-entry] ]
+
+
+   concise-swid-tag = {
+     tag-id => text / bstr .size 16,
+     tag-version => integer,
+     ? corpus => bool,
+     ? patch => bool,
+     ? supplemental => bool,
+     software-name => text,
+     ? software-version => text,
+     ? version-scheme => $version-scheme,
+     ? media => text,
+     ? software-meta => one-or-more<software-meta-entry>,
+     entity => one-or-more<entity-entry>,
+     ? link => one-or-more<link-entry>,
+     ? payload-or-evidence,
+     * $$coswid-extension,
+     global-attributes,
+   }
+
+   payload-or-evidence //= ( payload => payload-entry )
+   payload-or-evidence //= ( evidence => evidence-entry )
+
+   any-uri = uri
+   label = text / int
+
+   $version-scheme /= multipartnumeric
+   $version-scheme /= multipartnumeric-suffix
+   $version-scheme /= alphanumeric
+   $version-scheme /= decimal
+   $version-scheme /= semver
+   $version-scheme /= int / text
+
+   any-attribute = (
+     label => one-or-more<text> / one-or-more<int>
+   )
+
+   one-or-more<T> = T / [ 2* T ]
+
+   global-attributes = (
+     ? lang => text,
+     * any-attribute,
+   )
+
+   hash-entry = [
+     hash-alg-id: int,
+     hash-value: bytes,
+   ]
+
+   entity-entry = {
+     entity-name => text,
+     ? reg-id => any-uri,
+     role => one-or-more<$role>,
+     ? thumbprint => hash-entry,
+     * $$entity-extension,
+     global-attributes,
+   }
+
+   $role /= tag-creator
+   $role /= software-creator
+   $role /= aggregator
+   $role /= distributor
+   $role /= licensor
+   $role /= maintainer
+   $role /= int / text
+
+   link-entry = {
+     ? artifact => text,
+     href => any-uri,
+     ? media => text,
+     ? ownership => $ownership,
+     rel => $rel,
+     ? media-type => text,
+     ? use => $use,
+     * $$link-extension,
+     global-attributes,
+   }
+
+   $ownership /= shared
+   $ownership /= private
+   $ownership /= abandon
+   $ownership /= int / text
+
+   $rel /= ancestor
+   $rel /= component
+   $rel /= feature
+   $rel /= installationmedia
+   $rel /= packageinstaller
+   $rel /= parent
+   $rel /= patches
+   $rel /= requires
+   $rel /= see-also
+   $rel /= supersedes
+   $rel /= supplemental
+   $rel /= -256..64436 / text
+
+   $use /= optional
+   $use /= required
+   $use /= recommended
+   $use /= int / text
+
+   software-meta-entry = {
+     ? activation-status => text,
+     ? channel-type => text,
+     ? colloquial-version => text,
+     ? description => text,
+     ? edition => text,
+     ? entitlement-data-required => bool,
+     ? entitlement-key => text,
+     ? generator => text,
+     ? persistent-id => text,
+     ? product => text,
+     ? product-family => text,
+     ? revision => text,
+     ? summary => text,
+     ? unspsc-code => text,
+     ? unspsc-version => text,
+     * $$software-meta-extension,
+     global-attributes,
+   }
+
+   path-elements-group = ( ? directory => one-or-more<directory-entry>,
+                           ? file => one-or-more<file-entry>,
+                         )
+
+   resource-collection = (
+     path-elements-group,
+     ? process => one-or-more<process-entry>,
+     ? resource => one-or-more<resource-entry>,
+     * $$resource-collection-extension,
+   )
+
+   file-entry = {
+     filesystem-item,
+     ? size => uint,
+     ? file-version => text,
+     ? hash => hash-entry,
+     * $$file-extension,
+     global-attributes,
+   }
+
+   directory-entry = {
+     filesystem-item,
+     ? path-elements => { path-elements-group },
+     * $$directory-extension,
+     global-attributes,
+   }
+
+   process-entry = {
+     process-name => text,
+     ? pid => integer,
+     * $$process-extension,
+     global-attributes,
+   }
+
+   resource-entry = {
+     type => text,
+     * $$resource-extension,
+     global-attributes,
+   }
+
+   filesystem-item = (
+     ? key => bool,
+     ? location => text,
+     fs-name => text,
+     ? root => text,
+   )
+
+   payload-entry = {
+     resource-collection,
+     * $$payload-extension,
+     global-attributes,
+   }
+
+   evidence-entry = {
+     resource-collection,
+     ? date => integer-time,
+     ? device-id => text,
+     * $$evidence-extension,
+     global-attributes,
+   }
+
+   integer-time = #6.1(int)
+
+   tag-id = 0
+   software-name = 1
+   entity = 2
+   evidence = 3
+   link = 4
+   software-meta = 5
+   payload = 6
+   hash = 7
+   corpus = 8
+   patch = 9
+   media = 10
+   supplemental = 11
+   tag-version = 12
+   software-version = 13
+   version-scheme = 14
+   lang = 15
+   directory = 16
+   file = 17
+   process = 18
+   resource = 19
+   size = 20
+   file-version = 21
+   key = 22
+   location = 23
+   fs-name = 24
+   root = 25
+   path-elements = 26
+   process-name = 27
+   pid = 28
+   type = 29
+   entity-name = 31
+   reg-id = 32
+   role = 33
+   thumbprint = 34
+   date = 35
+   device-id = 36
+   artifact = 37
+   href = 38
+   ownership = 39
+   rel = 40
+   media-type = 41
+   use = 42
+   activation-status = 43
+   channel-type = 44
+   colloquial-version = 45
+   description = 46
+   edition = 47
+   entitlement-data-required = 48
+   entitlement-key = 49
+   generator = 50
+   persistent-id = 51
+   product = 52
+   product-family = 53
+   revision = 54
+   summary = 55
+   unspsc-code = 56
+   unspsc-version = 57
+
+   multipartnumeric = 1
+   multipartnumeric-suffix = 2
+   alphanumeric = 3
+   decimal = 4
+   semver = 16384
+
+   tag-creator=1
+   software-creator=2
+   aggregator=3
+   distributor=4
+   licensor=5
+   maintainer=6
+
+   shared=1
+   private=2
+   abandon=3
+
+   ancestor=1
+   component=2
+   feature=3
+   installationmedia=4
+   packageinstaller=5
+   parent=6
+   patches=7
+   requires=8
+   see-also=9
+   supersedes=10
+
+   optional=1
+   required=2
+   recommended=3
+
+   $rel /= requires-module
+   $rel /= runs-on-module
+
+   requires-module = 12
+
+   runs-on-module = 13
+
+
+   comid.language = 0
+   comid.tag-metadata = 1
+   comid.module-metadata = 2
+   comid.entity = 3
+   comid.linked-tags = 4
+   comid.claims = 5
+
+   comid.tag-id = 0
+   comid.tag-version = 1
+
+   comid.module-name = 0
+   comid.module-version = 1
+
+   comid.entity-name = 0
+   comid.reg-id = 1
+   comid.role = 2
+
+   comid.linked-tag-id = 0
+   comid.tag-rel = 1
+
+   comid.label = 0
+   comid.vendor = 1
+   comid.class-id = 2
+   comid.model = 3
+   comid.layer = 4
+   comid.index = 5
+
+   comid.version = 0
+   comid.svn = 1
+   comid.digests = 2
+   comid.flags = 3
+   comid.raw-value = 4
+   comid.raw-value-mask = 5
+
+   comid.includes = 0
+
+   comid.or-includes = 1
+
+   comid.supplements = 2
+
+   comid.updates = 3
+
+   comid.replaces = 4
+
+   comid.patches = 5
+
+   comid.version-scheme = 1
+
+   comid.element-name = 0
+   comid.element-value = 1
+
+   comid.reference-claims = 0
+   comid.endorsements = 1
+   comid.identity-claims = 2
+   comid.instance-claims = 3
+
+   comid.device-id = 0
+   comid.key-material = 1
+
+   comid.instance-element-name = 0
+   comid.mac-addr = 1
+   comid.ip-addr = 2
+   comid.serial-number = 3
+   comid.ueid = 4
+   comid.uuid = 5
+
+   comid.tag-creator = 1
+
+   comid.creator = 2
+
+   comid.maintainer = 3
+
+
+   corim.id = 0
+   corim.tags = 1
+   corim.dependent-rims = 2
+
+   corim.href = 0
+   corim.thumbprint = 1
+
+   corim.alg-id = 1
+   corim.content-type = 3
+   corim.issuer-key-id = 4
+   corim.meta = 8
+
+   corim.not-before = 0
+   corim.not-after = 1
+
+   corim.signer = 0
+   corim.validity = 1
+
+   corim.entity-name = 1
+   corim.reg-id = 2
+   corim.role = 3
+
+   corim.manifest-creator = 1
+
+   corim.manifest-signer = 2
+
+
+   non-empty<M> = (M) .and ({ + any => any })
+
+
+
+   COSE_Key = {
+     1 => tstr / int           ; kty
+     ? 2 => bstr               ; kid
+     ? 3 => tstr / int         ; alg
+     ? 4 => [+ (tstr / int) ]  ; key_ops
+     ? 5 => bstr               ; Base IV
+     * cose-label => cose-values
+   }
+
+   COSE_KeySet = [+COSE_Key]
+
+
+
+   cose-label = int / tstr
+   cose-values = any
+
+   $entity-name-type-choice /= text
+
+   $corim-id-type-choice /= tstr
+   $corim-id-type-choice /= uuid-type
+
+   uuid-type = bytes .size 16
+
+
+   <CODE ENDS>
+
+5.  Privacy Considerations
+
+   Privacy Considerations
+
+6.  Concise SWID Data Extension
+
+6.1.  New CoSWID to CoMID Relations
+
+   The CoSWID link-entry map is extended to describe relationships
+   between CoSWID and CoMID.  The new Link Rel values are defined in
+   Section 6.1.1.
+
+   When using one of these new relations, the following optional
+   elements MUST NOT be present in the Link Entry:
+
+   *  artifact
+
+   *  ownership
+
+   *  use
+
+6.1.1.  Link Rel Values
+
+   This document adds the following code-points to the Link Rel values
+   defined in Table 6 of [I-D.ietf-sacm-coswid].  These new indexes
+   define relationships between a CoSWID and a CoMID with the semantics
+   specified in Table 2.
+
+    +=======+=================+======================================+
+    | Index | Relationship    | Definition                           |
+    |       | Type Name       |                                      |
+    +=======+=================+======================================+
+    | 12    | requires-module | The link references a prerequisite   |
+    |       |                 | module that needs to be loaded or    |
+    |       |                 | present for installing this software |
+    +-------+-----------------+--------------------------------------+
+    | 13    | runs-on-module  | The link references a module tag     |
+    |       |                 | that this software runs on           |
+    +-------+-----------------+--------------------------------------+
+
+               Table 2: New CoSWID to CoMID Link Relations
+
+   The rel values listed in Table 2 MUST be used only for link relations
+   involving a base CoSWID and a target CoMID.
+
+7.  Security Considerations
+
+   Security Considerations
+
+8.  IANA Considerations
+
+   See Body Section 2.
+
+8.1.  CoSWID to CoMID Link Relations
+
+   IANA is requested to add the indexes in Table 3 to the Software Tag
+   Link Relationship Values Registry.
+
+          +=======+========================+===================+
+          | Index | Relationship Type Name | Specification     |
+          +=======+========================+===================+
+          | 12    | requires-module        | See Section 6.1.1 |
+          +-------+------------------------+-------------------+
+          | 13    | runs-on-module         | See Section 6.1.1 |
+          +-------+------------------------+-------------------+
+
+               Table 3: New CoSWID Link Relationship Values
+
+9.  References
+
+9.1.  Normative References
+
+   [I-D.ietf-rats-architecture]
+              Birkholz, H., Thaler, D., Richardson, M., Smith, N., and
+              W. Pan, "Remote Attestation Procedures Architecture", Work
+              in Progress, Internet-Draft, draft-ietf-rats-architecture-
+              12, 23 April 2021, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-rats-architecture-12.txt>.
+
+   [I-D.ietf-sacm-coswid]
+              Birkholz, H., Fitzgerald-McKay, J., Schmidt, C., and D.
+              Waltermire, "Concise Software Identification Tags", Work
+              in Progress, Internet-Draft, draft-ietf-sacm-coswid-17, 22
+              February 2021, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-sacm-coswid-17.txt>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://datatracker.ietf.org/doc/html/rfc2119>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://datatracker.ietf.org/doc/html/rfc8174>.
+
+   [RFC8610]  Birkholz, H., Vigano, C., and C. Bormann, "Concise Data
+              Definition Language (CDDL): A Notational Convention to
+              Express Concise Binary Object Representation (CBOR) and
+              JSON Data Structures", RFC 8610, DOI 10.17487/RFC8610,
+              June 2019,
+              <https://datatracker.ietf.org/doc/html/rfc8610>.
+
+9.2.  Informative References
+
+   [RFC4949]  Shirey, R., "Internet Security Glossary, Version 2",
+              FYI 36, RFC 4949, DOI 10.17487/RFC4949, August 2007,
+              <https://datatracker.ietf.org/doc/html/rfc4949>.
+
+Authors' Addresses
+
+   Henk Birkholz
+   Fraunhofer SIT
+   Rheinstrasse 75
+   64295 Darmstadt
+   Germany
+
+   Email: henk.birkholz@sit.fraunhofer.de
+
+
+   Thomas Fossati
+   Arm Limited
+   United Kingdom
+
+   Email: Thomas.Fossati@arm.com
+
+
+   Yogesh Deshpande
+   Arm Limited
+   United Kingdom
+
+   Email: yogesh.deshpande@arm.com
+
+
+   Ned Smith
+   Intel Corporation
+   United States of America
+
+   Email: ned.smith@intel.com
+
+
+   Wei Pan
+   Huawei Technologies
+
+   Email: william.panwei@huawei.com

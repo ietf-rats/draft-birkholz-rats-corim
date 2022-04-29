@@ -1,0 +1,818 @@
+
+
+
+
+RATS Working Group                                           H. Birkholz
+Internet-Draft                                            Fraunhofer SIT
+Intended status: Standards Track                              T. Fossati
+Expires: 10 September 2021                                  Y. Deshpande
+                                                             Arm Limited
+                                                                N. Smith
+                                                                   Intel
+                                                            9 March 2021
+
+
+                  Concise Reference Integrity Manifest
+                   draft-birkholz-rats-corim-latest0
+
+Abstract
+
+   Abstract
+
+Discussion Venues
+
+   This note is to be removed before publishing as an RFC.
+
+   Discussion of this document takes place on the RATS Working Group
+   mailing list (rats@ietf.org), which is archived at
+   https://mailarchive.ietf.org/arch/browse/rats/.
+
+   Source for this draft and an issue tracker can be found at
+   https://github.com/ietf-rats/draft-birkholz-rats-corim.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 10 September 2021.
+
+Copyright Notice
+
+   Copyright (c) 2021 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Simplified BSD License text
+   as described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Simplified BSD License.
+
+Table of Contents
+
+   1.  Introduction
+     1.1.  Requirements Notation
+   2.  Concise Reference Integrity Manifests
+   3.  CDDL
+   4.  Privacy Considerations
+   5.  Security Considerations
+   6.  IANA Considerations
+   7.  References
+     7.1.  Normative References
+     7.2.  Informative References
+   Authors' Addresses
+
+1.  Introduction
+
+   The Remote Attestation Procedures (RATS) architecture
+   [I-D.ietf-rats-architecture] describes appraisal procedures for
+   attestation Evidence and Attestation Results.  Appraisal procedures
+   for Evidence are conducted by Verifiers and are intended to assess
+   the trustworthiness of a remote peer.  Appraisal procedures for
+   Attestation Results are conducted by Relying Parties and are intended
+   to operationalize the assessment about a remote peer and to act on it
+   appropriately.  In order to enable their intent, appraisal procedures
+   consume Appraisal Policies, Reference Values, and Endorsements.
+
+   This documents specifies a binary encoding for Reference Values using
+   the Concise Binary Object Representation (CBOR).  The encoding is
+   based on three parts that are defined using the Concise Data
+   Definition Language (CDDL):
+
+   *  Concise Reference Integrity Manifests (CoRIM),
+
+   *  Concise Module Identifiers (CoMID), and
+
+   *  Concise Software Identifier (CoSWID).
+
+   While CoRIM and CoMID are defined in this document, CoSWID are
+   defined in [I-D.ietf-sacm-coswid].  CoRIM provide a wrapper
+   structure, in which CoMID, CoSWID, and corresponding metadata can be
+   bundled and signed as a whole.  CoMID represent hardware components
+   and provide a counterpart to CoSWID, which represent software
+   components.
+
+   While firmware can be represented as a software component, it is also
+   very hardware-specific and often resides directly on block devices
+   instead of a file system.  In accordance to [RFC4949], software
+   components that are stored in hardware modules are referred to as
+   firmware.  In this specification, firmware and their Reference Values
+   are represented via CoMID.  Reference Values for any other software
+   components stored on a file system are represented via CoSWID.
+
+   In addition to CoRIM - and respective CoMID - this specification
+   defines a Concise Manifest Revocation that represents a list of
+   reference to CoRIM that are actively marked as invalid before their
+   expiration time.
+
+1.1.  Requirements Notation
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+2.  Concise Reference Integrity Manifests
+
+   Body
+
+3.  CDDL
+
+   See [I-D.ietf-sacm-coswid].
+
+   <CODE BEGINS>
+   concise-reference-integrity-manifest =  #6.47111(unsigned-corim) / #6.47112(signed-corim)
+
+
+   signed-corim = #6.18(COSE-Sign1-corim)
+
+   cose-label = int / tstr
+   cose-values = any
+
+   protected-signed-corim-header = {
+     1 => int,                      ; algorithm identifier
+     3 => "application/rim+cbor",   ; content type identifier
+     4 => bstr,                     ; key identifier of issuer?
+     corim-meta-key => corim-meta   ; corim signature attributes
+     * cose-label => cose-values,
+   }
+   corim-meta-key = 8 ; scoped to protected-signed-corim-header map
+
+   corim-meta = {
+     signer => entity-entry, ; entity-entry is pointing to the manifest issuer - compare tag-metadata tag-issuer these are different things
+     ? validity-entry,
+     ? deny-id => corim-id-type, ; used for revocation - NOTE(tho) I'm not sure I understand how is this supposed to work?
+   }
+   signer = 98
+   deny-id = 99
+
+   validity-entry = (
+     ? not-before => time,
+     not-after => time,
+   )
+   not-before=100
+   not-after=101
+
+   unprotected-signed-corim-header = {
+     * cose-label => cose-values,
+   }
+
+   COSE-Sign1-corim = [
+     protected: bstr .cbor protected-signed-corim-header,
+     unprotected: unprotected-signed-corim-header,
+     payload: bstr .cbor unsigned-corim,
+     signature: bstr,
+   ]
+
+
+   unsigned-corim = {
+     corim-id => corim-id-type,
+     tags => concise-tag / [2* concise-tag],
+     ? dependent-rims => corim-locator / [2* corim-locator], ; hint for finding manifest files
+     * $$unsigned-corim-extension
+   }
+   corim-id = 123 ; TBD
+   tags = 97
+   dependent-rims = 122; TBD
+
+   corim-id-type = tstr / bstr .size 16 ; **Note: Do we want a %6.CT reservation?**
+
+   corim-locator = {
+     href => any-uri, ; e.g. https://isv.example.mymodule.corim
+     ? thumbprint => hash-entry, ; the digest computed over mymodule.corim
+     ; **Note:should there be an extension point here?**
+   }
+
+   concise-tag = #6.47116(concise-swid-tag) / #6.47117(concise-mid-tag)
+   ; NOTE(henk) does a concise-mid-tag by itself should be allowed to be singed the same as a CoSWID tag?
+
+   ; Notes:
+   ; - entity and entity-entry are defined by CoSWID
+   ; - linked-tags contains references to dependent CoSWID and CoMID tags
+   ; - claims may be omitted for manifests that only capture dependencies to other
+   ;   manifests
+   concise-mid-tag = {
+     ? language => text,
+     tag-metadata => tag-metadata-type,
+     ? module-metadata => module-metadata-type,
+     ? entity => one-or-many<entity-entry>,
+     ? linked-tags => one-or-many<linked-tags-entry>,
+     ? claims => claims-entry,
+     * $$comid-extension
+   }
+
+   one-or-many<T> = T / [ 2* T ]
+
+   language = 0
+   tag-metadata = 1
+   module-metadata = 2
+
+   tag-metadata-type = {
+     0 => $tag-id-type,
+     1 => tag-version-type,
+     * $$tag-metadata-extension,
+   }
+
+   $tag-id-type /= tstr
+   $tag-id-type /= bstr .size 16
+
+   tag-version-type = integer .default 0
+
+   module-metadata-type = {
+     ? 0 => module-name,
+     ? 1 => $module-type,
+     ? 2 => module-version,
+     ? 3 => module-vendor,
+     ? 4 => module-index,
+     * $$module-metadata-extension
+   }
+
+   module-name = text
+
+   $module-type /= tagged-oid
+   $module-type /= tagged-uuid
+   $module-type /= tagged-impl-id
+
+   ;
+   ; From draft-ietf-cbor-tags-oid (TBD, roid and pen)
+   ;
+   oid = bstr
+   tagged-oid = #6.111(bstr)
+
+   ;
+   ; From https://github.com/lucas-clemente/cbor-specs/blob/master/uuid.md
+   ;
+   uuid = bytes .size 16
+   tagged-uuid = #6.37(uuid)
+
+   ;
+   ; From draft-tschofenig-rats-psa-token
+   ;
+   impl-id = bytes .size 32
+   tagged-impl-id = #6.47115(impl-id)
+
+   ;
+   ; From draft-ietf-rats-eat
+   ;
+   ueid = bstr .size 33
+   tagged-ueid = #6.48000(ueid)
+
+   ; version-scheme defined in CoSWID
+   module-version = {
+     0 => text .default '0.0.0', ; version
+     1 => $version-scheme,       ; version-scheme
+   }
+
+   module-vendor = text
+
+   module-index = uint
+
+   linked-tags-entry = {
+     0 => $tag-id-type,
+     1 => $tag-rel-type,
+     ; tag thumbprint, i.e., digest of the CBOR encoding of the concise-tag
+     ? 2 => hash-entry,
+     ; verification key associated with the tag issuer
+     ? 3 => tag-issuer-type,
+   }
+
+   ; Bob is saying: I expect this tag to be provided (signed by) by Alice.
+   ; The COSE keyset only contains raw / certified public keys.
+   tag-issuer-type /= COSE_KeySet
+
+   $tag-rel-type /= comid-includes
+   $tag-rel-type /= comid-or-includes
+   $tag-rel-type /= comid-supplements
+   $tag-rel-type /= comid-updates
+   $tag-rel-type /= comid-replaces
+   $tag-rel-type /= comid-patches
+
+   ; The current module has additional module(s) identified by the linked tag(s).
+   ; The union of all modules describes an acceptable device.
+   comid-includes = 0
+   ; The current module has additional module(s) identified by the linked tag(s)
+   ; that describe alternative acceptable modules. At least one of the
+   ; alternatives is included to describe an acceptable device.
+   comid-or-includes = 1
+   ; The current module has additional claims that augment the claim set of the
+   ; target module. The current tag module information must match the target
+   ; module for the claims to be combined under the target.
+   comid-supplements = 2
+   ; The current module contains claims that fully replace the target module
+   ; claims. This is applied when the module is updated or changes in some
+   ; fashion.
+   comid-updates = 3
+   ; The current tag contains corrections to a previously issued tag. This tag
+   ; replaces the target tag. The tag-id remains unchanged. The tag-version is
+   ; incremented.
+   comid-replaces = 4
+   ; The current module contains claims that partially replace the target module
+   ; claims. This is applied when the module is updated or changes in some
+   ; fashion.  The target module contains both valid and replaced claims.
+   comid-patches = 5
+
+   claims = 107
+
+   ; Notes:
+   ; - any reference-value entry can match evidence
+   claims-entry = {
+     ? ref-claims => one-or-many<reference-value>
+     ? end-claims => one-or-many<endorsed-value>
+     ? identity-claims => one-or-many<identity-value>
+     ? instance-claims => one-or-many<instance-value>
+     * $$claims-entry-extension
+   }
+
+   ref-claims = 0
+   end-claims = 1
+   identity-claims = 2
+   instance-claims = 3
+
+   identity-value = {
+     ? 0 => $device-id-type, ; device id
+     1 => COSE_KeySet, ; key material
+   }
+
+   $device-id-type /= tagged-ueid
+   $device-id-type /= tagged-uuid
+   ; Note: is there a #6.4711 definition for hardwaremodulename RFC4108?
+
+   instance-value = {
+     ? 0 => element-name
+     $$instance-claim-choice
+   }
+
+   $$instance-claim-choice = (
+     mac-addr-key => mac-addr-type //
+     ip-addrs-key => one-or-many<ip-addr-type> //
+     serial-number-key => serial-number-type //
+     ueid-key => ueid //
+     uuid-key => uuid
+   )
+
+   mac-addr-key = 1
+   ip-addrs-key = 2
+   serial-number-key = 3
+   ueid-key = 4
+   uuid-key = 5
+
+   ip-addr-type = ip4-addr-type / ip6-addr-type
+   ip4-addr-type = bytes .size 4
+   ip6-addr-type = bytes .size 16
+
+   mac-addr-type = bytes .size 6
+
+   serial-number-type = text
+
+   ; Note: are there other well defined types under #6.4711 or EAT etc...
+
+   ; Notes:
+   ; - vendor is the namespace authority designation
+   ; - type SHOULD include a namespace authority if vendor is ommitted
+   ; - An extension point in element-name confuses verifiers' ability to match
+   ;   against evidence
+   ; - label is defined in coswid schema (q: should we use a different value if
+   ;   the semantics differ?)
+   ; - type is defined in coswid schema
+   element-name = {
+     ? label => text,
+     ? vendor => text,
+     ? type => $module-type,
+     ? model => text,
+     ? layer => int,
+     ? index => int,
+   }
+
+   ; Notes:
+   ; - do we need an extension point in element-value given there are extension
+   ;   points in endorsed-value and reference-value?
+   element-value = {
+     ? version => text,
+     ? svn => int,
+     ? raw-value-entry,
+     ? digests => digests-entry,
+     ? flags => bytes .bits operational-flags,
+   }
+
+   raw-value-entry = (
+     raw-value => bstr,
+     ? raw-value-mask => bstr,
+   )
+
+   ; Notes:
+   ; - one endorser benefits from the element-value of another endorser
+   ; - any-attribute is defined in CoSWID (this can be removed if we opt for using
+   ;   the extension point instead. NOTE(tho): agree
+   ; - How do vendor specific schemas allocate indices (keys)? We need to specify
+   ;   a range of keys with rules 'first come first served'
+   endorsed-value = {
+     0 => element-name,
+     ? 1 => element-value,
+     * $$endorsed-value-extension
+   }
+
+   ; Notes:
+   ; - a collection of reference values can be modeled using multiplicity of tags
+   ;   and/or claims, but we need to verify how to apply AND and OR logic for
+   ;   matching
+   reference-value = {
+     0 => element-name,
+     1 => element-value,
+     * $$reference-value-extension,
+   }
+
+   ; Notes:
+   ; - requires functional compare
+   operational-flags = &(
+     not-configured: 0,
+     not-secure: 1,
+     recovery: 2,
+     debug: 3,
+   )
+
+   ; Notes:
+   ; - hash-entry is defined in CoSWID schema
+   digests-entry = [ hash-entry / [2* hash-entry] ]
+
+   concise-swid-tag = {
+     tag-id => text / bstr .size 16,
+     tag-version => integer,
+     ? corpus => bool,
+     ? patch => bool,
+     ? supplemental => bool,
+     software-name => text,
+     ? software-version => text,
+     ? version-scheme => $version-scheme,
+     ? media => text,
+     ? software-meta => software-meta-entry / [ 2* software-meta-entry ],
+     entity => entity-entry / [ 2* entity-entry ],
+     ? link => link-entry / [ 2* link-entry ],
+     ? payload-or-evidence,
+     global-attributes,
+     * $$coswid-extension,
+   }
+
+   payload-or-evidence //= ( payload => payload-entry )
+   payload-or-evidence //= ( payload => [ 2* payload-entry ] )
+   payload-or-evidence //= ( evidence => evidence-entry )
+   payload-or-evidence //= ( evidence => [ 2* evidence-entry ] )
+
+   any-uri = text
+   label = text / int
+
+   $version-scheme /= multipartnumeric
+   $version-scheme /= multipartnumeric-suffix
+   $version-scheme /= alphanumeric
+   $version-scheme /= decimal
+   $version-scheme /= semver
+   $version-scheme /= uint / text
+
+   any-attribute = (
+     label => text / int / [ 2* text ] / [ 2* int ]
+   )
+
+   global-attributes = (
+     ? lang => text,
+     * any-attribute,
+   )
+
+   hash-entry = [
+     hash-alg-id: int,
+     hash-value: bytes,
+   ]
+
+   entity-entry = {
+     entity-name => text,
+     ? reg-id => any-uri,
+     role => $role / [ 2* $role ],
+     ? thumbprint => hash-entry,
+     global-attributes,
+     * $$entity-extension,
+   }
+
+   $role /= tag-creator
+   $role /= software-creator
+   $role /= aggregator
+   $role /= distributor
+   $role /= licensor
+   $role /= maintainer
+   $role /= uint / text
+
+   link-entry = {
+     ? artifact => text,
+     href => any-uri,
+     ? media => text,
+     ? ownership => $ownership,
+     rel => $rel,
+     ? media-type => text,
+     ? use => $use,
+     global-attributes,
+     * $$link-extension
+   }
+
+   $ownership /= shared
+   $ownership /= private
+   $ownership /= abandon
+   $ownership /= uint / text
+
+   $rel /= ancestor
+   $rel /= component
+   $rel /= feature
+   $rel /= installationmedia
+   $rel /= packageinstaller
+   $rel /= parent
+   $rel /= patches
+   $rel /= requires
+   $rel /= see-also
+   $rel /= supersedes
+   $rel /= supplemental
+   $rel /= -256..64436 / text
+
+   $use /= optional
+   $use /= required
+   $use /= recommended
+   $use /= uint / text
+
+   software-meta-entry = {
+     ? activation-status => text,
+     ? channel-type => text,
+     ? colloquial-version => text,
+     ? description => text,
+     ? edition => text,
+     ? entitlement-data-required => bool,
+     ? entitlement-key => text,
+     ? generator => text,
+     ? persistent-id => text,
+     ? product => text,
+     ? product-family => text,
+     ? revision => text,
+     ? summary => text,
+     ? unspsc-code => text,
+     ? unspsc-version => text,
+     global-attributes,
+     * $$software-meta-extension,
+   }
+
+   path-elements-group = ( ? directory => directory-entry / [ 2* directory-entry ],
+                           ? file => file-entry / [ 2* file-entry ],
+                         )
+
+   resource-collection = (
+     path-elements-group,
+     ? process => process-entry / [ 2* process-entry ],
+     ? resource => resource-entry / [ 2* resource-entry ],
+     * $$resource-collection-extension,
+   )
+
+   file-entry = {
+     filesystem-item,
+     ? size => uint,
+     ? file-version => text,
+     ? hash => hash-entry,
+     * $$file-extension,
+   }
+
+   directory-entry = {
+     filesystem-item,
+     ? path-elements => { path-elements-group },
+     * $$directory-extension,
+   }
+
+   process-entry = {
+     process-name => text,
+     ? pid => integer,
+     global-attributes,
+     * $$process-extension,
+   }
+
+   resource-entry = {
+     type => text,
+     global-attributes,
+     * $$resource-extension,
+   }
+
+   filesystem-item = (
+     ? key => bool,
+     ? location => text,
+     fs-name => text,
+     ? root => text,
+     global-attributes,
+   )
+
+   payload-entry = {
+     resource-collection,
+     global-attributes,
+     * $$payload-extension,
+   }
+
+   evidence-entry = {
+     resource-collection,
+     ? date => time,
+     ? device-id => text,
+     global-attributes,
+     * $$evidence-extension,
+   }
+
+   ; "global map member" integer indexes
+   tag-id = 0
+   software-name = 1
+   entity = 2
+   evidence = 3
+   link = 4
+   software-meta = 5
+   payload = 6
+   hash = 7
+   corpus = 8
+   patch = 9
+   media = 10
+   supplemental = 11
+   tag-version = 12
+   software-version = 13
+   version-scheme = 14
+   lang = 15
+   directory = 16
+   file = 17
+   process = 18
+   resource = 19
+   size = 20
+   file-version = 21
+   key = 22
+   location = 23
+   fs-name = 24
+   root = 25
+   path-elements = 26
+   process-name = 27
+   pid = 28
+   type = 29
+   entity-name = 31
+   reg-id = 32
+   role = 33
+   thumbprint = 34
+   date = 35
+   device-id = 36
+   artifact = 37
+   href = 38
+   ownership = 39
+   rel = 40
+   media-type = 41
+   use = 42
+   activation-status = 43
+   channel-type = 44
+   colloquial-version = 45
+   description = 46
+   edition = 47
+   entitlement-data-required = 48
+   entitlement-key = 49
+   generator = 50
+   persistent-id = 51
+   product = 52
+   product-family = 53
+   revision = 54
+   summary = 55
+   unspsc-code = 56
+   unspsc-version = 57
+
+   ; "version-scheme" integer indexes
+   multipartnumeric = 1
+   multipartnumeric-suffix = 2
+   alphanumeric = 3
+   decimal = 4
+   semver = 16384
+
+   ; "role" integer indexes
+   tag-creator=1
+   software-creator=2
+   aggregator=3
+   distributor=4
+   licensor=5
+   maintainer=6
+
+   ; "ownership" integer indexes
+   shared=1
+   private=2
+   abandon=3
+
+   ; "rel" integer indexes
+   ancestor=1
+   component=2
+   feature=3
+   installationmedia=4
+   packageinstaller=5
+   parent=6
+   patches=7
+   requires=8
+   see-also=9
+   supersedes=10
+   ; supplemental=11 ; this is already defined earlier
+
+   ; "use" integer indexes
+   optional=1
+   required=2
+   recommended=3
+
+   COSE_Key = {
+     1 => tstr / int,          ; kty
+     ? 2 => bstr,              ; kid
+     ? 3 => tstr / int,        ; alg
+     ? 4 => [+ (tstr / int) ], ; key_ops
+     ? 5 => bstr,              ; Base IV
+     * cose-key-label => cose-key-values
+   }
+
+   cose-key-label = int / tstr
+   cose-key-values = any
+
+   COSE_KeySet = [+COSE_Key]
+
+   <CODE ENDS>
+
+4.  Privacy Considerations
+
+   Privacy Considerations
+
+5.  Security Considerations
+
+   Security Considerations
+
+6.  IANA Considerations
+
+   See Body Section 2.
+
+7.  References
+
+7.1.  Normative References
+
+   [I-D.ietf-rats-architecture]
+              Birkholz, H., Thaler, D., Richardson, M., Smith, N., and
+              W. Pan, "Remote Attestation Procedures Architecture", Work
+              in Progress, Internet-Draft, draft-ietf-rats-architecture-
+              10, 9 February 2021,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-rats-
+              architecture-10.txt>.
+
+   [I-D.ietf-sacm-coswid]
+              Birkholz, H., Fitzgerald-McKay, J., Schmidt, C., and D.
+              Waltermire, "Concise Software Identification Tags", Work
+              in Progress, Internet-Draft, draft-ietf-sacm-coswid-17, 22
+              February 2021, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-sacm-coswid-17.txt>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://datatracker.ietf.org/doc/html/rfc2119>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://datatracker.ietf.org/doc/html/rfc8174>.
+
+7.2.  Informative References
+
+   [RFC4949]  Shirey, R., "Internet Security Glossary, Version 2",
+              FYI 36, RFC 4949, DOI 10.17487/RFC4949, August 2007,
+              <https://datatracker.ietf.org/doc/html/rfc4949>.
+
+Authors' Addresses
+
+   Henk Birkholz
+   Fraunhofer SIT
+   Rheinstrasse 75
+   64295 Darmstadt
+   Germany
+
+   Email: henk.birkholz@sit.fraunhofer.de
+
+
+   Thomas Fossati
+   Arm Limited
+   United Kingdom
+
+   Email: Thomas.Fossati@arm.com
+
+
+   Yogesh Deshpande
+   Arm Limited
+   United Kingdom
+
+   Email: yogesh.deshpande@arm.com
+
+
+   Ned Smith
+   Intel Corporation
+   United States of America
+
+   Email: ned.smith@intel.com
