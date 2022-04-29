@@ -177,7 +177,9 @@ one-or-more<T> = T / [ 2* T ] ; 2*
 A CoRIM is a bundle of CoMID tags and/or CoSWID tags that can reference each other and that includes additional metadata about that bundle.
 
 The root of the CDDL specification provided for CoRIM is the
-rule `corim` <!-- (as defined in FIXME) -->:
+rule `corim` <!-- (as defined in FIXME) -->.
+
+The CDDL in this document is normative.
 
 ~~~ CDDL
 start = corim
@@ -186,7 +188,7 @@ start = corim
 {: #model-signed-corim}
 ## The signed-corim Container
 
-A CoRIM is signed using {{-COSE}}. The additional CoRIM-specific COSE header member label corim-meta is defined as well as the corresponding type corim-meta-map as its value. This rule and its constraints MUST be followed when generating or validating a signed CoRIM tag.
+A CoRIM is signed using {{-COSE}}. The additional CoRIM-specific COSE header member label corim-meta is defined as well as the corresponding type corim-meta-map as its value.
 
 
 ~~~ CDDL
@@ -281,7 +283,7 @@ corim.not-after:
 {: #model-corim-map}
 ## The corim-map Container
 
-This map contains the payload of the COSE envelope that is used to sign the CoRIM. This rule and its constraints MUST be followed when generating or validating an unsigned Concise RIM.
+This map contains the payload of the COSE envelope that is used to sign the CoRIM.
 
 ~~~~ CDDL
 corim-map = {
@@ -335,7 +337,7 @@ $$corim-map-extension:
 {: #model-corim-entity-map}
 ### The corim-entity-map Container
 
-This Container contains qualifying attributes that provide more context information about the RIM as well its origin and purpose. This rule and its constraints MUST be followed when generating or validating a CoRIM tag
+This Container contains qualifying attributes that provide more context information about the RIM as well its origin and purpose.
 
 ~~~~ CDDL
 corim-entity-map = {
@@ -388,7 +390,7 @@ corim.thumbprint:
 {: #model-concise-mid-tag}
 ## The concise-mid-tag Container
 
-The CDDL specification for the root concise-mid-tag map is as follows. This rule and its constraints MUST be followed when generating or validating a CoMID tag.
+The CDDL specification for the root concise-mid-tag map is as follows.
 
 ~~~ CDDL
 concise-mid-tag = {
@@ -430,7 +432,7 @@ $$comid-mid-tag-extension:
 {: #model-tag-identity-map}
 ## The tag-identity-map Container
 
-The CDDL specification for the tag-identity-map includes all identifying attributes that enable a consumer of information to anticipate required capabilities to process the corresponding tag that map is included in. This rule and its constraints MUST be followed when generating or validating a CoMID tag.
+The CDDL specification for the tag-identity-map includes all identifying attributes that enable a consumer of information to anticipate required capabilities to process the corresponding tag that map is included in.
 
 ~~~ CDDL
 tag-identity-map = {
@@ -461,7 +463,7 @@ $$tag-identity-map-extension:
 {: #model-entity-map}
 ## The entity-map Container
 
-This Container provides qualifying attributes that provide more context information describing the module as well its origin and purpose. This rule and its constraints MUST be followed when generating or validating a CoMID tag.
+This Container provides qualifying attributes that provide more context information describing the module as well its origin and purpose.
 
 ~~~ CDDL
 entity-map = {
@@ -522,7 +524,7 @@ comid.tag-rel:
 {: #model-triples-map}
 ## The triples-map Container
 
-A set of directed properties that associate sets of data to provide reference values, endorsed values, verification key material or identifying key material for a specific hardware module that is a component of a composite device. The map provides the core element of CoMID tags that associate remote attestation relevant data with a distinct hardware component that runs an execution environment (a module that is either a Target Environment and/or an Attesting Environment). This rule and its constraints MUST be followed when generating or validating a CoMID tag.
+A set of directed properties that associate sets of data to provide reference values, endorsed values, verification key material or identifying key material for a specific hardware module that is a component of a composite device. The map provides the core element of CoMID tags that associate remote attestation relevant data with a distinct hardware component that runs an execution environment (a module that is either a Target Environment and/or an Attesting Environment).
 
 ~~~ CDDL
 triples-map = non-empty<{
@@ -559,7 +561,7 @@ $$triples-map-extension:
 {: #model-environment-map}
 ## The environment-map Container
 
-This map represents the module(s) that a triple-map can point directed properties (relationships) from in order to associate them with external information for remote attestation, such as reference values, endorsement and endorsed values, verification key material for evidence, or identifying key material for module (re-)identification. This map can identify a single module instance via `comid.instance` or groups of modules via `comid.group`. Referencing classes of modules requires the use of the more complex `class-map` container. This rule and its constraints MUST be followed when generating or validating a CoMID tag.
+This map represents the module(s) that a triple-map can point directed properties (relationships) from in order to associate them with external information for remote attestation, such as reference values, endorsement and endorsed values, verification key material for evidence, or identifying key material for module (re-)identification. This map can identify a single module instance via `comid.instance` or groups of modules via `comid.group`. Referencing classes of modules requires the use of the more complex `class-map` container.
 
 ~~~~ CDDL
 environment-map = non-empty<{
@@ -590,7 +592,7 @@ comid.group:
 
 ## The class-map Container
 
-This map enables a composite identifier intended to uniquely identify modules that are of a distinct class of devices. Effectively, all provided members in combination are a composite module class identifier.  This rule and its constraints MUST be followed when generating or validating a CoMID tag. This rule and its constraints MUST be followed when generating or validating a CoMID tag.
+This map enables a composite identifier intended to uniquely identify modules that are of a distinct class of devices. Effectively, all provided members in combination are a composite module class identifier.
 
 ~~~~ CDDL
 class-map = non-empty<{
@@ -632,7 +634,7 @@ comid.index
 {: #model-measurement-values-map}
 ## The measurement-map and measurement-values-map Containers
 
-One of the targets (range) that a triple-map can point to in order to associate it with a module (domain) is the measurement-map. This map is used to provide reference measurements values that can be compared with Evidence Claim values or Endorsements and endorsed values from other sources than the corresponding CoRIM. `measurement-map` comes with a measurement key that identifies the measured element with via a OID reference or a UUID. `measurement-values-map` contains the actual measurements associated with the module(s). Byte strings with corresponding bit masks that highlights which bits in the byte string are used as reference measurements or endorsement are located in `raw-value-group`. The members of `measurement-values-map` provide well-defined and well-scoped semantics for reference measurement or endorsements with respect to a given module instance, class, or group. This rule and its constraints MUST be followed when generating or validating a CoMID tag.
+One of the targets (range) that a triple-map can point to in order to associate it with a module (domain) is the measurement-map. This map is used to provide reference measurements values that can be compared with Evidence Claim values or Endorsements and endorsed values from other sources than the corresponding CoRIM. `measurement-map` comes with a measurement key that identifies the measured element with via a OID reference or a UUID. `measurement-values-map` contains the actual measurements associated with the module(s). Byte strings with corresponding bit masks that highlights which bits in the byte string are used as reference measurements or endorsement are located in `raw-value-group`. The members of `measurement-values-map` provide well-defined and well-scoped semantics for reference measurement or endorsements with respect to a given module instance, class, or group.
 
 ~~~~ CDDL
 measurement-map = {
@@ -821,7 +823,7 @@ eui64-addr-type = bytes .size 8
 {: #model-verification-key-map}
 ## The verification-key-map Container
 
-One of the targets (range) that a triple-map can point to in order to associate it with a module (domain). This map is used to provide the key material for evidence verification (effectively signature checking or a lightweight proof-of-possession of private signing key material) or for identity assertion/check (where a proof-of-possession implies a certain device identity). In support of informed trust decisions, an optional trust anchor in the form a PKIX certification path that is associated with the provided key material can be included. This rule and its constraints MUST be followed when generating or validating a CoMID tag.
+One of the targets (range) that a triple-map can point to in order to associate it with a module (domain). This map is used to provide the key material for evidence verification (effectively signature checking or a lightweight proof-of-possession of private signing key material) or for identity assertion/check (where a proof-of-possession implies a certain device identity). In support of informed trust decisions, an optional trust anchor in the form a PKIX certification path that is associated with the provided key material can be included.
 
 ~~~ CDDL
 verification-key-map = {
