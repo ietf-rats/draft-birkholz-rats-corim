@@ -82,7 +82,9 @@ CoRIM and CoMID tags are defined in this document, CoSWID tags are defined in {{
 
 In accordance to {{RFC4949}}, software components that are stored in hardware modules are referred to as firmware. While firmware can be represented as a software component, it is also very hardware-specific and often resides directly on block devices instead of a file system. In this specification, firmware and their Reference Values are represented via CoMID tags. Reference Values for any other software components stored on a file system are represented via CoSWID tags.
 
-In addition to CoRIM - and respective CoMID tags - this specification defines a Concise Manifest Revocation that represents a list of reference to CoRIM that are actively marked as invalid before their expiration time.
+In addition to CoRIM - and respective CoMID tags - this specification defines a Concise Manifest Revocation that represents a list of reference to CoRIM that are actively marked as invalid before their expiration time. [^note]
+
+[^note]: Revocation needs more discussion.  See https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/77
 
 ## Requirements Notation
 
@@ -91,13 +93,11 @@ In addition to CoRIM - and respective CoMID tags - this specification defines a 
 {: #mybody}
 # Concise Reference Integrity Manifests
 
-This section specifies the Concise RIM (CoRIM) format, the Concise MID format (CoMID), and the extension to the CoSWID specification that augments CoSWID tags to express specific relationships to CoMID tags.
-
-While each specification defines its own start rule, only CoMID and CoSWID are stand-alone specifications. The CoRIM specification - as the bundling format - has a dependency on CoMID and CoSWID and is not a stand-alone specification.
+This section specifies the Concise RIM (CoRIM) format and the Concise MID format (CoMID).
 
 This specification defines how to generate signed CoRIM tags with COSE {{-COSE}} to enable proof of authenticity and tamper-evidence.
 
-This document uses the Concise Data Definition Language (CDDL {{RFC8610}}) to define the data structure of CoRIM and CoMID tags, as well as the extensions to CoSWID. The CDDL definitions provided define nested containers. Typically, the CDDL types used for nested containers are maps. Every key used in the maps is a named type that is associated with an corresponding uint via a block of rules appended at the end of the CDDL definition.
+This document uses the Concise Data Definition Language (CDDL {{RFC8610}}) to define the data structure of CoRIM and CoMID tags. The CDDL definitions provided define nested containers. Typically, the CDDL types used for nested containers are maps. Every key used in the maps is a named type that is associated with an corresponding uint via a block of rules appended at the end of the CDDL definition.
 
 Every set of uint keys that is used in the context of the "collision domain" of map is intended to be collision-free (each key is intended to be unique in the scope of a map, not a multimap). To accomplish that, for each map there is an IANA registry for the map members of maps. <!-- FIXME: ref to IANA sections -->
 
@@ -515,11 +515,11 @@ The following describes each member of the linked-tag-map container.
 
 comid.linked-tag-id:
 
-: The tag-id of the linked tag. A linked tag MAY be a CoMID tag or a CoSWID tag.
+: The tag-id of the linked CoMID tag.
 
 comid.tag-rel:
 
-: The relationship type with the linked tag. The relationship type MAY be `supplements` or `replaces`, as well as other types well-defined by additional specifications.
+: The relationship type with the linked tag. The relationship type MAY be `supplements` or `replaces`.
 
 {: #model-triples-map}
 ## The triples-map Container
@@ -855,7 +855,7 @@ This section aggregates the CDDL definitions specified in this document in a ful
 
 Not included in the full CDDL definition are CDDL dependencies to CoSWID. The following CDDL definitions can be found in {{-coswid}}:
 
-* the COSE envelope for CoRIM: signed-coswid
+* the COSE envelope for CoSWID: signed-coswid
 * the CoSWID document: concise-swid-tag
 
 ~~~~ CDDL
