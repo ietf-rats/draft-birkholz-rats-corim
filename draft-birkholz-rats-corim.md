@@ -82,7 +82,7 @@ CoRIM and CoMID tags are defined in this document, CoSWID tags are defined in {{
 
 In accordance to {{RFC4949}}, software components that are stored in hardware modules are referred to as firmware. While firmware can be represented as a software component, it is also very hardware-specific and often resides directly on block devices instead of a file system. In this specification, firmware and their Reference Values are represented via CoMID tags. Reference Values for any other software components stored on a file system are represented via CoSWID tags.
 
-In addition to CoRIM - and respective CoMID tags - this specification defines a Concise Manifest Revocation that represents a list of reference to CoRIM that are actively marked as invalid before their expiration time. [^note]
+In addition to CoRIM - and respective CoMID tags - this specification defines a Concise Manifest Revocation that represents a list of references to CoRIM that are actively marked as invalid before their expiration time. [^note]
 
 [^note]: Revocation needs more discussion.  See https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/77
 
