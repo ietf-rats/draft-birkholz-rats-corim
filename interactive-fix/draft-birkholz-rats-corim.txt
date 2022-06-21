@@ -176,7 +176,7 @@ Table of Contents
 
    In addition to CoRIM - and respective CoMID tags - this specification
    defines a Concise Manifest Revocation that represents a list of
-   reference to CoRIM that are actively marked as invalid before their
+   references to CoRIM that are actively marked as invalid before their
    expiration time.
    // Revocation needs more discussion.  See https://github.com/ietf-
    // rats/draft-birkholz-rats-corim/issues/77
