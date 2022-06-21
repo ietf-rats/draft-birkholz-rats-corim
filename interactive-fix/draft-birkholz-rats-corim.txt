@@ -5,13 +5,13 @@
 RATS Working Group                                           H. Birkholz
 Internet-Draft                                            Fraunhofer SIT
 Intended status: Standards Track                              T. Fossati
-Expires: 31 October 2022                                    Y. Deshpande
+Expires: 23 December 2022                                   Y. Deshpande
                                                              Arm Limited
                                                                 N. Smith
                                                                    Intel
                                                                   W. Pan
                                                      Huawei Technologies
-                                                           29 April 2022
+                                                            21 June 2022
 
 
                   Concise Reference Integrity Manifest
@@ -61,7 +61,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 31 October 2022.
+   This Internet-Draft will expire on 23 December 2022.
 
 Copyright Notice
 
@@ -178,6 +178,8 @@ Table of Contents
    defines a Concise Manifest Revocation that represents a list of
    reference to CoRIM that are actively marked as invalid before their
    expiration time.
+   // Revocation needs more discussion.  See https://github.com/ietf-
+   // rats/draft-birkholz-rats-corim/issues/77
 
 1.1.  Requirements Notation
 
@@ -189,26 +191,18 @@ Table of Contents
 
 2.  Concise Reference Integrity Manifests
 
-   This section specifies the Concise RIM (CoRIM) format, the Concise
-   MID format (CoMID), and the extension to the CoSWID specification
-   that augments CoSWID tags to express specific relationships to CoMID
-   tags.
-
-   While each specification defines its own start rule, only CoMID and
-   CoSWID are stand-alone specifications.  The CoRIM specification - as
-   the bundling format - has a dependency on CoMID and CoSWID and is not
-   a stand-alone specification.
+   This section specifies the Concise RIM (CoRIM) format and the Concise
+   MID format (CoMID).
 
    This specification defines how to generate signed CoRIM tags with
    COSE [RFC8152] to enable proof of authenticity and tamper-evidence.
 
    This document uses the Concise Data Definition Language (CDDL
-   [RFC8610]) to define the data structure of CoRIM and CoMID tags, as
-   well as the extensions to CoSWID.  The CDDL definitions provided
-   define nested containers.  Typically, the CDDL types used for nested
-   containers are maps.  Every key used in the maps is a named type that
-   is associated with an corresponding uint via a block of rules
-   appended at the end of the CDDL definition.
+   [RFC8610]) to define the data structure of CoRIM and CoMID tags.  The
+   CDDL definitions provided define nested containers.  Typically, the
+   CDDL types used for nested containers are maps.  Every key used in
+   the maps is a named type that is associated with an corresponding
+   uint via a block of rules appended at the end of the CDDL definition.
 
    Every set of uint keys that is used in the context of the "collision
    domain" of map is intended to be collision-free (each key is intended
@@ -638,12 +632,10 @@ Table of Contents
 
    The following describes each member of the linked-tag-map container.
 
-   comid.linked-tag-id:  The tag-id of the linked tag.  A linked tag MAY
-      be a CoMID tag or a CoSWID tag.
+   comid.linked-tag-id:  The tag-id of the linked CoMID tag.
 
    comid.tag-rel:  The relationship type with the linked tag.  The
-      relationship type MAY be "supplements" or "replaces", as well as
-      other types well-defined by additional specifications.
+      relationship type MAY be "supplements" or "replaces".
 
 3.7.  The triples-map Container
 
@@ -962,7 +954,7 @@ Table of Contents
    CoSWID.  The following CDDL definitions can be found in
    [I-D.ietf-sacm-coswid]:
 
-   *  the COSE envelope for CoRIM: signed-coswid
+   *  the COSE envelope for CoSWID: signed-coswid
 
    *  the CoSWID document: concise-swid-tag
 
@@ -2153,9 +2145,8 @@ Table of Contents
               Birkholz, H., Thaler, D., Richardson, M., Smith, N., and
               W. Pan, "Remote Attestation Procedures Architecture", Work
               in Progress, Internet-Draft, draft-ietf-rats-architecture-
-              15, 8 February 2022,
-              <https://datatracker.ietf.org/doc/html/draft-ietf-rats-
-              architecture-15.txt>.
+              18, 14 June 2022, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-rats-architecture-18.txt>.
 
    [I-D.ietf-sacm-coswid]
               Birkholz, H., Fitzgerald-McKay, J., Schmidt, C., and D.
