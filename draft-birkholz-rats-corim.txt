@@ -5,13 +5,13 @@
 RATS Working Group                                           H. Birkholz
 Internet-Draft                                            Fraunhofer SIT
 Intended status: Standards Track                              T. Fossati
-Expires: 30 July 2022                                       Y. Deshpande
+Expires: 30 December 2022                                   Y. Deshpande
                                                              Arm Limited
                                                                 N. Smith
                                                                    Intel
                                                                   W. Pan
                                                      Huawei Technologies
-                                                         26 January 2022
+                                                            28 June 2022
 
 
                   Concise Reference Integrity Manifest
@@ -61,7 +61,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 July 2022.
+   This Internet-Draft will expire on 30 December 2022.
 
 Copyright Notice
 
@@ -176,8 +176,10 @@ Table of Contents
 
    In addition to CoRIM - and respective CoMID tags - this specification
    defines a Concise Manifest Revocation that represents a list of
-   reference to CoRIM that are actively marked as invalid before their
+   references to CoRIM that are actively marked as invalid before their
    expiration time.
+   // Revocation needs more discussion.  See https://github.com/ietf-
+   // rats/draft-birkholz-rats-corim/issues/77
 
 1.1.  Requirements Notation
 
@@ -189,30 +191,18 @@ Table of Contents
 
 2.  Concise Reference Integrity Manifests
 
-   This section specifies the Concise RIM (CoRIM) format, the Concise
-   MID format (CoMID), and the extension to the CoSWID specification
-   that augments CoSWID tags to express specific relationships to CoMID
-   tags.
+   This section specifies the Concise RIM (CoRIM) format and the Concise
+   MID format (CoMID).
 
-   While each specification defines its own start rule, only CoMID and
-   CoSWID are stand-alone specifications.  The CoRIM specification - as
-   the bundling format - has a dependency on CoMID and CoSWID and is not
-   a stand-alone specification.
-
-   While stand-alone CoSWID tags may be signed [I-D.ietf-sacm-coswid],
-   CoMID tags are not intended to be stand-alone and are always part of
-   a CoRIM that must be signed.  [I-D.ietf-sacm-coswid] specifies the
-   use of COSE [RFC7231] for signing.  This specification defines how to
-   generate singed CoRIM tags with COSE to enable proof of authenticity
-   and temper-evidence.
+   This specification defines how to generate signed CoRIM tags with
+   COSE [RFC8152] to enable proof of authenticity and tamper-evidence.
 
    This document uses the Concise Data Definition Language (CDDL
-   [RFC8610]) to define the data structure of CoRIM and CoMID tags, as
-   well as the extensions to CoSWID.  The CDDL definitions provided
-   define nested containers.  Typically, the CDDL types used for nested
-   containers are maps.  Every key used in the maps is a named type that
-   is associated with an corresponding uint via a block of rules
-   appended at the end of the CDDL definition.
+   [RFC8610]) to define the data structure of CoRIM and CoMID tags.  The
+   CDDL definitions provided define nested containers.  Typically, the
+   CDDL types used for nested containers are maps.  Every key used in
+   the maps is a named type that is associated with an corresponding
+   uint via a block of rules appended at the end of the CDDL definition.
 
    Every set of uint keys that is used in the context of the "collision
    domain" of map is intended to be collision-free (each key is intended
@@ -353,17 +343,17 @@ Table of Contents
    bundle.
 
    The root of the CDDL specification provided for CoRIM is the rule
-   "corim" :
+   "corim" .
+
+   The CDDL in this document is normative.
 
    start = corim
 
 3.1.  The signed-corim Container
 
-   A CoRIM is signed using [RFC7231].  The additional CoRIM-specific
+   A CoRIM is signed using [RFC8152].  The additional CoRIM-specific
    COSE header member label corim-meta is defined as well as the
-   corresponding type corim-meta-map as its value.  This rule and its
-   constraints MUST be followed when generating or validating a signed
-   CoRIM tag.
+   corresponding type corim-meta-map as its value.
 
    signed-corim = #6.18(COSE-Sign1-corim)
 
@@ -446,8 +436,7 @@ Table of Contents
 3.2.  The corim-map Container
 
    This map contains the payload of the COSE envelope that is used to
-   sign the CoRIM.  This rule and its constraints MUST be followed when
-   generating or validating an unsigned Concise RIM.
+   sign the CoRIM.
 
    corim-map = {
      corim.id => $corim-id-type-choice
@@ -493,8 +482,6 @@ Table of Contents
 
    This Container contains qualifying attributes that provide more
    context information about the RIM as well its origin and purpose.
-   This rule and its constraints MUST be followed when generating or
-   validating a CoRIM tag
 
    corim-entity-map = {
      corim.entity-name => $entity-name-type-choice
@@ -537,8 +524,7 @@ Table of Contents
 3.3.  The concise-mid-tag Container
 
    The CDDL specification for the root concise-mid-tag map is as
-   follows.  This rule and its constraints MUST be followed when
-   generating or validating a CoMID tag.
+   follows.
 
    concise-mid-tag = {
      ? comid.language => language-type
@@ -575,8 +561,7 @@ Table of Contents
    The CDDL specification for the tag-identity-map includes all
    identifying attributes that enable a consumer of information to
    anticipate required capabilities to process the corresponding tag
-   that map is included in.  This rule and its constraints MUST be
-   followed when generating or validating a CoMID tag.
+   that map is included in.
 
    tag-identity-map = {
      comid.tag-id => $tag-id-type-choice
@@ -604,8 +589,7 @@ Table of Contents
 
    This Container provides qualifying attributes that provide more
    context information describing the module as well its origin and
-   purpose.  This rule and its constraints MUST be followed when
-   generating or validating a CoMID tag.
+   purpose.
 
    entity-map = {
      comid.entity-name => $entity-name-type-choice
@@ -648,12 +632,10 @@ Table of Contents
 
    The following describes each member of the linked-tag-map container.
 
-   comid.linked-tag-id:  The tag-id of the linked tag.  A linked tag MAY
-      be a CoMID tag or a CoSWID tag.
+   comid.linked-tag-id:  The tag-id of the linked CoMID tag.
 
    comid.tag-rel:  The relationship type with the linked tag.  The
-      relationship type MAY be "supplements" or "replaces", as well as
-      other types well-defined by additional specifications.
+      relationship type MAY be "supplements" or "replaces".
 
 3.7.  The triples-map Container
 
@@ -664,8 +646,7 @@ Table of Contents
    of CoMID tags that associate remote attestation relevant data with a
    distinct hardware component that runs an execution environment (a
    module that is either a Target Environment and/or an Attesting
-   Environment).  This rule and its constraints MUST be followed when
-   generating or validating a CoMID tag.
+   Environment).
 
    triples-map = non-empty<{
      ? comid.reference-triples => one-or-more<reference-triple-record>
@@ -705,8 +686,7 @@ Table of Contents
    (re-)identification.  This map can identify a single module instance
    via "comid.instance" or groups of modules via "comid.group".
    Referencing classes of modules requires the use of the more complex
-   "class-map" container.  This rule and its constraints MUST be
-   followed when generating or validating a CoMID tag.
+   "class-map" container.
 
    environment-map = non-empty<{
      ? comid.class => class-map
@@ -735,9 +715,7 @@ Table of Contents
    This map enables a composite identifier intended to uniquely identify
    modules that are of a distinct class of devices.  Effectively, all
    provided members in combination are a composite module class
-   identifier.  This rule and its constraints MUST be followed when
-   generating or validating a CoMID tag.  This rule and its constraints
-   MUST be followed when generating or validating a CoMID tag.
+   identifier.
 
    class-map = non-empty<{
      ? comid.class-id => $class-id-type-choice
@@ -778,8 +756,7 @@ Table of Contents
    "raw-value-group".  The members of "measurement-values-map" provide
    well-defined and well-scoped semantics for reference measurement or
    endorsements with respect to a given module instance, class, or
-   group.  This rule and its constraints MUST be followed when
-   generating or validating a CoMID tag.
+   group.
 
    measurement-map = {
      ? comid.mkey => $measured-element-type-choice
@@ -941,8 +918,7 @@ Table of Contents
    possession implies a certain device identity).  In support of
    informed trust decisions, an optional trust anchor in the form a PKIX
    certification path that is associated with the provided key material
-   can be included.  This rule and its constraints MUST be followed when
-   generating or validating a CoMID tag.
+   can be included.
 
    verification-key-map = {
      comid.key => pkix-base64-key-type
@@ -978,7 +954,7 @@ Table of Contents
    CoSWID.  The following CDDL definitions can be found in
    [I-D.ietf-sacm-coswid]:
 
-   *  the COSE envelope for CoRIM: signed-coswid
+   *  the COSE envelope for CoSWID: signed-coswid
 
    *  the CoSWID document: concise-swid-tag
 
@@ -1353,7 +1329,7 @@ Table of Contents
      ? edition => text,
      ? entitlement-data-required => bool,
      ? entitlement-key => text,
-     ? generator => text,
+     ? generator =>  text / bstr .size 16,
      ? persistent-id => text,
      ? product => text,
      ? product-family => text,
@@ -1422,6 +1398,7 @@ Table of Contents
      resource-collection,
      ? date => integer-time,
      ? device-id => text,
+     ? location => text,
      * $$evidence-extension,
      global-attributes,
    }
@@ -1499,9 +1476,9 @@ Table of Contents
    licensor=5
    maintainer=6
 
-   shared=1
+   abandon=1
    private=2
-   abandon=3
+   shared=3
 
    ancestor=1
    component=2
@@ -2168,16 +2145,15 @@ Table of Contents
               Birkholz, H., Thaler, D., Richardson, M., Smith, N., and
               W. Pan, "Remote Attestation Procedures Architecture", Work
               in Progress, Internet-Draft, draft-ietf-rats-architecture-
-              14, 9 December 2021,
-              <https://datatracker.ietf.org/doc/html/draft-ietf-rats-
-              architecture-14.txt>.
+              18, 14 June 2022, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-rats-architecture-18.txt>.
 
    [I-D.ietf-sacm-coswid]
               Birkholz, H., Fitzgerald-McKay, J., Schmidt, C., and D.
               Waltermire, "Concise Software Identification Tags", Work
-              in Progress, Internet-Draft, draft-ietf-sacm-coswid-19, 20
-              October 2021, <https://datatracker.ietf.org/doc/html/
-              draft-ietf-sacm-coswid-19.txt>.
+              in Progress, Internet-Draft, draft-ietf-sacm-coswid-21, 7
+              March 2022, <https://datatracker.ietf.org/doc/html/draft-
+              ietf-sacm-coswid-21.txt>.
 
    [IANA.cbor-tags]
               IANA, "Concise Binary Object Representation (CBOR) Tags",
@@ -2202,11 +2178,6 @@ Table of Contents
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/rfc/rfc2119>.
 
-   [RFC7231]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
-              Protocol (HTTP/1.1): Semantics and Content", RFC 7231,
-              DOI 10.17487/RFC7231, June 2014,
-              <https://www.rfc-editor.org/rfc/rfc7231>.
-
    [RFC7252]  Shelby, Z., Hartke, K., and C. Bormann, "The Constrained
               Application Protocol (CoAP)", RFC 7252,
               DOI 10.17487/RFC7252, June 2014,
@@ -2216,6 +2187,10 @@ Table of Contents
               Writing an IANA Considerations Section in RFCs", BCP 26,
               RFC 8126, DOI 10.17487/RFC8126, June 2017,
               <https://www.rfc-editor.org/rfc/rfc8126>.
+
+   [RFC8152]  Schaad, J., "CBOR Object Signing and Encryption (COSE)",
+              RFC 8152, DOI 10.17487/RFC8152, July 2017,
+              <https://www.rfc-editor.org/rfc/rfc8152>.
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
