@@ -49,7 +49,7 @@ author:
 
 normative:
   RFC2119:
-  RFC7231: COSE
+  RFC8152: COSE
   RFC7252:
   RFC8126:
   RFC8174:
@@ -82,7 +82,9 @@ CoRIM and CoMID tags are defined in this document, CoSWID tags are defined in {{
 
 In accordance to {{RFC4949}}, software components that are stored in hardware modules are referred to as firmware. While firmware can be represented as a software component, it is also very hardware-specific and often resides directly on block devices instead of a file system. In this specification, firmware and their Reference Values are represented via CoMID tags. Reference Values for any other software components stored on a file system are represented via CoSWID tags.
 
-In addition to CoRIM - and respective CoMID tags - this specification defines a Concise Manifest Revocation that represents a list of reference to CoRIM that are actively marked as invalid before their expiration time.
+In addition to CoRIM - and respective CoMID tags - this specification defines a Concise Manifest Revocation that represents a list of references to CoRIM that are actively marked as invalid before their expiration time. [^note]
+
+[^note]: Revocation needs more discussion.  See https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/77
 
 ## Requirements Notation
 
@@ -91,13 +93,11 @@ In addition to CoRIM - and respective CoMID tags - this specification defines a 
 {: #mybody}
 # Concise Reference Integrity Manifests
 
-This section specifies the Concise RIM (CoRIM) format, the Concise MID format (CoMID), and the extension to the CoSWID specification that augments CoSWID tags to express specific relationships to CoMID tags.
+This section specifies the Concise RIM (CoRIM) format and the Concise MID format (CoMID).
 
-While each specification defines its own start rule, only CoMID and CoSWID are stand-alone specifications. The CoRIM specification - as the bundling format - has a dependency on CoMID and CoSWID and is not a stand-alone specification.
+This specification defines how to generate signed CoRIM tags with COSE {{-COSE}} to enable proof of authenticity and tamper-evidence.
 
-While stand-alone CoSWID tags may be signed {{-coswid}}, CoMID tags are not intended to be stand-alone and are always part of a CoRIM that must be signed. {{-coswid}} specifies the use of COSE {{-COSE}} for signing. This specification defines how to generate singed CoRIM tags with COSE to enable proof of authenticity and temper-evidence.
-
-This document uses the Concise Data Definition Language (CDDL {{RFC8610}}) to define the data structure of CoRIM and CoMID tags, as well as the extensions to CoSWID. The CDDL definitions provided define nested containers. Typically, the CDDL types used for nested containers are maps. Every key used in the maps is a named type that is associated with an corresponding uint via a block of rules appended at the end of the CDDL definition.
+This document uses the Concise Data Definition Language (CDDL {{RFC8610}}) to define the data structure of CoRIM and CoMID tags. The CDDL definitions provided define nested containers. Typically, the CDDL types used for nested containers are maps. Every key used in the maps is a named type that is associated with an corresponding uint via a block of rules appended at the end of the CDDL definition.
 
 Every set of uint keys that is used in the context of the "collision domain" of map is intended to be collision-free (each key is intended to be unique in the scope of a map, not a multimap). To accomplish that, for each map there is an IANA registry for the map members of maps. <!-- FIXME: ref to IANA sections -->
 
@@ -177,7 +177,9 @@ one-or-more<T> = T / [ 2* T ] ; 2*
 A CoRIM is a bundle of CoMID tags and/or CoSWID tags that can reference each other and that includes additional metadata about that bundle.
 
 The root of the CDDL specification provided for CoRIM is the
-rule `corim` <!-- (as defined in FIXME) -->:
+rule `corim` <!-- (as defined in FIXME) -->.
+
+The CDDL in this document is normative.
 
 ~~~ CDDL
 start = corim
@@ -186,7 +188,7 @@ start = corim
 {: #model-signed-corim}
 ## The signed-corim Container
 
-A CoRIM is signed using {{-COSE}}. The additional CoRIM-specific COSE header member label corim-meta is defined as well as the corresponding type corim-meta-map as its value. This rule and its constraints MUST be followed when generating or validating a signed CoRIM tag.
+A CoRIM is signed using {{-COSE}}. The additional CoRIM-specific COSE header member label corim-meta is defined as well as the corresponding type corim-meta-map as its value.
 
 
 ~~~ CDDL
@@ -281,7 +283,7 @@ corim.not-after:
 {: #model-corim-map}
 ## The corim-map Container
 
-This map contains the payload of the COSE envelope that is used to sign the CoRIM. This rule and its constraints MUST be followed when generating or validating an unsigned Concise RIM.
+This map contains the payload of the COSE envelope that is used to sign the CoRIM.
 
 ~~~~ CDDL
 corim-map = {
@@ -335,7 +337,7 @@ $$corim-map-extension:
 {: #model-corim-entity-map}
 ### The corim-entity-map Container
 
-This Container contains qualifying attributes that provide more context information about the RIM as well its origin and purpose. This rule and its constraints MUST be followed when generating or validating a CoRIM tag
+This Container contains qualifying attributes that provide more context information about the RIM as well its origin and purpose.
 
 ~~~~ CDDL
 corim-entity-map = {
@@ -388,7 +390,7 @@ corim.thumbprint:
 {: #model-concise-mid-tag}
 ## The concise-mid-tag Container
 
-The CDDL specification for the root concise-mid-tag map is as follows. This rule and its constraints MUST be followed when generating or validating a CoMID tag.
+The CDDL specification for the root concise-mid-tag map is as follows.
 
 ~~~ CDDL
 concise-mid-tag = {
@@ -430,7 +432,7 @@ $$comid-mid-tag-extension:
 {: #model-tag-identity-map}
 ## The tag-identity-map Container
 
-The CDDL specification for the tag-identity-map includes all identifying attributes that enable a consumer of information to anticipate required capabilities to process the corresponding tag that map is included in. This rule and its constraints MUST be followed when generating or validating a CoMID tag.
+The CDDL specification for the tag-identity-map includes all identifying attributes that enable a consumer of information to anticipate required capabilities to process the corresponding tag that map is included in.
 
 ~~~ CDDL
 tag-identity-map = {
@@ -461,7 +463,7 @@ $$tag-identity-map-extension:
 {: #model-entity-map}
 ## The entity-map Container
 
-This Container provides qualifying attributes that provide more context information describing the module as well its origin and purpose. This rule and its constraints MUST be followed when generating or validating a CoMID tag.
+This Container provides qualifying attributes that provide more context information describing the module as well its origin and purpose.
 
 ~~~ CDDL
 entity-map = {
@@ -513,16 +515,16 @@ The following describes each member of the linked-tag-map container.
 
 comid.linked-tag-id:
 
-: The tag-id of the linked tag. A linked tag MAY be a CoMID tag or a CoSWID tag.
+: The tag-id of the linked CoMID tag.
 
 comid.tag-rel:
 
-: The relationship type with the linked tag. The relationship type MAY be `supplements` or `replaces`, as well as other types well-defined by additional specifications.
+: The relationship type with the linked tag. The relationship type MAY be `supplements` or `replaces`.
 
 {: #model-triples-map}
 ## The triples-map Container
 
-A set of directed properties that associate sets of data to provide reference values, endorsed values, verification key material or identifying key material for a specific hardware module that is a component of a composite device. The map provides the core element of CoMID tags that associate remote attestation relevant data with a distinct hardware component that runs an execution environment (a module that is either a Target Environment and/or an Attesting Environment). This rule and its constraints MUST be followed when generating or validating a CoMID tag.
+A set of directed properties that associate sets of data to provide reference values, endorsed values, verification key material or identifying key material for a specific hardware module that is a component of a composite device. The map provides the core element of CoMID tags that associate remote attestation relevant data with a distinct hardware component that runs an execution environment (a module that is either a Target Environment and/or an Attesting Environment).
 
 ~~~ CDDL
 triples-map = non-empty<{
@@ -559,7 +561,7 @@ $$triples-map-extension:
 {: #model-environment-map}
 ## The environment-map Container
 
-This map represents the module(s) that a triple-map can point directed properties (relationships) from in order to associate them with external information for remote attestation, such as reference values, endorsement and endorsed values, verification key material for evidence, or identifying key material for module (re-)identification. This map can identify a single module instance via `comid.instance` or groups of modules via `comid.group`. Referencing classes of modules requires the use of the more complex `class-map` container. This rule and its constraints MUST be followed when generating or validating a CoMID tag.
+This map represents the module(s) that a triple-map can point directed properties (relationships) from in order to associate them with external information for remote attestation, such as reference values, endorsement and endorsed values, verification key material for evidence, or identifying key material for module (re-)identification. This map can identify a single module instance via `comid.instance` or groups of modules via `comid.group`. Referencing classes of modules requires the use of the more complex `class-map` container.
 
 ~~~~ CDDL
 environment-map = non-empty<{
@@ -590,7 +592,7 @@ comid.group:
 
 ## The class-map Container
 
-This map enables a composite identifier intended to uniquely identify modules that are of a distinct class of devices. Effectively, all provided members in combination are a composite module class identifier.  This rule and its constraints MUST be followed when generating or validating a CoMID tag. This rule and its constraints MUST be followed when generating or validating a CoMID tag.
+This map enables a composite identifier intended to uniquely identify modules that are of a distinct class of devices. Effectively, all provided members in combination are a composite module class identifier.
 
 ~~~~ CDDL
 class-map = non-empty<{
@@ -632,7 +634,7 @@ comid.index
 {: #model-measurement-values-map}
 ## The measurement-map and measurement-values-map Containers
 
-One of the targets (range) that a triple-map can point to in order to associate it with a module (domain) is the measurement-map. This map is used to provide reference measurements values that can be compared with Evidence Claim values or Endorsements and endorsed values from other sources than the corresponding CoRIM. `measurement-map` comes with a measurement key that identifies the measured element with via a OID reference or a UUID. `measurement-values-map` contains the actual measurements associated with the module(s). Byte strings with corresponding bit masks that highlights which bits in the byte string are used as reference measurements or endorsement are located in `raw-value-group`. The members of `measurement-values-map` provide well-defined and well-scoped semantics for reference measurement or endorsements with respect to a given module instance, class, or group. This rule and its constraints MUST be followed when generating or validating a CoMID tag.
+One of the targets (range) that a triple-map can point to in order to associate it with a module (domain) is the measurement-map. This map is used to provide reference measurements values that can be compared with Evidence Claim values or Endorsements and endorsed values from other sources than the corresponding CoRIM. `measurement-map` comes with a measurement key that identifies the measured element with via a OID reference or a UUID. `measurement-values-map` contains the actual measurements associated with the module(s). Byte strings with corresponding bit masks that highlights which bits in the byte string are used as reference measurements or endorsement are located in `raw-value-group`. The members of `measurement-values-map` provide well-defined and well-scoped semantics for reference measurement or endorsements with respect to a given module instance, class, or group.
 
 ~~~~ CDDL
 measurement-map = {
@@ -821,7 +823,7 @@ eui64-addr-type = bytes .size 8
 {: #model-verification-key-map}
 ## The verification-key-map Container
 
-One of the targets (range) that a triple-map can point to in order to associate it with a module (domain). This map is used to provide the key material for evidence verification (effectively signature checking or a lightweight proof-of-possession of private signing key material) or for identity assertion/check (where a proof-of-possession implies a certain device identity). In support of informed trust decisions, an optional trust anchor in the form a PKIX certification path that is associated with the provided key material can be included. This rule and its constraints MUST be followed when generating or validating a CoMID tag.
+One of the targets (range) that a triple-map can point to in order to associate it with a module (domain). This map is used to provide the key material for evidence verification (effectively signature checking or a lightweight proof-of-possession of private signing key material) or for identity assertion/check (where a proof-of-possession implies a certain device identity). In support of informed trust decisions, an optional trust anchor in the form a PKIX certification path that is associated with the provided key material can be included.
 
 ~~~ CDDL
 verification-key-map = {
@@ -853,7 +855,7 @@ This section aggregates the CDDL definitions specified in this document in a ful
 
 Not included in the full CDDL definition are CDDL dependencies to CoSWID. The following CDDL definitions can be found in {{-coswid}}:
 
-* the COSE envelope for CoRIM: signed-coswid
+* the COSE envelope for CoSWID: signed-coswid
 * the CoSWID document: concise-swid-tag
 
 ~~~~ CDDL
