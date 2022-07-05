@@ -154,10 +154,15 @@ tagged-int-type = #6.551(int)
 ~~~
 
 # CoRIM
+Concise Reference Integrity Manifest (CoRIM) contain tags that describe the composition and measurements of a platform, device, component, or software.
 
 ## Purpose
+The purpose of a CoRIM is to define an envelope to carry information exchanged between an Endorser and Verifier Roles [Ref RATS]. Endorsements are information produced by Endorsers and consumed by Verifiers. CoRIM contains CoMID which carry xyz information for hardware or firwmware while CoSWID contains xyz information for software components.
+Mention difference between a signed and unsigned CoRIM.
 
 ## Structure
+
+The CDDL specification for the corim-map is as follows and this rule and its constraints must be followed when creating or validating a CoRIM map.
 
 ~~~ cddl
 corim-map = {
