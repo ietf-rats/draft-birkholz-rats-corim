@@ -43,21 +43,36 @@ author:
   email: william.panwei@huawei.com
 
 normative:
-  RFC2119:
+  RFC4122: uuid
+  RFC7468: cose
   RFC8152: cose
-  RFC7252:
-  RFC8126:
-  RFC8174:
   RFC8610: cddl
+  RFC9090: cbor-oids
   STD94:
     -: cbor
     =: RFC8949
+  STD66:
+    -: uri
+    =: RFC3986
   I-D.ietf-sacm-coswid: coswid
   I-D.ietf-rats-architecture: rats-arch
+  I-D.ietf-rats-eat: eat
   IANA.language-subtag-registry: language-subtag
+  X.690:
+    title: >
+      Information technology — ASN.1 encoding rules:
+      Specification of Basic Encoding Rules (BER), Canonical Encoding
+      Rules (CER) and Distinguished Encoding Rules (DER)
+    author:
+      org: International Telecommunications Union
+    date: 2015-08
+    seriesinfo:
+      ITU-T: Recommendation X.690
+    target: https://www.itu.int/rec/T-REC-X.690
 
 informative:
-  RFC4949:
+  RFC7942:
+  I-D.fdb-rats-psa-endorsements: psa-endorsements
 
 entity:
   SELF: "RFCthis"
@@ -65,23 +80,24 @@ entity:
 --- abstract
 
 Remote Attestation Procedures (RATS) enable Relying Parties to assess the
-trustworthiness of a remote Attester and therefore to decide wheher to engage
+trustworthiness of a remote Attester and therefore to decide whether to engage
 in secure interactions with it. Evidence about trustworthiness can be rather
 complex and it is deemed unrealistic that every Relying Party is capable of the
 appraisal of Evidence. Therefore that burden is typically offloaded to a
 Verifier.  In order to conduct Evidence appraisal, a Verifier requires not only
 fresh Evidence from an Attester, but also trusted Endorsements and Reference
-Values from Endorsers, such as manufacturers, distributors, or device owners.
-This document specifies Concise Reference Integrity Manifests (CoRIM) that
-represent Endorsements and Reference Values in CBOR format.  Composite devices
-or systems are represented by a collection of Concise Module Identifiers
-(CoMID) and Concise Software Identifiers (CoSWID) bundled in a CoRIM document.
+Values from Endorsers and Reference Value Providers, such as manufacturers,
+distributors, or device owners.  This document specifies Concise Reference
+Integrity Manifests (CoRIM) that represent Endorsements and Reference Values in
+CBOR format.  Composite devices or systems are represented by a collection of
+Concise Module Identifiers (CoMID) and Concise Software Identifiers (CoSWID)
+bundled in a CoRIM document.
 
 --- middle
 
 # Introduction
 
-TODO
+[^issue] https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/86
 
 ## Terminology and Requirements Language
 
@@ -111,53 +127,169 @@ in {{tbl-typography}}.
 | flags | `&( a: 1, b: 2 )` | NAME-`flags` |
 {: #tbl-typography title="Type Traits & Typographical Conventions"}
 
-## CDDL Generic Types
+## Common Types
 
-The CDDL definitions for CoRIM and CoMID tags make use the following generic
-type.
+The following CDDL types are used in both CoRIM and CoMID.
 
 ### Non-Empty
 
 The `non-empty` generic type is used to express that a map with only optional
-members MUST at least include one of the optional members.
+members MUST at least include one of the members.
 
 ~~~~ cddl
-non-empty<M> = (M) .within ({ + any => any })
+non-empty<M> = (M) .and ({ + any => any })
 ~~~~
 
-## CDDL Custom Types
+### Entity {#sec-common-entity}
 
-### UUID Types
+The `entity-map` is a generic type describing an organization responsible for
+the contents of a manifest. It is instantiated by supplying two parameters:
+
+* A `role-type-choice`, i.e., a selection of roles that entities of the
+  instantiated type can claim
+
+* An `extension-socket`, i.e., a CDDL socket that can be used to extend
+  the attributes associated with entities of the instantiated type
+
+~~~cddl
+entity-map<role-type-choice, extension-socket> = {
+  &(entity-name: 0) => $entity-name-type-choice
+  ? &(reg-id: 1) => uri
+  &(role: 2) => [ + role-type-choice ]
+  * extension-socket
+}
+
+$entity-name-type-choice /= text
+~~~
+
+The following describes each member of the `entity-map`.
+
+* `entity-name` (index 0): The name of entity which is responsible for the
+  action(s) as defined by the role. `$entity-name-type-choice` can only be
+  Other specifications can extend the `$entity-name-type-choice` (see
+  {{sec-iana-comid}}).
+
+* `reg-id` (index 1): A URI associated with the organization that owns the
+  entity name
+
+* `role` (index 2): A type choice defining the roles that the entity is
+  claiming.  The role is supplied as a parameter at the time the `entity-map`
+  generic is instantiated.
+
+* `extension-socket`: A CDDL socket used to add new information structures to
+  the `entity-map`.
+
+Examples of how the `entity-map` generic is instantiated can be found in
+{{sec-corim-entity}} and {{sec-comid-entity}}.
+
+### Validity {#sec-common-validity}
+
+A `validity-map` represents the time interval during which the signer
+warrants that it will maintain information about the status of the signed
+object (e.g., a manifest).
+
+In a `validity-map`, both ends of the interval are encoded as epoch-based
+date/time as per {{Section 3.4.2 of -cbor}}.
 
 ~~~ cddl
+validity-map = {
+  ? &(not-before: 0) => time
+  &(not-after: 1) => time
+}
+~~~
+
+* `not-before` (index 0): the date on which the signed manifest validity period
+  begins
+
+* `not-after` (index 1): the date on which the signed manifest validity period
+  ends
+
+### UUID {#sec-common-uuid}
+
+Used to tag a byte string as a binary UUID defined in {{Section 4.1.2. of
+-uuid}}.
+
+~~~ cddl
+uuid-type = bytes .size 16
 tagged-uuid-type = #6.37(uuid-type)
 ~~~
 
-### UEID Types
+### UEID {#sec-common-ueid}
+
+Used to tag a byte string as Universal Entity ID Claim (UUID) defined in
+{{Section 4.2.1 of -eat}}.
 
 ~~~ cddl
 ueid-type = bytes .size 33
 tagged-ueid-type = #6.550(ueid-type)
 ~~~
 
-### OID Types
+### OID {#sec-common-oid}
+
+Used to tag a byte string as the BER encoding {{X.690}} of an absolute object
+identifier {{-cbor-oids}}.
 
 ~~~ cddl
 oid-type = bytes
 tagged-oid-type = #6.111(oid-type)
 ~~~
 
-### Tagged Integer Type
+### Tagged Integer Type {#sec-common-tagged-int}
+
+[^issue] https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/87
 
 ~~~ cddl
 tagged-int-type = #6.551(int)
 ~~~
 
+### Hash Entry {#sec-common-hash-entry}
+
+A hash entry represents the value of a hashing operation together with the hash
+algorithm used. Defined in {{Section 2.9.1 of -coswid}}. The CDDL is copied
+below for convenience.
+
+~~~ cddl
+hash-entry = [
+  hash-alg-id: int
+  hash-value: bytes
+]
+~~~
+
 # CoRIM
+[^revise]
 
-## Purpose
+Concise Reference Integrity Manifests (CoRIM) contain tags that describe the
+composition and measurements of a platform, device, component, or software.
 
-## Structure
+CoRIM is an envelope to carry information typically exchanged between Endorsers
+and Verifiers {{-rats-arch}}. Endorsements are information produced by
+Endorsers and consumed by Verifiers. CoRIM contains Endorsement Claims. Inside
+CoRIM, Claims about hardware or firmware are described using CoMID tags.
+Software Claims are described using CoSWID tags.
+
+CoRIM can be integrity protected and authenticated using cryptography. The
+CoRIM signer is the entity that asserts Endorsement Claims.  In a complex
+supply chain, it is likely multiple Endorsers will produce CoRIMs, pertaining
+to individual components they produce, at different times. Hence a CoRIM can
+provide a link to other CoRIMs such that a combination of CoRIMs describe a
+device class.
+
+## Top Level
+
+At the top-level, a CoRIM can either be a CBOR-tagged `corim-map`
+({{sec-corim-map}}) or a COSE signed `corim-map` ({{sec-corim-signed}}).
+
+~~~ cddl
+corim = #6.500(concise-rim-type-choice)
+
+$concise-rim-type-choice /= #6.501(corim-map)
+$concise-rim-type-choice /= #6.502(signed-corim)
+~~~
+
+## CoRIM Map {#sec-corim-map}
+
+The CDDL specification for the `corim-map` is as follows and this rule and its
+constraints must be followed when creating or validating a CoRIM map.
 
 ~~~ cddl
 corim-map = {
@@ -171,23 +303,56 @@ corim-map = {
 }
 ~~~
 
-### Identity
+The following describes each child item of this map.
+
+* `id` (index 0): A globally unique identifier to identify a CoRIM. Described
+  in {{sec-corim-id}}
+
+* `tags` (index 1):  An array of one or more CoMID or CoSWID tags.  Described
+  in {{sec-corim-tags}}
+
+* `dependent-rims` (index 2): One or more services supplying additional,
+  possibly dependent, manifests or related files.  Described in
+  {{sec-corim-locator-map}}
+
+* `profile` (index 3): One or more unique identifiers for the profiles of the
+  tags contained in this CoRIM.  All the listed profiles MUST be understood.
+  Failure to recognize a profile identifier MUST result in the rejection of the
+  entire processing.  Described in {{sec-corim-profile-types}}
+
+* `rim-validity` (index 4): Specifies the validity period of the CoRIM.
+  Described in {{sec-common-validity}}
+
+* `entities` (index 5): A list of entities involved in a CoRIM life-cycle.
+  Described in {{sec-corim-entity}}
+
+* `$$corim-map-extension`: This CDDL socket is used to add new information
+  structures to the `corim-map`.  See {{sec-iana-corim}}.
+
+### Identity {#sec-corim-id}
+
+A CoRIM id can be either a text string or a UUID type that uniquely identifies
+a CoRIM.
 
 ~~~ cddl
 $corim-id-type-choice /= tstr
 $corim-id-type-choice /= uuid-type
 ~~~
 
-### Tags
+### Tags {#sec-corim-tags}
 
-NOTE: for CoSWID, should we use tagged-coswid instead?
+A `$concise-tag-type-choice` is a tagged CBOR payload that carries either a
+CoMID ({{sec-comid}}) or a CoSWID {{-coswid}}.
 
 ~~~ cddl
 $concise-tag-type-choice /= #6.505(bytes .cbor concise-swid-tag)
 $concise-tag-type-choice /= #6.506(bytes .cbor concise-mid-tag)
 ~~~
 
-### Dependent RIMs
+### Locator Map {#sec-corim-locator-map}
+
+The locator map contains pointers to repositories where dependent manifests,
+certificates, or other relevant information can be retrieved by the Verifier.
 
 ~~~ cddl
 corim-locator-map = {
@@ -196,57 +361,151 @@ corim-locator-map = {
 }
 ~~~
 
-### Profiles
+The following describes each child element of this type.
+
+* `href` (index 0): URI identifying the additional resource that can be fetched
+
+* `thumbprint` (index 1): expected digest of the resource referenced by `href`.
+  See {{sec-common-hash-entry}}.
+
+### Profile Types {#sec-corim-profile-types}
+
+A profile specifies which of the optional parts of a CoRIM are required, which
+are prohibited and which extension points are exercised and how.
 
 ~~~ cddl
 profile-type-choice = uri / tagged-oid-type
 ~~~
 
-### RIM Validity
+### Entities {#sec-corim-entity}
+
+The CoRIM Entity is an instantiation of the Entity generic
+({{sec-common-entity}}) using a `$corim-role-type-choice`.
+
+The only role defined in this specification for a CoRIM Entity is
+`manifest-creator`.
+
+The `$$corim-entity-map-extension` extension socket is empty in this
+specification.
 
 ~~~ cddl
-validity-map = {
-  ? &(not-before: 0) => time
-  &(not-after: 1) => time
-}
-~~~
+corim-entity-map =
+  entity-map<$corim-role-type-choice, $$corim-entity-map-extension>
 
-### Entities
-
-~~~ cddl
-corim-entity-map = {
-  &(entity-name: 0) => $entity-name-type-choice
-  ? &(reg-id: 1) => uri
-  &(role: 2) => $corim-role-type-choice
-  * $$corim-entity-map-extension
-}
-~~~
-
-#### Name
-
-~~~ cddl
-$entity-name-type-choice /= text
-~~~
-
-#### Registered ID
-
-#### Role
-
-~~~ cddl
 $corim-role-type-choice /= &(manifest-creator: 1)
 ~~~
 
-## Extensibility
+## Signed CoRIM {#sec-corim-signed}
 
-# CoMID
+Signing a CoRIM follows the procedures defined in CBOR Object Signing and
+Encryption {{-cose}}. A CoRIM tag MUST be wrapped in a COSE_Sign1 structure.
+The CoRIM MUST be signed by the CoRIM creator.
 
-## Purpose
+The following CDDL specification defines a restrictive subset of COSE header
+parameters that MUST be used in the protected header alongside additional
+information about the CoRIM encoded in a `corim-meta-map` ({{sec-corim-meta}}).
+
+~~~ cddl
+COSE-Sign1-corim = [
+  protected: bstr .cbor protected-corim-header-map
+  unprotected: unprotected-corim-header-map
+  payload: bstr .cbor tagged-corim-map
+  signature: bstr
+]
+~~~
+
+The following describes each child element of this type.
+
+* `protected`: A CBOR Encoded protected header which is protected by the COSE
+  signature. Contains information as given by Protected Header Map below.
+
+* `unprotected`: A COSE header that is not protected by COSE signature.
+
+* `payload`: A CBOR encoded tagged CoRIM.
+
+* `signature`: A COSE signature block which is the signature over the protected
+  and payload components of the signed CoRIM.
+
+### Protected Header Map
+
+~~~ cddl
+protected-corim-header-map = {
+  &(alg-id: 1) => int
+  &(content-type: 3) => "application/corim-unsigned+cbor"
+  &(issuer-key-id: 4) => bstr
+  &(corim-meta: 8) => bstr .cbor corim-meta-map
+  * cose-label => cose-value
+}
+~~~
+
+The following describes each child item of this map.
+
+* `alg-id` (index 1): An integer that identifies a signature algorithm.
+
+* `content-type` (index 3): A string that represents the "MIME Content type"
+  carried in the CoRIM payload.
+
+* `issuer-key-id` (index 4): A bit string which is a key identity pertaining to
+  the CoRIM Issuer.
+
+* `corim-meta` (index 8): A map that contains metadata associated with a
+  signed CoRIM. Described in {{sec-corim-meta}}.
+
+Additional data can be included in the COSE header map as per {{Section 3 of
+-cose}}.
+
+### Meta Map {#sec-corim-meta}
+
+The CoRIM meta map identifies the entity or entities that create and sign the
+CoRIM. This ensures the consumer is able to identify credentials used to
+authenticate its signer.
+
+~~~ cddl
+corim-meta-map = {
+  &(signer: 0) => corim-signer-map
+  ? &(signature-validity: 1) => validity-map
+}
+~~~
+
+The following describes each child item of this group.
+
+* `signer` (index 0): Information about the entity that signs the CoRIM.
+  Described in {{sec-corim-signer}}
+
+* `signature-validity` (index 1): Validity period for the CoRIM. Described in
+  {{sec-common-validity}}
+
+#### Signer Map {#sec-corim-signer}
+
+~~~ cddl
+corim-signer-map = {
+  &(signer-name: 0) => $entity-name-type-choice
+  ? &(signer-uri: 1) => uri
+  * $$corim-signer-map-extension
+}
+~~~
+
+* `signer-name` (index 0): Name of the organization that performs the signer
+  role
+
+* `signer-uri` (index 1): A URI identifying the same organization
+
+* `$$corim-signer-map-extension`: Extension point for future expansion of the
+  Signer map.
+
+# CoMID {#sec-comid}
+
+[^issue] https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/88
 
 ## Structure
 
+The CDDL specification for the `concise-mid-tag` map is as follows and this
+rule and its constraints MUST be followed when creating or validating a CoMID
+tag:
+
 ~~~ cddl
 concise-mid-tag = {
-  ? &(language: 0) => language-type
+  ? &(language: 0) => text
   &(tag-identity: 1) => tag-identity-map
   ? &(entities: 2) => [ + entity-map ]
   ? &(linked-tags: 3) => [ + linked-tag-map ]
@@ -255,13 +514,32 @@ concise-mid-tag = {
 }
 ~~~
 
-### Language
+The following describes each member of the `concise-mid-tag` map.
 
-~~~ cddl
-language-type = text
-~~~
+* `lang` (index 0): A textual language tag that conforms with IANA "Language
+  Subtag Registry" {{-language-subtag}}. The context of the specified language
+  applies to all sibling and descendant textual values, unless a descendant
+  object has defined a different language tag. Thus, a new context is
+  established when a descendant object redefines a new language tag.  All
+  textual values within a given context MUST be considered expressed in the
+  specified language.
 
-### Tag Identity
+* `tag-identity` (index 1): A `tag-identity-map` containing unique
+  identification information for the CoMID. Described in {{sec-comid-tag-id}}.
+
+* `entities` (index 2): Provides information about one or more organizations
+  responsible for producing the CoMID tag. Described in {{sec-comid-entity}}.
+
+* `linked-tags` (index 3): A list of one or more `linked-tag-map` (described in
+  {{sec-comid-linked-tag}}), providing typed relationships between this and
+  other CoMIDs.
+
+* `triples` (index 4): One or more triples providing information specific to
+  the described module, e.g.: reference or endorsed values, cryptographic
+  material, or structural relationship between the described module and other
+  modules.  Described in ({{sec-comid-triples}}).
+
+### Tag Identity {#sec-comid-tag-id}
 
 ~~~ cddl
 tag-identity-map = {
@@ -270,6 +548,14 @@ tag-identity-map = {
 }
 ~~~
 
+The following describes each member of the `tag-identity-map`.
+
+* `tag-id` (index 0): A universally unique identifier for the CoMID. Described
+  in {{sec-tag-id}}.
+
+* `tag-version` (index 1): Optional versioning information for the `tag-id` .
+  Described in {{sec-tag-version}}.
+
 #### Tag ID {#sec-tag-id}
 
 ~~~ cddl
@@ -277,32 +563,43 @@ $tag-id-type-choice /= tstr
 $tag-id-type-choice /= uuid-type
 ~~~
 
-#### Tag Version
+A Tag ID is either a 16-byte binary string, or a textual identifier, uniquely
+referencing the CoMID. The tag identifier MUST be globally unique. Failure to
+ensure global uniqueness can create ambiguity in tag use since the tag-id
+serves as the global key for matching, lookups and linking. If represented as a
+16-byte binary string, the identifier MUST be a valid universally unique
+identifier as defined by {{-uuid}}. There are no strict guidelines on how the
+identifier is structured, but examples include a 16-byte GUID (e.g., class 4
+UUID) {{-uuid}}, or a URI {{-uri}}.
+
+#### Tag Version {#sec-tag-version}
 
 ~~~ cddl
 tag-version-type = uint .default 0
 ~~~
 
-### Entities
+Tag Version is an integer value that indicates the specific release revision of
+the tag.  Typically, the initial value of this field is set to 0 and the value
+is increased for subsequent tags produced for the same module release.  This
+value allows a CoMID tag producer to correct an incorrect tag previously
+released without indicating a change to the underlying module the tag
+represents. For example, the tag version could be changed to add new metadata,
+to correct a broken link, to add a missing reference value, etc. When producing
+a revised tag, the new tag-version value MUST be greater than the old
+tag-version value.
+
+### Entities {#sec-comid-entity}
 
 ~~~ cddl
-entity-map = {
-  &(entity-name: 0) => $entity-name-type-choice
-  ? &(reg-id: 1) => uri
-  &(role: 2) => [ + $comid-role-type-choice ]
-  * $$entity-map-extension
-}
+comid-entity-map =
+  entity-map<$comid-role-type-choice, $$comid-entity-map-extension>
 ~~~
 
-#### Name
+The CoMID Entity is an instantiation of the Entity generic
+({{sec-common-entity}}) using a `$comid-role-type-choice`.
 
-~~~ cddl
-$entity-name-type-choice /= text
-~~~
-
-#### Registered ID
-
-#### Role
+The `$$comid-entity-map-extension` extension socket is empty in this
+specification.
 
 ~~~ cddl
 $comid-role-type-choice /= &(tag-creator: 0)
@@ -310,7 +607,19 @@ $comid-role-type-choice /= &(creator: 1)
 $comid-role-type-choice /= &(maintainer: 2)
 ~~~
 
-### Linked Tags
+The roles defined for a CoMID entity are:
+
+* `tag-creator` (value 0): creator of the CoMID tag.
+
+* `creator` (value 1): original maker of the module described by the CoMID tag.
+
+* `maintainer` (value 2): an entity making changes to the module described by
+  the CoMID tag.
+
+### Linked Tag {#sec-comid-linked-tag}
+
+The linked tag map represents a typed relationship between the embedding CoMID
+tag (the source) and another CoMID tag (the target).
 
 ~~~ cddl
 linked-tag-map = {
@@ -319,18 +628,33 @@ linked-tag-map = {
 }
 ~~~
 
-#### Linked Tag Identification
+The following describes each member of the `tag-identity-map`.
 
-For the definition see {{sec-tag-id}}.
+* `linked-tag-id` (index 0): Unique identifier for the target tag.  For the
+  definition see {{sec-tag-id}}.
 
-#### Tag Relations
+* `tag-rel` (index 1): the kind of relation linking the source tag to the
+  target identified by `linked-tag-id`.
 
 ~~~ cddl
 $tag-rel-type-choice /= &(supplements: 0)
 $tag-rel-type-choice /= &(replaces: 1)
 ~~~
 
-### Triples
+The relations defined in this specification are:
+
+* `supplements` (value 0): the source tag provides additional information about
+  the module described in the target tag.
+
+* `replaces` (value 1): the source tag corrects erroneous information
+  contained in the target tag.  The information in the target MUST be
+  disregarded.
+
+### Triples {#sec-comid-triples}
+
+The `triples-map` contains all the CoMID triples broken down per category.  Not
+all category need to be present but at least one category MUST be present and
+contain at least one entry.
 
 ~~~ cddl
 triples-map = non-empty<{
@@ -338,15 +662,47 @@ triples-map = non-empty<{
   ? &(endorsed-triples: 1)  => [ + endorsed-triple-record ]
   ? &(identity-triples: 2) => [ + identity-triple-record ]
   ? &(attest-key-triples: 3) => [ + attest-key-triple-record ]
-  // TODO(tho) 4 and 5
+  ? &(dependency-triples: 4) => [ + domain-dependency-triple-record ]
+  ? &(membership-triples: 5) => [ + domain-membership-triple-record ]
   ? &(coswid-triples: 6) => [ + coswid-triple-record ]
   * $$triples-map-extension
 }>
 ~~~
 
-#### Common Data Items
+The following describes each member of the `triples-map`:
+
+* `reference-triples` (index 0): Triples containing reference values. Described
+  in {{sec-comid-triple-refval}}.
+
+* `endorsed-triples` (index 1): Triples containing endorsed values. Described
+  in {{sec-comid-triple-endval}}.
+
+* `identity-triples` (index 2): Triples containing identity credentials.
+  Described in {{sec-comid-triple-identity}}.
+
+* `attest-key-triples` (index 3): Triples containing verification keys
+  associated with attesting environments. Described in
+  {{sec-comid-triple-attest-key}}.
+
+* `dependency-triples` (index 4): Triples describing trust relationships
+  between domains.  Described in {{sec-comid-triple-domain-dependency}}.
+
+* `membership-triples` (index 5): Triples describing topological relationships
+  between (sub-)modules.  Described in {{sec-comid-triple-domain-membership}}.
+
+* `coswid-triples` (index 6): Triples associating modules with existing CoSWID
+  tags. Described in {{sec-comid-triple-coswid}}.
+
+#### Common Types
 
 ##### Environment
+
+An `environment-map` may be used to represent a whole attester, an attesting
+environment, or a target environment.  The exact semantic depends on the
+context (triple) in which the environment is used.
+
+An environment is named after a class, instance or group identifier (or a
+combination thereof).
 
 ~~~ cddl
 environment-map = non-empty<{
@@ -356,7 +712,23 @@ environment-map = non-empty<{
 }>
 ~~~
 
-##### Class
+The following describes each member of the `environment-map`:
+
+* `class` (index 0): Contains "class" attributes associated with the module.
+  Described in {{sec-comid-class}}.
+
+* `instance` (index 1): Contains a unique identifier of a module's instance.
+  See {{sec-comid-instance}}.
+
+* `group` (index 2): identifier for a group of instances, e.g., if an
+  anonymization scheme is used.
+
+##### Class {#sec-comid-class}
+
+The Class name consists of class attributes that distinguish the class of
+environment from other classes. The class attributes include class-id, vendor,
+model, layer, and index. The CoMID author determines which attributes are
+needed.
 
 ~~~ cddl
 class-map = non-empty<{
@@ -366,17 +738,40 @@ class-map = non-empty<{
   ? &(layer: 3) => uint
   ? &(index: 4) => uint
 }>
-~~~
 
-##### Class Id
-
-~~~ cddl
 $class-id-type-choice /= tagged-oid-type
 $class-id-type-choice /= tagged-uuid-type
 $class-id-type-choice /= tagged-int-type
 ~~~
 
-##### Instance
+The following describes each member of the `class-map`:
+
+* `class-id` (index 0): Identifies the environment via a well-known identifier.
+  Typically, `class-id` is an object identifier (OID) or universally unique
+  identifier (UUID). Use of this attribute is preferred.
+
+* `vendor` (index 1): Identifies the entity responsible for choosing values for
+  the other class attributes that do not already have naming authority.
+
+* `model` (index 2): Describes a product, generation, and family.  If
+  populated, vendor MUST also be populated.
+
+* `layer` (index 3): Is used to capture where in a sequence the environment
+  exists. For example, the order in which bootstrap code is executed may have
+  security relevance.
+
+* `index` (index 4): Is used when there are clones (i.e., multiple instances)
+  of the same class of environment.  Each clone is given a different index
+  value to disambiguate it from the other clones. For example, given a chassis
+  with several network interface controllers (NIC), each NIC can be given a
+  different index value.
+
+##### Instance {#sec-comid-instance}
+
+An instance carries a unique identifier that is reliably bound to an instance
+of the attester.
+
+The types defined for an instance identifier are UEID or UUID.
 
 ~~~ cddl
 $instance-id-type-choice /= tagged-ueid-type
@@ -385,11 +780,33 @@ $instance-id-type-choice /= tagged-uuid-type
 
 ##### Group
 
+A group carries a unique identifier that is reliably bound to a group of
+attesters, for example when a number of attester are hidden in the same
+anonymity set.
+
+The type defined for a group identified is UUID.
+
 ~~~ cddl
 $group-id-type-choice /= tagged-uuid-type
 ~~~
 
 ##### Measurements
+
+Measurements can be of a variety of things including software, firmware,
+configuration files, read-only memory, fuses, IO ring configuration, partial
+reconfiguration regions, etc. Measurements comprise raw values, digests, or
+status information.
+
+An environment has one or more measurable elements. Each element can have a
+dedicated measurement or multiple elements could be combined into a single
+measurement. Measurements can have class, instance or group scope.  This is
+typically determined by the triple's environment.
+
+Class measurements apply generally to all the attesters in the given class.
+Instance measurements apply to a specific attester instances.  Environments
+identified by a class identifier have measurements that are common to the
+class. Environments identified by an instance identifier have measurements that
+are specific to that instance.
 
 ~~~ cddl
 measurement-map = {
@@ -398,7 +815,17 @@ measurement-map = {
 }
 ~~~
 
-###### Measurement Keys
+The following describes each member of the `measurement-map`:
+
+* `mkey` (index 0): An optional unique identifier of the measured
+  (sub-)environment.  See {{sec-comid-mkey}}.
+
+* `mval` (index 1): The measurements associated with the (sub-)environment.
+  Described in {{sec-comid-mval}}.
+
+###### Measurement Keys {#sec-comid-mkey}
+
+The types defined for a measurement identifier are OID, UUID or uint.
 
 ~~~ cddl
 $measured-element-type-choice /= tagged-oid-type
@@ -406,13 +833,18 @@ $measured-element-type-choice /= tagged-uuid-type
 $measured-element-type-choice /= uint
 ~~~
 
-###### Measurement Values
+###### Measurement Values {#sec-comid-mval}
+
+A `measurement-values-map` contains measurements associated with a certain
+environment. Depending on the context (triple) in which they are found,
+elements in a `measurement-values-map` can represent class or instance
+measurements. Note that some of the elements have instance scope only.
 
 ~~~ cddl
 measurement-values-map = non-empty<{
-  ? &(ver: 0) => version-map
+  ? &(version: 0) => version-map
   ? &(svn: 1) => svn-type-choice
-  ? &(digests: 2) => digests-type
+  ? &(digests: 2) => [ + hash-entry ]
   ? &(flags: 3) => flags-map
   ? (
       &(raw-value: 4) => $raw-value-type-choice,
@@ -420,15 +852,178 @@ measurement-values-map = non-empty<{
     )
   ? &(mac-addr: 6) => mac-addr-type-choice
   ? &(ip-addr: 7) =>  ip-addr-type-choice
-  ? &(serial-number: 8) => serial-number-type
+  ? &(serial-number: 8) => text
   ? &(ueid: 9) => ueid-type
   ? &(uuid: 10) => uuid-type
-  ? &(name: 11) => tstr
+  ? &(name: 11) => text
   * $$measurement-values-map-extension
 }>
 ~~~
 
+The following describes each member of the `measurement-values-map`.
+
+* `version` (index 0): Typically changes whenever the measured environment is
+  updated. Described in {{sec-comid-version}}.
+
+* `svn` (index 1): The security version number typically changes only when a
+  security relevant change is made to the measured environment.  Described in
+  {{sec-comid-svn}}.
+
+* `digests` (index 2): Contains the digest(s) of the measured environment
+  together with the respective hash algorithm used in the process.  See
+  {{sec-common-hash-entry}}.
+
+* `flags` (index 3): Describes security relevant operational modes. For
+  example, whether the environment is in a debug mode, recovery mode, not fully
+  configured, not secure, not replay protected or not integrity protected. The
+  `flags` field indicates which operational modes are currently associated with
+  measured environment.  Described in {{sec-comid-flags}}.
+
+* `raw-value` (index 4): Contains the actual (not hashed) value of the element.
+  An optional `raw-value-mask` (index 5) indicates which bits in the
+  `raw-value` field are relevant for verification. A mask of all ones ("1")
+  means all bits in the `raw-value` field are relevant. Multiple values could
+  be combined to create a single `raw-value` attribute. The vendor determines
+  how to pack multiple values into a single `raw-value` structure. The same
+  packing format is used when collecting Evidence so that Reference Values and
+  collected values are bit-wise comparable. The vendor determines the encoding
+  of `raw-value` and the corresponding `raw-value-mask`.
+
+* `mac-addr` (index 6): A EUI-48 or EUI-64 MAC address associated with the
+  measured environment.  Described in {{sec-comid-address-types}}.
+
+* `ip-addr` (index 7): An IPv4 or IPv6 address associated with the measured
+  environment.  Described in {{sec-comid-address-types}}.
+
+* `serial-number` (index 8): A text string representing the product serial
+  number.
+
+* `ueid` (index 9): UEID associated with the measured environment.  See
+  {{sec-common-ueid}}.
+
+* `uuid` (index 10): UUID associated with the measured environment.  See
+  {{sec-common-uuid}}.
+
+* `name` (index 11): a name associated with the measured environment.
+
+###### Version {#sec-comid-version}
+
+A `version-map` contains details about the versioning of a measured
+environment.
+
+~~~ cddl
+version-map = {
+  &(version: 0) => text
+  ? &(version-scheme: 1) => $version-scheme
+}
+~~~
+
+The following describes each member of the `version-map`:
+
+* `version` (index 0): the version string
+
+* `version-scheme` (index 1): an optional indicator of the versioning
+  convention used in the `version` attribute.  Defined in {{Section 4.1 of
+  -coswid}}.  The CDDL is copied below for convenience.
+
+~~~ cddl
+$version-scheme /= &(multipartnumeric: 1)
+$version-scheme /= &(multipartnumeric-suffix: 2)
+$version-scheme /= &(alphanumeric: 3)
+$version-scheme /= &(decimal: 4)
+$version-scheme /= &(semver: 16384)
+$version-scheme /= int / text
+~~~
+
+###### Security Version Number {#sec-comid-svn}
+
+[^issue] https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/89
+
+~~~ cddl
+svn-type = uint
+svn = svn-type
+min-svn = svn-type
+tagged-svn = #6.552(svn)
+tagged-min-svn = #6.553(min-svn)
+svn-type-choice = tagged-svn / tagged-min-svn
+~~~
+
+###### Flags {#sec-comid-flags}
+
+The `flags-map` measurement describes a number of boolean operational modes.
+If a `flags-map` value is not specified, then the operational mode is unknown.
+
+~~~ cddl
+flags-map = {
+  ? &(configured: 0) => bool
+  ? &(secure: 1) => bool
+  ? &(recovery: 2) => bool
+  ? &(debug: 3) => bool
+  ? &(replay-protected: 4) => bool
+  ? &(integrity-protected: 5) => bool
+  * $$flags-map-extension
+}
+~~~
+
+The following describes each member of the `flags-map`:
+
+* `configured` (index 0): The measured environment is fully configured for
+  normal operation if the flag is true.
+
+* `secure` (index 1): The measured environment's configurable security settings
+  are fully enabled if the flag is true.
+
+* `recovery` (index 2): The measured environment is NOT in a recovery state if
+  the flag is true.
+
+* `debug` (index 3): The measured environment is in a debug enabled state if
+  the flag is true.
+
+* `replay-protected` (index 4): The measured environment is protected from
+  replay by a previous image that differs from the current image if the flag is
+  true.
+
+* `integrity-protected` (index 5): The measured environment is protected from
+  unauthorized update if the flag is true.
+
+###### Raw Values Types {#sec-comid-raw-value-types}
+
+[^issue] https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/90
+
+~~~ cddl
+$raw-value-type-choice /= #6.560(bytes)
+
+raw-value-mask-type = bytes
+~~~
+
+###### Address Types {#sec-comid-address-types}
+
+The types or associating addressing information to a measured environment are:
+
+~~~ cddl
+ip-addr-type-choice = ip4-addr-type / ip6-addr-type
+ip4-addr-type = bytes .size 4
+ip6-addr-type = bytes .size 16
+
+mac-addr-type-choice = eui48-addr-type / eui64-addr-type
+eui48-addr-type = bytes .size 6
+eui64-addr-type = bytes .size 8
+~~~
+
 ##### Crypto Keys
+
+A cryptographic key can be one of the following formats:
+
+* `tagged-pkix-base64-key-type`: PEM encoded SubjectPublicKeyInfo.
+  Defined in {{Section 13 of RFC7468}}.
+
+* `tagged-pkix-base64-cert-type`: PEM encoded X.509 public key certificate.
+  Defined in {{Section 5 of RFC7468}}.
+
+* `tagged-pkix-base64-cert-path-type`: X.509 certificate chain created by the
+  concatenation of as many PEM encoded X.509 certificates as needed.  The
+  certificates MUST be concatenated in order so that each directly certifies
+  the one preceding.
 
 ~~~ cddl
 $crypto-key-type-choice /= tagged-pkix-base64-key-type
@@ -440,7 +1035,26 @@ tagged-pkix-base64-cert-type = #6.555(tstr)
 tagged-pkix-base64-cert-path-type = #6.556(tstr)
 ~~~
 
-#### Reference Values
+##### Domain Types {#sec-comid-domain-type}
+
+A domain is a context for bundling a collection of related environments and
+their measurements.
+
+Three types are defined: uint and text for local scope, UUID for global scope.
+
+~~~ cddl
+$domain-type-choice /= uint
+$domain-type-choice /= text
+$domain-type-choice /= tagged-uuid-type
+~~~
+
+#### Reference Values Triple {#sec-comid-triple-refval}
+
+A Reference Values triple relates reference measurements to a Target
+Environment. For Reference Value Claims, the subject identifies a Target
+Environment, the object contains measurements, and the predicate asserts that
+these are the expected (i.e., reference) measurements for the Target
+Environment.
 
 ~~~ cddl
 reference-triple-record = [
@@ -449,7 +1063,13 @@ reference-triple-record = [
 ]
 ~~~
 
-#### Endorsed Values
+#### Endorsed Values Triple {#sec-comid-triple-endval}
+
+An Endorsed Values triple declares additional measurements that are valid when
+a Target Environment has been verified against reference measurements. For
+Endorsed Value Claims, the subject is either a Target or Attesting Environment,
+the object contains measurements, and the predicate defines semantics for how
+the object relates to the subject.
 
 ~~~ cddl
 endorsed-triple-record = [
@@ -458,16 +1078,13 @@ endorsed-triple-record = [
 ]
 ~~~
 
-#### Attestation Verification Keys
+#### Device Identity Triple {#sec-comid-triple-identity}
 
-~~~ cddl
-attest-key-triple-record = [
-  environment-map
-  [ + $crypto-key-type-choice ]
-]
-~~~
-
-#### Identity Keys
+A Device Identity triple relates one or more cryptographic keys to a device.
+The subject of an Identity triple uses an instance or class identifier to refer
+to a device, and a cryptographic key is the object. The predicate asserts that
+the identity is authenticated by the key. A common application for this triple
+is device identity.
 
 ~~~ cddl
 identity-triple-record = [
@@ -476,7 +1093,59 @@ identity-triple-record = [
 ]
 ~~~
 
-#### CoMID-CoSWID Linkage
+#### Attestation Keys Triple {#sec-comid-triple-attest-key}
+
+An Attestation Keys triple relates one or more cryptographic keys to an
+Attesting Environment. The Attestation Key triple subject is an Attesting
+Environment whose object is a cryptographic key. The predicate asserts that the
+Attesting Environment signs Evidence that can be verified using the key.
+
+~~~ cddl
+attest-key-triple-record = [
+  environment-map
+  [ + $crypto-key-type-choice ]
+]
+~~~
+
+#### Domain Dependency Triple {#sec-comid-triple-domain-dependency}
+
+A Domain Dependency triple defines trust dependencies between measurement
+sources.  The subject identifies a domain ({{sec-comid-domain-type}}) that has
+a predicate relationship to the object containing one or more dependent
+domains.  Dependency means the subject domain’s trustworthiness properties rely
+on the object domain(s) trustworthiness having been established before the
+trustworthiness properties of the subject domain exists.
+
+~~~ cddl
+domain-dependency-triple-record = [
+ $domain-type-choice
+ [ + $domain-type-choice ]
+]
+~~~
+
+#### Domain Membership Triple {#sec-comid-triple-domain-membership}
+
+A Domain Membership triple assigns domain membership to environments.  The
+subject identifies a domain ({{sec-comid-domain-type}}) that has a predicate
+relationship to the object containing one or more environments.  Endorsed
+environments ({{sec-comid-triple-endval}}) membership is conditional upon
+successful matching of Reference Values ({{sec-comid-triple-refval}}) to
+Evidence.
+
+~~~ cddl
+domain-membership-triple-record = [
+  $domain-type-choice
+  [ + environment-map ]
+]
+~~~
+
+#### CoMID-CoSWID Linking Triple {#sec-comid-triple-coswid}
+
+A CoSWID triple relates reference measurements contained in one or more CoSWIDs
+to a Target Environment. The subject identifies a Target Environment, the
+object one or more unique tag identifiers of existing CoSWIDs, and the
+predicate asserts that these contain the expected (i.e., reference)
+measurements for the Target Environment.
 
 ~~~ cddl
 coswid-triple-record = [
@@ -489,71 +1158,86 @@ concise-swid-tag-id = text / bstr .size 16
 
 ## Extensibility
 
-# Signed CoRIM
-
-~~~ cddl
-COSE-Sign1-corim = [
-  protected: bstr .cbor protected-corim-header-map
-  unprotected: unprotected-corim-header-map
-  payload: bstr .cbor tagged-corim-map
-  signature: bstr
-]
-~~~
-
-## Protected Header CoRIM Metadata
-
-~~~ cddl
-protected-corim-header-map = {
-  &(alg-id: 1) => int
-  &(content-type: 3) => "application/corim-unsigned+cbor"
-  &(issuer-key-id: 4) => bstr
-  &(meta: 8) => bstr .cbor corim-meta-map
-  * cose-label => cose-values
-}
-
-cose-label = int / tstr
-cose-values = any
-~~~
-
-## Unprotected Header CoRIM Map
-
-~~~ cddl
-unprotected-corim-header-map = {
-  * cose-label => cose-values
-}
-~~~
-
-### CoRIM Meta Map
-
-~~~ cddl
-corim-meta-map = {
-  &(signer: 0) => corim-signer-map
-  ? &(signature-validity: 1) => validity-map
-}
-~~~
+[^issue] https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/91
 
 # Implementation Status
 
-See [Section 2 of RFC7942](https://datatracker.ietf.org/doc/html/rfc7942#section-2)
+This section records the status of known implementations of the protocol
+defined by this specification at the time of posting of this Internet-Draft,
+and is based on a proposal described in {{RFC7942}}.  The description of
+implementations in this section is intended to assist the IETF in its decision
+processes in progressing drafts to RFCs.  Please note that the listing of any
+individual implementation here does not imply endorsement by the IETF.
+Furthermore, no effort has been spent to verify the information presented here
+that was supplied by IETF contributors.  This is not intended as, and must not
+be construed to be, a catalog of available implementations or their features.
+Readers are advised to note that other implementations may exist.
+
+According to {{RFC7942}}, "this will allow reviewers and working groups to
+assign due consideration to documents that have the benefit of running code,
+which may serve as evidence of valuable experimentation and feedback that have
+made the implemented protocols more mature.  It is up to the individual working
+groups to use this information as they see fit".
+
+## Veraison
+
+* Organization responsible for the implementation: Veraison Project, Linux
+  Foundation
+
+* Implementation's web page:
+  [https://github.com/veraison/corim/README.md](https://github.com/veraison/corim/README.md)
+
+* Brief general description: The `corim/corim` and `corim/comid` packages
+  provide a golang API for low-level manipulation of Concise Reference
+  Integrity Manifest (CoRIM) and Concise Module Identifier (CoMID) tags
+  respectively.  The `corim/cocli` package uses the API above (as well as the
+  API from the `veraison/swid` package) to provide a user command line
+  interface for working with CoRIM, CoMID and CoSWID. Specifically, it allows
+  creating, signing, verifying, displaying, uploading, and more. See
+  [https://github.com/cocli/README.md](https://github.com/cocli/README.md) for
+  further details.
+
+* Implementation's level of maturity: alpha.
+
+* Coverage: the whole protocol is implemented, including PSA-specific
+  extensions {{-psa-endorsements}}.
+
+* Version compatibility: Version -02 of the draft
+
+* Licensing: Apache 2.0
+  [https://github.com/veraison/corim/blob/main/LICENSE](https://github.com/veraison/corim/blob/main/LICENSE)
+
+* Implementation experience: n/a
+
+* Contact information:
+  [https://veraison.zulipchat.com](https://veraison.zulipchat.com)
+
+* Last updated:
+  [https://github.com/veraison/corim/commits/main](https://github.com/veraison/corim/commits/main)
 
 # Security and Privacy Considerations {#sec-sec}
 
-# IANA Considerations
+[^issue] https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/92
 
-## New CBOR Tags
+# IANA Considerations {#sec-iana-cons}
 
-TODO: populate table from the contents of cbor-tags.txt
+## New COSE Header Parameters
 
-| Tag | Data Item | Semantics | Reference |
-|---
-| TODO | TODO | TODO | {{&SELF}} |
+[^issue] https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/96
 
+## New CBOR Tags {#sec-iana-cbor-tags}
 
-## New CoRIM Registries
+[^issue] https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/93
 
-## New CoMID Registries
+## New CoRIM Registries {#sec-iana-corim}
 
-## New Media Types
+[^issue] https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/94
+
+## New CoMID Registries {#sec-iana-comid}
+
+[^issue] https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/95
+
+## New Media Types {#sec-iana-media-types}
 
 IANA is requested to add the following media types to the "Media Types"
 registry {{!IANA.media-types}}.
@@ -576,7 +1260,8 @@ Required parameters:
 : n/a
 
 Optional parameters:
-: "profile" (CoRIM profile in string format.  OIDs MUST use the dotted-decimal notation.)
+: "profile" (CoRIM profile in string format.  OIDs MUST use the dotted-decimal
+  notation.)
 
 Encoding considerations:
 : binary
@@ -591,7 +1276,9 @@ Published specification:
 : {{&SELF}}
 
 Applications that use this media type:
-: Attestation Verifiers, Endorsers and Reference-Value providers that need to transfer COSE Sign1 wrapped CoRIM payloads over HTTP(S), CoAP(S), and other transports.
+: Attestation Verifiers, Endorsers and Reference-Value providers that need to
+  transfer COSE Sign1 wrapped CoRIM payloads over HTTP(S), CoAP(S), and other
+  transports.
 
 Fragment identifier considerations:
 : n/a
@@ -633,7 +1320,8 @@ Required parameters:
 : n/a
 
 Optional parameters:
-: "profile" (CoRIM profile in string format.  OIDs MUST use the dotted-decimal notation.)
+: "profile" (CoRIM profile in string format.  OIDs MUST use the dotted-decimal
+  notation.)
 
 Encoding considerations:
 : binary
@@ -648,7 +1336,9 @@ Published specification:
 : {{&SELF}}
 
 Applications that use this media type:
-: Attestation Verifiers, Endorsers and Reference-Value providers that need to transfer unprotected CoRIM payloads over HTTP(S), CoAP(S), and other transports.
+: Attestation Verifiers, Endorsers and Reference-Value providers that need to
+  transfer unprotected CoRIM payloads over HTTP(S), CoAP(S), and other
+  transports.
 
 Fragment identifier considerations:
 : n/a
@@ -693,13 +1383,15 @@ Environments (CoRE) Parameters" Registry {{!IANA.core-parameters}}:
 
 # Full CoRIM CDDL
 
-~~~ cddl
-corim = [ "TODO" ]
-~~~
-
-# Full CoMID CDDL
+[^issue] https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/80
 
 ~~~ cddl
-comid = [ "TODO" ]
+corim = []
 ~~~
 
+[^revise]: (This content needs to be revised. Consider removing for now and
+    replacing with an issue.)
+
+[^todo]: (Needed content missing. Consider adding an issue into the tracker)
+
+[^issue]: Content missing. Tracked at:
