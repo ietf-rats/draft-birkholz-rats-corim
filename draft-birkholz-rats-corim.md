@@ -173,6 +173,8 @@ $concise-reference-integrity-manifest-type-choice  /= tagged-corim-map
 $concise-reference-integrity-manifest-type-choice /= #6.502(signed-corim)
 ~~~
 
+The section {{CoRIM Map}} explains the details of `corim-map`, while section {{Signed CoRIM Schema}} explain the details of `signed-corim`.
+
 ## Signed CoRIM Schema
 A signed CoRIM is a COSE Sign1 Envelope. The COSE envelope contains a protected CoRIM Header which carries the security information of the Envelope and additional information about CoRIM.
 
