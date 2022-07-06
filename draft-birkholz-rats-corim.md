@@ -260,7 +260,7 @@ validity-map = {
   corim.not-after => time
 }
 ~~~
-- corim.not-before An optional parameter in a time to represent start time of the CoRIM signature. 
+- corim.not-before An optional parameter in time units to represent start time of the CoRIM signature. 
 
 - corim.not-after Time to represent the expiry for CoRIM signature
 
@@ -279,23 +279,24 @@ corim-map = {
   * $$corim-map-extension
 }
 ~~~
-The following describes each child item of this map.
+The following describes each child item of this map. 
 
--id A text or a UUID type that identify a manifest instance.
+- id A globally unique identifier to identify a CoRIM instance as per CDDL syntax {{Identity}} 
 
-- tags An array of one or more CoMID or CoSWID tag.
+- tags An array of one or more CoMID or CoSWID tag as per CDDL syntax {{Tags}} 
 
-- dependent-rims: An array containing a list of additional supplied rim information as mentioned in []
+- dependent-rims: An array containing a list of additional supplied rim information or dependent files as per CDDL syntax {{Dependent RIMs}}
 
-- profile:
+- profile: A uri or a tagged oid that identify the profile that this CoRIM specifies. A profile specifies which of the optional parts of a CoRIM are required, which are prohibited and which extension points are exercised and how, as per the CDDL syntax {{Profiles}}
 
-- rim-validity :
+- rim-validity : Specifies the validity period of RIM Contents as per the CDDL syntax {{RIM Validity}
 
-- entities: 
+- entities: A list of entities involved in a CoRIM lifecycle. The CDDL syntax is as per {{Entities}}
 
--corim-map-extemsion: 
+- $$corim-map-extension: This CDDL socket is used to add new information structures to the corim-map.
 
 ### Identity
+A CoRIM Identity can be either a text string or a UUID type that uniquely identifies a CoRIM identity.
 
 ~~~ cddl
 $corim-id-type-choice /= tstr
@@ -303,13 +304,13 @@ $corim-id-type-choice /= uuid-type
 ~~~
 
 ### Tags
-
-NOTE: for CoSWID, should we use tagged-coswid instead?
+A concise-tag-type-choice selection can either be a tagged CBOR payload that carries either a {{CoMID}} or a {{CoSWID}}.
 
 ~~~ cddl
 $concise-tag-type-choice /= #6.505(bytes .cbor concise-swid-tag)
 $concise-tag-type-choice /= #6.506(bytes .cbor concise-mid-tag)
 ~~~
+
 
 ### Dependent RIMs
 
@@ -346,21 +347,11 @@ corim-entity-map = {
 }
 ~~~
 
-#### Name
+The following are the elements within a corim-entity-map
 
-~~~ cddl
-$entity-name-type-choice /= text
-~~~
-
-#### Registered ID
-
-#### Role
-
-~~~ cddl
-$corim-role-type-choice /= &(manifest-creator: 1)
-~~~
-
-## Extensibility
+- entity-name: The name of entity which is responsible for the CoRIM action as defined by the role. `$entity-name-type-choice` can only be text string in this version of specification.
+- reg-id: uri that is the registration identifier for the organization that manages the namespace for corim.entity-name
+- role: The role that the Manifest entity is involved with this Manifest. For this version of specification  `corim-role-type-choice` can only be `manifest-creator` of an entity.
 
 # CoMID
 
