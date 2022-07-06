@@ -157,10 +157,114 @@ tagged-int-type = #6.551(int)
 Concise Reference Integrity Manifest (CoRIM) contain tags that describe the composition and measurements of a platform, device, component, or software.
 
 ## Purpose
-The purpose of a CoRIM is to define an envelope to carry information exchanged between an Endorser and Verifier Roles [Ref RATS]. Endorsements are information produced by Endorsers and consumed by Verifiers. CoRIM contains CoMID which carry xyz information for hardware or firwmware while CoSWID contains xyz information for software components.
-Mention difference between a signed and unsigned CoRIM.
+CoRIM describes an envelope to carry information exchanged between an Endorser and Verifier Roles [Ref RATS]. Endorsements are information produced by Endorsers and consumed by Verifiers. CoRIM contains Endorsment Claims. Inside CoRIM, Claims about hardware or firmware are described using CoMID tags. Software Claims are described using CoSWID tags. 
+CoRIM can be integrity protected and authenticated using cryptography. The CoRIM signer is the entity that asserts Endorsement Claims.
+In a complex supply chain, it is likely multiple Endorsers will produce CoRIMs, pertaining to individual components they produce, at different times. Hence a CoRIM can provide a link to other CoRIMs such that a combination of CoRIMs describe a device class.
 
-## Structure
+## Top Level Schema
+
+Top level CoRIM schema provides optionality to the Endorser to include either a tagged Signed CoRIM or an Unsigned CoRIM containing just the CoRIM Map.
+
+~~~ cddl
+corim = #6.500(concise-reference-integrity-manifest-type-choice)
+
+tagged-corim-map = #6.501(corim-map)
+$concise-reference-integrity-manifest-type-choice  /= tagged-corim-map
+$concise-reference-integrity-manifest-type-choice /= #6.502(signed-corim)
+~~~
+
+## Signed CoRIM Schema
+A signed CoRIM is a COSE Sign1 Envelope. The COSE envelope contains a protected CoRIM Header which carries the security information of the Envelope and additional information about CoRIM.
+
+~~~ cddl
+COSE-Sign1-corim = [
+  protected: bstr .cbor protected-corim-header-map
+  unprotected: unprotected-corim-header-map
+  payload: bstr .cbor tagged-corim-map
+  signature: bstr
+]
+~~~
+The following describes each child item of this group.
+
+- protected: A CBOR Encoded protected header which is protected by the COSE signature. Contains information as given by Protected Header Map below.
+
+- unprotected A COSE header that is not protected by COSE signature.
+
+- payload A CBOR encoded tagged CoRIM.
+
+- signature A COSE signature block which is the signature over the protected and payload components of the signed CoRIM.
+
+### Protected Header Map
+
+~~~ cddl
+protected-corim-header-map = {
+  corim.alg-id => int
+  corim.content-type => "application/corim-unsigned+cbor"
+  corim.issuer-key-id => bstr
+  corim.meta => bstr .cbor corim-meta-map
+  * cose-label => cose-values 
+}
+~~~
+
+The following describes each child item of this group.
+
+- corim.alg-id: An integer that identifies a signature algorithm.
+
+- corim.content-type: A string that represents the "MIME Content type" carried in the CoRIM payload.
+
+- corim.issuer-key-id: A bit string which is a key identity pertaining to the CoRIM Issuer.
+
+- corim.meta: A map that contains meta data associated with a signed CoRIM as described in Meta Map below.
+
+- cose-label: Additional data that can be included in the COSE header map.
+
+### Meta Map
+
+The CoRIM meta map identifies the entity or entities that create and sign the CoRIM. This ensures the consumer of the corim is able to identify credentials used to authenticate its creator/signer.
+
+~~~ cddl
+corim-meta-map = {
+  corim.signer => corim-signer-map
+  ? corim.signature-validity => validity-map
+}
+~~~
+
+The following describes each child item of this group.
+
+- corim.signer: Signer Map carries information about the entity that performs the CoRIM Signer Role
+
+- corim.signature-validity: Validity Map carries the validity period of signed CoRIM.
+
+#### Signer Map
+
+~~~ cddl
+corim-signer-map = {
+  corim.signer-name => $entity-name-type-choice
+  ? corim.signer-uri => uri
+  * $$corim-signer-map-extension
+}
+~~~
+- corim.signer-name A string for the name of the organization that performs the signer role.
+
+- corim.signer-uri The registration identifier for the organization that manages the namespace corim.signer-name.
+
+- corim-signer-map-extension The extension point to the signer map.
+
+#### Validity Map
+
+Validity Map contains the validity period ranges.
+
+~~~ cddl
+validity-map = {
+  ? corim.not-before => time
+  corim.not-after => time
+}
+~~~
+- corim.not-before An optional parameter in a time to represent start time of the CoRIM signature. 
+
+- corim.not-after Time to represent the expiry for CoRIM signature
+
+## Core Structure
 
 The CDDL specification for the corim-map is as follows and this rule and its constraints must be followed when creating or validating a CoRIM map.
 
