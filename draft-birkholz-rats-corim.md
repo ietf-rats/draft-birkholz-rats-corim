@@ -184,7 +184,7 @@ COSE-Sign1-corim = [
   signature: bstr
 ]
 ~~~
-The following describes each child item of this group.
+The following describes each child element of this type.
 
 - protected: A CBOR Encoded protected header which is protected by the COSE signature. Contains information as given by Protected Header Map below.
 
@@ -206,7 +206,7 @@ protected-corim-header-map = {
 }
 ~~~
 
-The following describes each child item of this group.
+The following describes each child item of this map.
 
 - corim.alg-id: An integer that identifies a signature algorithm.
 
@@ -264,7 +264,7 @@ validity-map = {
 
 - corim.not-after Time to represent the expiry for CoRIM signature
 
-## Core Structure
+## CoRIM Map
 
 The CDDL specification for the corim-map is as follows and this rule and its constraints must be followed when creating or validating a CoRIM map.
 
@@ -279,6 +279,21 @@ corim-map = {
   * $$corim-map-extension
 }
 ~~~
+The following describes each child item of this map.
+
+-id A text or a UUID type that identify a manifest instance.
+
+- tags An array of one or more CoMID or CoSWID tag.
+
+- dependent-rims: An array containing a list of additional supplied rim information as mentioned in []
+
+- profile:
+
+- rim-validity :
+
+- entities: 
+
+-corim-map-extemsion: 
 
 ### Identity
 
