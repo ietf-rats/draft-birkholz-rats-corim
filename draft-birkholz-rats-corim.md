@@ -256,25 +256,9 @@ hash-entry = [
 ~~~
 
 # CoRIM
-[^revise]
 
-Concise Reference Integrity Manifests (CoRIM) contain tags that describe the
-composition and measurements of a platform, device, component, or software.
-
-CoRIM is an envelope to carry information typically exchanged between Endorsers
-and Verifiers {{-rats-arch}}. Endorsements are information produced by
-Endorsers and consumed by Verifiers. CoRIM contains Endorsement Claims. Inside
-CoRIM, Claims about hardware or firmware are described using CoMID tags.
-Software Claims are described using CoSWID tags.
-
-CoRIM can be integrity protected and authenticated using cryptography. The
-CoRIM signer is the entity that asserts Endorsement Claims.  In a complex
-supply chain, it is likely multiple Endorsers will produce CoRIMs, pertaining
-to individual components they produce, at different times. Hence a CoRIM can
-provide a link to other CoRIMs such that a combination of CoRIMs describe a
-device class.
-
-## Top Level
+[^issue]
+https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/98
 
 At the top-level, a CoRIM can either be a CBOR-tagged `corim-map`
 ({{sec-corim-map}}) or a COSE signed `corim-map` ({{sec-corim-signed}}).
