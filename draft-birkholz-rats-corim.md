@@ -9,8 +9,8 @@ consensus: true
 submissiontype: IETF
 
 ipr: trust200902
-area: Security
-workgroup: RATS Working Group
+area: "Security"
+workgroup: "Remote ATtestation ProcedureS"
 keyword: RIM, RATS, attestation, verifier, supply chain
 
 stand_alone: true
