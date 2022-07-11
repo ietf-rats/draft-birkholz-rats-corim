@@ -1373,6 +1373,12 @@ Environments (CoRE) Parameters" Registry {{!IANA.core-parameters}}:
 corim = []
 ~~~
 
+# Acknowledgments
+{:unnumbered}
+
+{{{Carl Wallace}}} for review and comments on this document.
+
+
 [^revise]: (This content needs to be revised. Consider removing for now and
     replacing with an issue.)
 
