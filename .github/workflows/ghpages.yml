@@ -39,10 +39,10 @@ jobs:
           refcache-
 
     - name: "Build Drafts"
-      uses: docker://thomasfossati/i-d-template:latest
+      uses: docker://martinthomson/i-d-template:latest
 
     - name: "Update GitHub Pages"
-      uses: docker://thomasfossati/i-d-template:latest
+      uses: docker://martinthomson/i-d-template:latest
       if: ${{ github.event_name == 'push' }}
       with:
         make: gh-pages
