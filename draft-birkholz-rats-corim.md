@@ -442,14 +442,7 @@ rule and its constraints MUST be followed when creating or validating a CoMID
 tag:
 
 ~~~ cddl
-concise-mid-tag = {
-  ? &(language: 0) => text
-  &(tag-identity: 1) => tag-identity-map
-  ? &(entities: 2) => [ + entity-map ]
-  ? &(linked-tags: 3) => [ + linked-tag-map ]
-  &(triples: 4) => triples-map
-  * $$concise-mid-tag-extension
-}
+{::include cddl/concise-mid-tag.cddl}
 ~~~
 
 The following describes each member of the `concise-mid-tag` map.
@@ -480,10 +473,7 @@ The following describes each member of the `concise-mid-tag` map.
 ### Tag Identity {#sec-comid-tag-id}
 
 ~~~ cddl
-tag-identity-map = {
-  &(tag-id: 0) => $tag-id-type-choice
-  ? &(tag-version: 1) => tag-version-type
-}
+{::include cddl/tag-identity-map.cddl}
 ~~~
 
 The following describes each member of the `tag-identity-map`.
@@ -497,8 +487,7 @@ The following describes each member of the `tag-identity-map`.
 #### Tag ID {#sec-tag-id}
 
 ~~~ cddl
-$tag-id-type-choice /= tstr
-$tag-id-type-choice /= uuid-type
+{::include cddl/tag-id-type-choice.cddl}
 ~~~
 
 A Tag ID is either a 16-byte binary string, or a textual identifier, uniquely
@@ -513,7 +502,7 @@ UUID) {{-uuid}}, or a URI {{-uri}}.
 #### Tag Version {#sec-tag-version}
 
 ~~~ cddl
-tag-version-type = uint .default 0
+{::include cddl/tag-version-type.cddl}
 ~~~
 
 Tag Version is an integer value that indicates the specific release revision of
@@ -529,8 +518,7 @@ tag-version value.
 ### Entities {#sec-comid-entity}
 
 ~~~ cddl
-comid-entity-map =
-  entity-map<$comid-role-type-choice, $$comid-entity-map-extension>
+{::include cddl/comid-entity-map.cddl}
 ~~~
 
 The CoMID Entity is an instantiation of the Entity generic
@@ -540,9 +528,7 @@ The `$$comid-entity-map-extension` extension socket is empty in this
 specification.
 
 ~~~ cddl
-$comid-role-type-choice /= &(tag-creator: 0)
-$comid-role-type-choice /= &(creator: 1)
-$comid-role-type-choice /= &(maintainer: 2)
+{::include cddl/comid-role-type-choice.cddl}
 ~~~
 
 The roles defined for a CoMID entity are:
@@ -560,10 +546,7 @@ The linked tag map represents a typed relationship between the embedding CoMID
 tag (the source) and another CoMID tag (the target).
 
 ~~~ cddl
-linked-tag-map = {
-  &(linked-tag-id: 0) => $tag-id-type-choice
-  &(tag-rel: 1) => $tag-rel-type-choice
-}
+{::include cddl/linked-tag-map.cddl}
 ~~~
 
 The following describes each member of the `tag-identity-map`.
@@ -575,8 +558,7 @@ The following describes each member of the `tag-identity-map`.
   target identified by `linked-tag-id`.
 
 ~~~ cddl
-$tag-rel-type-choice /= &(supplements: 0)
-$tag-rel-type-choice /= &(replaces: 1)
+{::include cddl/tag-rel-type-choice.cddl}
 ~~~
 
 The relations defined in this specification are:
@@ -595,16 +577,7 @@ all category need to be present but at least one category MUST be present and
 contain at least one entry.
 
 ~~~ cddl
-triples-map = non-empty<{
-  ? &(reference-triples: 0) => [ + reference-triple-record ]
-  ? &(endorsed-triples: 1)  => [ + endorsed-triple-record ]
-  ? &(identity-triples: 2) => [ + identity-triple-record ]
-  ? &(attest-key-triples: 3) => [ + attest-key-triple-record ]
-  ? &(dependency-triples: 4) => [ + domain-dependency-triple-record ]
-  ? &(membership-triples: 5) => [ + domain-membership-triple-record ]
-  ? &(coswid-triples: 6) => [ + coswid-triple-record ]
-  * $$triples-map-extension
-}>
+{::include cddl/triples-map.cddl}
 ~~~
 
 The following describes each member of the `triples-map`:
@@ -643,11 +616,7 @@ An environment is named after a class, instance or group identifier (or a
 combination thereof).
 
 ~~~ cddl
-environment-map = non-empty<{
-  ? &(class: 0) => class-map
-  ? &(instance: 1) => $instance-id-type-choice
-  ? &(group: 2) => $group-id-type-choice
-}>
+{::include cddl/environment-map.cddl}
 ~~~
 
 The following describes each member of the `environment-map`:
@@ -669,17 +638,9 @@ model, layer, and index. The CoMID author determines which attributes are
 needed.
 
 ~~~ cddl
-class-map = non-empty<{
-  ? &(class-id: 0) => $class-id-type-choice
-  ? &(vendor: 1) => tstr
-  ? &(model: 2) => tstr
-  ? &(layer: 3) => uint
-  ? &(index: 4) => uint
-}>
+{::include cddl/class-map.cddl}
 
-$class-id-type-choice /= tagged-oid-type
-$class-id-type-choice /= tagged-uuid-type
-$class-id-type-choice /= tagged-int-type
+{::include cddl/class-id-type-choice.cddl}
 ~~~
 
 The following describes each member of the `class-map`:
@@ -712,8 +673,7 @@ of the attester.
 The types defined for an instance identifier are UEID or UUID.
 
 ~~~ cddl
-$instance-id-type-choice /= tagged-ueid-type
-$instance-id-type-choice /= tagged-uuid-type
+{::include cddl/instance-id-type-choice.cddl}
 ~~~
 
 ##### Group
@@ -725,7 +685,7 @@ anonymity set.
 The type defined for a group identified is UUID.
 
 ~~~ cddl
-$group-id-type-choice /= tagged-uuid-type
+{::include cddl/group-id-type-choice.cddl}
 ~~~
 
 ##### Measurements
@@ -747,10 +707,7 @@ class. Environments identified by an instance identifier have measurements that
 are specific to that instance.
 
 ~~~ cddl
-measurement-map = {
-  ? &(mkey: 0) => $measured-element-type-choice
-  &(mval: 1) => measurement-values-map
-}
+{::include cddl/measurement-map.cddl}
 ~~~
 
 The following describes each member of the `measurement-map`:
@@ -766,9 +723,7 @@ The following describes each member of the `measurement-map`:
 The types defined for a measurement identifier are OID, UUID or uint.
 
 ~~~ cddl
-$measured-element-type-choice /= tagged-oid-type
-$measured-element-type-choice /= tagged-uuid-type
-$measured-element-type-choice /= uint
+{::include cddl/measured-element-type-choice.cddl}
 ~~~
 
 ###### Measurement Values {#sec-comid-mval}
@@ -779,23 +734,7 @@ elements in a `measurement-values-map` can represent class or instance
 measurements. Note that some of the elements have instance scope only.
 
 ~~~ cddl
-measurement-values-map = non-empty<{
-  ? &(version: 0) => version-map
-  ? &(svn: 1) => svn-type-choice
-  ? &(digests: 2) => [ + hash-entry ]
-  ? &(flags: 3) => flags-map
-  ? (
-      &(raw-value: 4) => $raw-value-type-choice,
-      ? &(raw-value-mask: 5) => raw-value-mask-type
-    )
-  ? &(mac-addr: 6) => mac-addr-type-choice
-  ? &(ip-addr: 7) =>  ip-addr-type-choice
-  ? &(serial-number: 8) => text
-  ? &(ueid: 9) => ueid-type
-  ? &(uuid: 10) => uuid-type
-  ? &(name: 11) => text
-  * $$measurement-values-map-extension
-}>
+{::include cddl/measurement-values-map.cddl}
 ~~~
 
 The following describes each member of the `measurement-values-map`.
@@ -850,10 +789,7 @@ A `version-map` contains details about the versioning of a measured
 environment.
 
 ~~~ cddl
-version-map = {
-  &(version: 0) => text
-  ? &(version-scheme: 1) => $version-scheme
-}
+{::include cddl/version-map.cddl}
 ~~~
 
 The following describes each member of the `version-map`:
@@ -878,12 +814,7 @@ $version-scheme /= int / text
 [^issue] https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/89
 
 ~~~ cddl
-svn-type = uint
-svn = svn-type
-min-svn = svn-type
-tagged-svn = #6.552(svn)
-tagged-min-svn = #6.553(min-svn)
-svn-type-choice = tagged-svn / tagged-min-svn
+{::include cddl/svn-type-choice.cddl}
 ~~~
 
 ###### Flags {#sec-comid-flags}
@@ -892,15 +823,7 @@ The `flags-map` measurement describes a number of boolean operational modes.
 If a `flags-map` value is not specified, then the operational mode is unknown.
 
 ~~~ cddl
-flags-map = {
-  ? &(configured: 0) => bool
-  ? &(secure: 1) => bool
-  ? &(recovery: 2) => bool
-  ? &(debug: 3) => bool
-  ? &(replay-protected: 4) => bool
-  ? &(integrity-protected: 5) => bool
-  * $$flags-map-extension
-}
+{::include cddl/flags-map.cddl}
 ~~~
 
 The following describes each member of the `flags-map`:
@@ -929,9 +852,7 @@ The following describes each member of the `flags-map`:
 [^issue] https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/90
 
 ~~~ cddl
-$raw-value-type-choice /= #6.560(bytes)
-
-raw-value-mask-type = bytes
+{::include cddl/raw-value.cddl}
 ~~~
 
 ###### Address Types {#sec-comid-address-types}
@@ -939,13 +860,9 @@ raw-value-mask-type = bytes
 The types or associating addressing information to a measured environment are:
 
 ~~~ cddl
-ip-addr-type-choice = ip4-addr-type / ip6-addr-type
-ip4-addr-type = bytes .size 4
-ip6-addr-type = bytes .size 16
+{::include cddl/ip-addr-type-choice.cddl}
 
-mac-addr-type-choice = eui48-addr-type / eui64-addr-type
-eui48-addr-type = bytes .size 6
-eui64-addr-type = bytes .size 8
+{::include cddl/mac-addr-type-choice.cddl}
 ~~~
 
 ##### Crypto Keys
@@ -964,13 +881,7 @@ A cryptographic key can be one of the following formats:
   the one preceding.
 
 ~~~ cddl
-$crypto-key-type-choice /= tagged-pkix-base64-key-type
-$crypto-key-type-choice /= tagged-pkix-base64-cert-type
-$crypto-key-type-choice /= tagged-pkix-base64-cert-path-type
-
-tagged-pkix-base64-key-type = #6.554(tstr)
-tagged-pkix-base64-cert-type = #6.555(tstr)
-tagged-pkix-base64-cert-path-type = #6.556(tstr)
+{:include cddl/crypto-key-type-choice.cddl}
 ~~~
 
 ##### Domain Types {#sec-comid-domain-type}
@@ -981,9 +892,7 @@ their measurements.
 Three types are defined: uint and text for local scope, UUID for global scope.
 
 ~~~ cddl
-$domain-type-choice /= uint
-$domain-type-choice /= text
-$domain-type-choice /= tagged-uuid-type
+{::include cddl/domain-type-choice.cddl}
 ~~~
 
 #### Reference Values Triple {#sec-comid-triple-refval}
@@ -995,10 +904,7 @@ these are the expected (i.e., reference) measurements for the Target
 Environment.
 
 ~~~ cddl
-reference-triple-record = [
-  environment-map
-  [ + measurement-map ]
-]
+{::include cddl/reference-triple-record.cddl}
 ~~~
 
 #### Endorsed Values Triple {#sec-comid-triple-endval}
@@ -1010,10 +916,7 @@ the object contains measurements, and the predicate defines semantics for how
 the object relates to the subject.
 
 ~~~ cddl
-endorsed-triple-record = [
-  environment-map
-  [ + measurement-map ]
-]
+{::include cddl/endorsed-triple-record.cddl}
 ~~~
 
 #### Device Identity Triple {#sec-comid-triple-identity}
@@ -1025,10 +928,7 @@ the identity is authenticated by the key. A common application for this triple
 is device identity.
 
 ~~~ cddl
-identity-triple-record = [
-  environment-map
-  [ + $crypto-key-type-choice ]
-]
+{::include cddl/identity-triple-record.cddl}
 ~~~
 
 #### Attestation Keys Triple {#sec-comid-triple-attest-key}
@@ -1039,10 +939,7 @@ Environment whose object is a cryptographic key. The predicate asserts that the
 Attesting Environment signs Evidence that can be verified using the key.
 
 ~~~ cddl
-attest-key-triple-record = [
-  environment-map
-  [ + $crypto-key-type-choice ]
-]
+{::include cddl/attest-key-triple-record.cddl}
 ~~~
 
 #### Domain Dependency Triple {#sec-comid-triple-domain-dependency}
@@ -1055,10 +952,7 @@ on the object domain(s) trustworthiness having been established before the
 trustworthiness properties of the subject domain exists.
 
 ~~~ cddl
-domain-dependency-triple-record = [
- $domain-type-choice
- [ + $domain-type-choice ]
-]
+{::include cddl/domain-dependency-triple-record.cddl}
 ~~~
 
 #### Domain Membership Triple {#sec-comid-triple-domain-membership}
@@ -1071,10 +965,7 @@ successful matching of Reference Values ({{sec-comid-triple-refval}}) to
 Evidence.
 
 ~~~ cddl
-domain-membership-triple-record = [
-  $domain-type-choice
-  [ + environment-map ]
-]
+{::include cddl/domain-membership-triple-record.cddl}
 ~~~
 
 #### CoMID-CoSWID Linking Triple {#sec-comid-triple-coswid}
@@ -1086,12 +977,7 @@ predicate asserts that these contain the expected (i.e., reference)
 measurements for the Target Environment.
 
 ~~~ cddl
-coswid-triple-record = [
-  environment-map
-  [ + concise-swid-tag-id ]
-]
-
-concise-swid-tag-id = text / bstr .size 16
+{::include cddl/coswid-triple-record.cddl}
 ~~~
 
 ## Extensibility
