@@ -137,7 +137,7 @@ The `non-empty` generic type is used to express that a map with only optional
 members MUST at least include one of the members.
 
 ~~~~ cddl
-non-empty<M> = (M) .and ({ + any => any })
+{::include cddl/non-empty.cddl}
 ~~~~
 
 ### Entity {#sec-common-entity}
@@ -152,14 +152,9 @@ the contents of a manifest. It is instantiated by supplying two parameters:
   the attributes associated with entities of the instantiated type
 
 ~~~cddl
-entity-map<role-type-choice, extension-socket> = {
-  &(entity-name: 0) => $entity-name-type-choice
-  ? &(reg-id: 1) => uri
-  &(role: 2) => [ + role-type-choice ]
-  * extension-socket
-}
+{::include cddl/entity-map.cddl}
 
-$entity-name-type-choice /= text
+{::include cddl/entity-name-type-choice.cddl}
 ~~~
 
 The following describes each member of the `entity-map`.
@@ -192,10 +187,7 @@ In a `validity-map`, both ends of the interval are encoded as epoch-based
 date/time as per {{Section 3.4.2 of -cbor}}.
 
 ~~~ cddl
-validity-map = {
-  ? &(not-before: 0) => time
-  &(not-after: 1) => time
-}
+{::include cddl/validity-map.cddl}
 ~~~
 
 * `not-before` (index 0): the date on which the signed manifest validity period
@@ -210,8 +202,7 @@ Used to tag a byte string as a binary UUID defined in {{Section 4.1.2. of
 -uuid}}.
 
 ~~~ cddl
-uuid-type = bytes .size 16
-tagged-uuid-type = #6.37(uuid-type)
+{::include cddl/uuid.cddl}
 ~~~
 
 ### UEID {#sec-common-ueid}
@@ -220,8 +211,7 @@ Used to tag a byte string as Universal Entity ID Claim (UUID) defined in
 {{Section 4.2.1 of -eat}}.
 
 ~~~ cddl
-ueid-type = bytes .size 33
-tagged-ueid-type = #6.550(ueid-type)
+{::include cddl/ueid.cddl}
 ~~~
 
 ### OID {#sec-common-oid}
@@ -230,8 +220,7 @@ Used to tag a byte string as the BER encoding {{X.690}} of an absolute object
 identifier {{-cbor-oids}}.
 
 ~~~ cddl
-oid-type = bytes
-tagged-oid-type = #6.111(oid-type)
+{::include cddl/oid.cddl}
 ~~~
 
 ### Tagged Integer Type {#sec-common-tagged-int}
@@ -239,7 +228,7 @@ tagged-oid-type = #6.111(oid-type)
 [^issue] https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/87
 
 ~~~ cddl
-tagged-int-type = #6.551(int)
+{::include cddl/tagged-int.cddl}
 ~~~
 
 ### Hash Entry {#sec-common-hash-entry}
@@ -264,10 +253,7 @@ At the top-level, a CoRIM can either be a CBOR-tagged `corim-map`
 ({{sec-corim-map}}) or a COSE signed `corim-map` ({{sec-corim-signed}}).
 
 ~~~ cddl
-corim = #6.500(concise-rim-type-choice)
-
-$concise-rim-type-choice /= #6.501(corim-map)
-$concise-rim-type-choice /= #6.502(signed-corim)
+{::include cddl/corim.cddl}
 ~~~
 
 ## CoRIM Map {#sec-corim-map}
@@ -276,15 +262,7 @@ The CDDL specification for the `corim-map` is as follows and this rule and its
 constraints must be followed when creating or validating a CoRIM map.
 
 ~~~ cddl
-corim-map = {
-  &(id: 0) => $corim-id-type-choice
-  &(tags: 1) => [ + $concise-tag-type-choice ]
-  ? &(dependent-rims: 2) => [ + corim-locator-map ]
-  ? &(profile: 3) => [ + profile-type-choice ]
-  ? &(rim-validity: 4) => validity-map
-  ? &(entities: 5) => [ + corim-entity-map ]
-  * $$corim-map-extension
-}
+{::include cddl/corim-map.cddl}
 ~~~
 
 The following describes each child item of this map.
@@ -319,8 +297,7 @@ A CoRIM id can be either a text string or a UUID type that uniquely identifies
 a CoRIM.
 
 ~~~ cddl
-$corim-id-type-choice /= tstr
-$corim-id-type-choice /= uuid-type
+{::include cddl/corim-id-type-choice.cddl}
 ~~~
 
 ### Tags {#sec-corim-tags}
@@ -329,8 +306,7 @@ A `$concise-tag-type-choice` is a tagged CBOR payload that carries either a
 CoMID ({{sec-comid}}) or a CoSWID {{-coswid}}.
 
 ~~~ cddl
-$concise-tag-type-choice /= #6.505(bytes .cbor concise-swid-tag)
-$concise-tag-type-choice /= #6.506(bytes .cbor concise-mid-tag)
+{::include cddl/concise-tag-type-choice.cddl}
 ~~~
 
 ### Locator Map {#sec-corim-locator-map}
@@ -339,10 +315,7 @@ The locator map contains pointers to repositories where dependent manifests,
 certificates, or other relevant information can be retrieved by the Verifier.
 
 ~~~ cddl
-corim-locator-map = {
-  &(href: 0) => uri
-  ? &(thumbprint: 1) => hash-entry
-}
+{::include cddl/corim-locator-map.cddl}
 ~~~
 
 The following describes each child element of this type.
