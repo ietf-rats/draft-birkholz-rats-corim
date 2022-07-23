@@ -291,6 +291,10 @@ The following describes each child item of this map.
 * `$$corim-map-extension`: This CDDL socket is used to add new information
   structures to the `corim-map`.  See {{sec-iana-corim}}.
 
+~~~ cddl
+{::include cddl/tagged-corim-map.cddl}
+~~~
+
 ### Identity {#sec-corim-id}
 
 A CoRIM id can be either a text string or a UUID type that uniquely identifies
@@ -352,6 +356,10 @@ specification.
 ~~~
 
 ## Signed CoRIM {#sec-corim-signed}
+
+~~~ cddl
+{::include cddl/signed-corim.cddl}
+~~~
 
 Signing a CoRIM follows the procedures defined in CBOR Object Signing and
 Encryption {{-cose}}. A CoRIM tag MUST be wrapped in a COSE_Sign1 structure.
@@ -420,7 +428,7 @@ The following describes each child item of this group.
 #### Signer Map {#sec-corim-signer}
 
 ~~~ cddl
-{::include cddl/corim-signed-map.cddl}
+{::include cddl/corim-signer-map.cddl}
 ~~~
 
 * `signer-name` (index 0): Name of the organization that performs the signer
@@ -430,6 +438,13 @@ The following describes each child item of this group.
 
 * `$$corim-signer-map-extension`: Extension point for future expansion of the
   Signer map.
+
+### Unprotected CoRIM Header Map {#sec-corim-unprotected-header}
+
+~~~ cddl
+{::include cddl/unprotected-corim-header-map.cddl}
+~~~
+
 
 # CoMID {#sec-comid}
 
@@ -1210,7 +1225,7 @@ Environments (CoRE) Parameters" Registry {{!IANA.core-parameters}}:
 [^issue] https://github.com/ietf-rats/draft-birkholz-rats-corim/issues/80
 
 ~~~ cddl
-corim = []
+{::include cddl/corim-autogen.cddl}
 ~~~
 
 # Acknowledgments

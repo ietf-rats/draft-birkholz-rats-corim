@@ -10,6 +10,7 @@ report.xml
 .tags
 .targets.mk
 *.txt
+!cbor-tags.txt
 *.upload
 venv/
 lib
