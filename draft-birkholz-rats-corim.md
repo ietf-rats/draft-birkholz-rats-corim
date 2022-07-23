@@ -331,7 +331,7 @@ A profile specifies which of the optional parts of a CoRIM are required, which
 are prohibited and which extension points are exercised and how.
 
 ~~~ cddl
-profile-type-choice = uri / tagged-oid-type
+{::include cddl/profile-type-choice.cddl}
 ~~~
 
 ### Entities {#sec-corim-entity}
@@ -346,10 +346,9 @@ The `$$corim-entity-map-extension` extension socket is empty in this
 specification.
 
 ~~~ cddl
-corim-entity-map =
-  entity-map<$corim-role-type-choice, $$corim-entity-map-extension>
+{::include cddl/corim-entity-map.cddl}
 
-$corim-role-type-choice /= &(manifest-creator: 1)
+{::include cddl/corim-role-type-choice.cddl}
 ~~~
 
 ## Signed CoRIM {#sec-corim-signed}
@@ -363,12 +362,7 @@ parameters that MUST be used in the protected header alongside additional
 information about the CoRIM encoded in a `corim-meta-map` ({{sec-corim-meta}}).
 
 ~~~ cddl
-COSE-Sign1-corim = [
-  protected: bstr .cbor protected-corim-header-map
-  unprotected: unprotected-corim-header-map
-  payload: bstr .cbor tagged-corim-map
-  signature: bstr
-]
+{::include cddl/cose-sign1-corim.cddl}
 ~~~
 
 The following describes each child element of this type.
@@ -386,13 +380,7 @@ The following describes each child element of this type.
 ### Protected Header Map
 
 ~~~ cddl
-protected-corim-header-map = {
-  &(alg-id: 1) => int
-  &(content-type: 3) => "application/corim-unsigned+cbor"
-  &(issuer-key-id: 4) => bstr
-  &(corim-meta: 8) => bstr .cbor corim-meta-map
-  * cose-label => cose-value
-}
+{::include cddl/protected-corim-header-map.cddl}
 ~~~
 
 The following describes each child item of this map.
@@ -418,10 +406,7 @@ CoRIM. This ensures the consumer is able to identify credentials used to
 authenticate its signer.
 
 ~~~ cddl
-corim-meta-map = {
-  &(signer: 0) => corim-signer-map
-  ? &(signature-validity: 1) => validity-map
-}
+{::include cddl/corim-meta-map.cddl}
 ~~~
 
 The following describes each child item of this group.
@@ -435,11 +420,7 @@ The following describes each child item of this group.
 #### Signer Map {#sec-corim-signer}
 
 ~~~ cddl
-corim-signer-map = {
-  &(signer-name: 0) => $entity-name-type-choice
-  ? &(signer-uri: 1) => uri
-  * $$corim-signer-map-extension
-}
+{::include cddl/corim-signed-map.cddl}
 ~~~
 
 * `signer-name` (index 0): Name of the organization that performs the signer
